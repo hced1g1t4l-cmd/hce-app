@@ -1,26 +1,55 @@
 @import "tailwindcss";
 
+/*
+  Design system da HCE.
+  Cores extraidas da identidade oficial (logo + posts):
+  - Azul royal #003288 (primaria)
+  - Ambar/dourado #FFC027 (secundaria)
+  - Neutros para texto e fundos claros
+  Conceito: minimalista, sobrio-moderno, equilibrio entre negocios e educacao.
+*/
+
+@theme {
+  --color-brand-blue: #003288;
+  --color-brand-blue-dark: #00256a;
+  --color-brand-blue-deep: #001b4f;
+  --color-brand-blue-light: #0a46a8;
+
+  --color-brand-amber: #ffc027;
+  --color-brand-amber-dark: #e8a200;
+  --color-brand-amber-soft: #ffe9b0;
+
+  --color-ink: #131720;
+  --color-muted: #5a6473;
+  --color-line: #e6e9ef;
+  --color-surface: #ffffff;
+  --color-surface-soft: #f6f8fc;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-poppins), var(--font-inter), sans-serif;
+
+  --radius-brand: 0.9rem;
+}
+
 :root {
   --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --foreground: #131720;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Foco visivel e acessivel em toda a navegacao por teclado. */
+:focus-visible {
+  outline: 2px solid var(--color-brand-blue);
+  outline-offset: 2px;
+}
+
+/* Rolagem suave para os links ancora do menu. */
+html {
+  scroll-behavior: smooth;
 }
