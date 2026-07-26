@@ -138,7 +138,7 @@ export default function Home() {
                           sizes="(max-width: 768px) 45vw, 300px"
                           className="object-cover"
                         />
-                        <span className="absolute right-3 bottom-3 flex items-center gap-1 rounded-full bg-brand-blue/85 px-2.5 py-1 text-[0.7rem] font-semibold text-white backdrop-blur-sm">
+                        <span className="absolute right-3 bottom-3 hidden items-center gap-1 rounded-full bg-brand-blue/85 px-2.5 py-1 text-[0.7rem] font-semibold text-white backdrop-blur-sm sm:flex">
                           <span aria-hidden>↻</span> bio
                         </span>
                       </div>
@@ -158,6 +158,10 @@ export default function Home() {
                       {f.nome}
                     </p>
                     <p className="text-sm text-muted">{f.papel}</p>
+                    {/* RAF_001: no mobile (sem hover) a bio aparece aqui, legivel. */}
+                    <p className="mt-2 text-[0.82rem] leading-relaxed text-muted sm:hidden">
+                      {f.bio}
+                    </p>
                   </figcaption>
                 </figure>
               ))}
