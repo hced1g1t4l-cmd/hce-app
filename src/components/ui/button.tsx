@@ -6,8 +6,9 @@ type Size = "md" | "lg";
 
 // FAB_004: transicao mais longa ("esfumacar") e padrao azul<->amarelo.
 // Todos os botoes convergem para AMARELO no hover.
+// RAF_002: texto sempre centralizado (inclusive quando quebra em 2 linhas).
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-full font-display font-semibold transition-all duration-300 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60";
+  "inline-flex items-center justify-center gap-2 rounded-full text-center leading-snug font-display font-semibold transition-all duration-300 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60";
 
 // FAB_009: regra de cor dos botoes
 //  - fundo AMARELO  => letra AZUL
@@ -29,9 +30,10 @@ const variants: Record<Variant, string> = {
   nav: "bg-brand-blue text-brand-amber hover:bg-brand-blue-dark hover:-translate-y-0.5 shadow-sm hover:shadow-md focus-visible:outline-brand-amber",
 };
 
+// RAF_002: tamanhos responsivos — menores no mobile, cheios no desktop.
 const sizes: Record<Size, string> = {
-  md: "px-5 py-2.5 text-sm",
-  lg: "px-7 py-3.5 text-base",
+  md: "px-4 py-2.5 text-sm sm:px-5",
+  lg: "px-6 py-3 text-sm sm:px-7 sm:py-3.5 sm:text-base",
 };
 
 type CommonProps = {
