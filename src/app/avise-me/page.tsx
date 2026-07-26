@@ -23,14 +23,9 @@ export default function AviseMePage() {
     const form = e.currentTarget;
     const fd = new FormData(form);
 
-    const canalEmail = fd.get("canalEmail") === "on";
-    const canalSms = fd.get("canalSms") === "on";
-    const canalWhatsapp = fd.get("canalWhatsapp") === "on";
-
-    if (!canalEmail && !canalSms && !canalWhatsapp) {
-      setErro(
-        "Selecione ao menos um canal para avisarmos você (e-mail, SMS ou WhatsApp).",
-      );
+    const autorizaAviso = fd.get("canalAviso") === "on";
+    if (!autorizaAviso) {
+      setErro("Autorize a HCE a te avisar sobre o lançamento.");
       return;
     }
 
@@ -49,9 +44,9 @@ export default function AviseMePage() {
       nome: String(fd.get("nome") || ""),
       email: String(fd.get("email") || ""),
       telefone: String(fd.get("telefone") || ""),
-      canalEmail,
-      canalSms,
-      canalWhatsapp,
+      canalEmail: autorizaAviso,
+      canalSms: autorizaAviso,
+      canalWhatsapp: autorizaAviso,
       aceitaPromos: fd.get("aceitaPromos") === "on",
       website: String(fd.get("website") || ""),
       captchaToken,
@@ -157,24 +152,14 @@ export default function AviseMePage() {
               </Field>
             </div>
 
-            <fieldset className="mt-7">
-              <legend className="font-display text-sm font-semibold text-brand-blue">
-                Como podemos te avisar sobre o lançamento?
-              </legend>
-              <p className="mt-1 text-xs text-muted">
-                Selecione ao menos uma opção.
-              </p>
-              <div className="mt-3 space-y-2.5">
-                <Checkbox name="canalEmail" label="Autorizo ser avisado por e-mail" />
-                <Checkbox name="canalSms" label="Autorizo ser avisado por SMS" />
-                <Checkbox
-                  name="canalWhatsapp"
-                  label="Autorizo ser avisado por WhatsApp"
-                />
-              </div>
-            </fieldset>
+            <div className="mt-7 rounded-xl bg-surface-soft p-4">
+              <Checkbox
+                name="canalAviso"
+                label="Autorizo a HCE a me avisar sobre o lançamento do Clube +HCE por e-mail, SMS e/ou WhatsApp."
+              />
+            </div>
 
-            <div className="mt-6 rounded-xl bg-surface-soft p-4">
+            <div className="mt-4 rounded-xl bg-surface-soft p-4">
               <Checkbox
                 name="aceitaPromos"
                 label="Autorizo a HCE a me enviar outras novidades, conteúdos e promoções por e-mail, SMS e WhatsApp. Posso cancelar quando quiser."
