@@ -83,11 +83,11 @@ export function SiteFooter() {
       </Container>
 
       <div className="border-t border-white/10">
-        <Container className="flex flex-col items-center justify-between gap-2 py-6 text-xs text-white/50 sm:flex-row">
-          <span>© {YEAR} HCE Gastronomia. Todos os direitos reservados.</span>
-          {/* FAB_008 + RAF_004: credito do desenvolvedor com link. */}
+        <Container className="py-6 text-center text-xs text-white/50">
+          {/* RAF_010: "Desenvolvido por rqtte" como continuacao do copyright. */}
           <span>
-            hcegastronomia.com · Desenvolvido por{" "}
+            © {YEAR} HCE Gastronomia. Todos os direitos reservados. Desenvolvido
+            por{" "}
             <a
               href="https://rqtte.com.br"
               target="_blank"
