@@ -6,7 +6,6 @@ import { Container } from "@/components/site/container";
 import { Logo } from "@/components/site/logo";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
-import { WHATSAPP_URL } from "@/lib/site";
 
 const NAV = [
   { label: "Sobre", href: "#sobre" },
@@ -38,7 +37,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden md:block">
-          <Button href={WHATSAPP_URL} size="md" variant="nav">
+          <Button href="/fale-com-a-hce" size="md" variant="nav">
             Fale com a HCE
           </Button>
         </div>
@@ -87,7 +86,7 @@ export function SiteHeader() {
               </Link>
             ))}
             <Button
-              href={WHATSAPP_URL}
+              href="/fale-com-a-hce"
               size="lg"
               className="mt-2 w-full"
             >
