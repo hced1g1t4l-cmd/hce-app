@@ -185,17 +185,17 @@ export default function Home() {
                 Clube +HCE: conteúdo que vira resultado
               </h2>
               <p className="mt-6 text-lg leading-relaxed text-white/80">
-                Um clube por assinatura com receitas, fichas técnicas, aulas e
-                uma comunidade para quem quer evoluir na cozinha e na gestão do
-                negócio, no seu ritmo.
+                Um clube por assinatura com receitas, fichas técnicas, ebooks e
+                uma comunidade para quem quer evoluir na cozinha e na gestão de
+                seu negócio, no seu ritmo.
               </p>
               <ul className="mt-8 space-y-3 text-white/85">
                 {[
                   "Biblioteca de receitas e fichas técnicas",
-                  "Aulas e treinamentos exclusivos",
-                  "Comunidade e trocas com as chefs",
+                  "Acervo exclusivo de ebooks e materiais sobre técnicas de cozinha, ciência, história e gestão",
+                  "Comunidade e trocas com os especialistas",
                 ].map((item) => (
-                  <li key={item} className="flex items-center gap-3">
+                  <li key={item} className="flex items-start gap-3">
                     <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-amber text-sm font-bold text-brand-blue-deep">
                       ✓
                     </span>
