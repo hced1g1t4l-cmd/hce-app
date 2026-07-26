@@ -58,10 +58,10 @@ export default function Home() {
             <Image
               src="/brand/logos/logo-hce.png"
               alt="HCE"
-              width={360}
-              height={150}
+              width={560}
+              height={233}
               priority
-              className="h-24 w-auto sm:h-28"
+              className="h-36 w-auto sm:h-48 lg:h-56"
             />
             <p className="font-display text-sm font-semibold tracking-[0.28em] text-brand-amber uppercase">
               Hospitalidade · Consultoria · Educação
