@@ -18,9 +18,9 @@ export function SiteFooter() {
             className="drop-shadow-[0_4px_14px_rgba(0,0,0,0.3)]"
           />
           <p className="mt-5 max-w-sm text-sm leading-relaxed text-white/70">
-            Hospitalidade, Consultoria e Educação em Gastronomia. Unindo as
-            trajetórias de Cris Leite e Gio Gropello para transformar
-            restaurantes e formar pessoas.
+            As experiências de Cris Leite e Gio Gropello reunidas para
+            desenvolver pessoas, fortalecer equipes e impulsionar resultados no
+            setor de Alimentos e Bebidas.
           </p>
           {/* FAB_007: caminhos para as redes sociais. */}
           <SocialLinks className="mt-6" />

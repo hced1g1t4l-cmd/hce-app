@@ -11,7 +11,7 @@ const PILARES = [
     letra: "h",
     titulo: "Hospitalidade",
     texto:
-      "Cultura de serviço que coloca as pessoas no centro. Ajudamos equipes a criar experiências mais humanas e memoráveis, do primeiro contato ao pós-atendimento.",
+      "A hospitalidade é um ativo estratégico. Na HCE, desenvolvemos equipes, criamos processos e implementamos soluções que elevam a excelência dos serviços e fortalecem a experiência do cliente.",
   },
   {
     letra: "c",
