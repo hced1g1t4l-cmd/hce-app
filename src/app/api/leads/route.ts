@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { verifyCaptcha, getClientIp } from "@/lib/anti-bot";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -20,6 +21,15 @@ const schema = z.object({
 });
 
 export async function POST(req: Request) {
+  const ip = getClientIp(req);
+  const limit = rateLimit(`leads:${ip ?? "sem-ip"}`, 10, 60 * 60 * 1000);
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: "Muitas tentativas. Tente novamente mais tarde." },
+      { status: 429 },
+    );
+  }
+
   let body: unknown;
   try {
     body = await req.json();
@@ -60,7 +70,7 @@ export async function POST(req: Request) {
         canalSms: data.canalSms,
         canalWhatsapp: data.canalWhatsapp,
         aceitaPromos: data.aceitaPromos,
-        ip: getClientIp(req),
+        ip,
         userAgent: req.headers.get("user-agent"),
       },
     });
