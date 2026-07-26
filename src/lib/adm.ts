@@ -2,34 +2,38 @@ import crypto from "crypto";
 import { cookies } from "next/headers";
 
 // Autenticacao simples do painel /adm (RAF_007).
-// Usuario/senha unicos. Senha guardada como hash SHA-256 (nao em texto puro).
-// Pode ser sobrescrita por variaveis de ambiente na Vercel:
-//   ADMIN_USER, ADMIN_PASSWORD (texto puro) ou ADMIN_PASSWORD_HASH (sha256 hex).
+// Usuario/senha unicos, definidos por variaveis de ambiente na Vercel:
+//   AUTH_SECRET       -> assina o cookie de sessao (OBRIGATORIO em producao)
+//   ADMIN_USER        -> usuario do painel
+//   ADMIN_PASSWORD    -> senha em texto puro (comparada de forma segura)
+//   ADMIN_PASSWORD_HASH -> alternativa: hash sha256 da senha (hex)
+//
+// Em producao, se AUTH_SECRET ou a senha nao estiverem configurados, o painel
+// fica "fail-closed" (ninguem entra) em vez de usar um segredo fixo e forjavel.
 
 export const ADM_COOKIE = "hce_adm";
 const MAX_AGE_SECONDS = 60 * 60 * 8; // 8 horas
 
-const DEFAULT_USER = "hce.d1g1t4l";
-// sha256("d1g1t4lhce@26")
-const DEFAULT_PASSWORD_HASH =
-  "83c1625523a373a0eee89b71668229c0778087494c6118054503bfa624827ac7";
+const IS_PROD = process.env.NODE_ENV === "production";
 
-function sessionSecret(): string {
-  return process.env.AUTH_SECRET || "hce-dev-secret-troque-em-producao";
-}
+// Fallbacks usados SOMENTE em desenvolvimento local.
+const DEV_USER = "hce.d1g1t4l";
+const DEV_PASSWORD = "d1g1t4lhce@26";
+const DEV_SECRET = "hce-dev-secret-apenas-local";
 
 function sha256(value: string): string {
   return crypto.createHash("sha256").update(value).digest("hex");
 }
 
-function expectedUser(): string {
-  return process.env.ADMIN_USER || DEFAULT_USER;
+// Retorna o segredo de sessao, ou null se ausente em producao (fail-closed).
+function sessionSecret(): string | null {
+  if (process.env.AUTH_SECRET) return process.env.AUTH_SECRET;
+  return IS_PROD ? null : DEV_SECRET;
 }
 
-function expectedPasswordHash(): string {
-  if (process.env.ADMIN_PASSWORD_HASH) return process.env.ADMIN_PASSWORD_HASH;
-  if (process.env.ADMIN_PASSWORD) return sha256(process.env.ADMIN_PASSWORD);
-  return DEFAULT_PASSWORD_HASH;
+function expectedUser(): string {
+  if (process.env.ADMIN_USER) return process.env.ADMIN_USER;
+  return IS_PROD ? "" : DEV_USER;
 }
 
 function safeEqual(a: string, b: string): boolean {
@@ -39,21 +43,36 @@ function safeEqual(a: string, b: string): boolean {
   return crypto.timingSafeEqual(ab, bb);
 }
 
+function passwordOk(input: string): boolean {
+  const plain = process.env.ADMIN_PASSWORD;
+  if (plain) return safeEqual(input, plain);
+
+  const hash = process.env.ADMIN_PASSWORD_HASH;
+  if (hash) return safeEqual(sha256(input), hash);
+
+  // Sem senha configurada: so aceita o fallback em desenvolvimento.
+  return IS_PROD ? false : safeEqual(input, DEV_PASSWORD);
+}
+
 export function checkCredentials(user: string, password: string): boolean {
-  return (
-    safeEqual(user, expectedUser()) &&
-    safeEqual(sha256(password), expectedPasswordHash())
-  );
+  const expUser = expectedUser();
+  // Fail-closed: sem usuario/segredo configurado em producao, ninguem entra.
+  if (!expUser || sessionSecret() === null) return false;
+  return safeEqual(user, expUser) && passwordOk(password);
 }
 
-function sign(payload: string): string {
-  return crypto.createHmac("sha256", sessionSecret()).update(payload).digest("hex");
+function sign(payload: string): string | null {
+  const secret = sessionSecret();
+  if (secret === null) return null;
+  return crypto.createHmac("sha256", secret).update(payload).digest("hex");
 }
 
-export function createToken(): string {
+export function createToken(): string | null {
   const exp = Date.now() + MAX_AGE_SECONDS * 1000;
   const payload = `adm.${exp}`;
-  return `${payload}.${sign(payload)}`;
+  const sig = sign(payload);
+  if (sig === null) return null;
+  return `${payload}.${sig}`;
 }
 
 export function verifyToken(token?: string | null): boolean {
@@ -62,7 +81,9 @@ export function verifyToken(token?: string | null): boolean {
   if (parts.length !== 3) return false;
   const [scope, exp, sig] = parts;
   const payload = `${scope}.${exp}`;
-  if (!safeEqual(sign(payload), sig)) return false;
+  const expected = sign(payload);
+  if (expected === null) return false;
+  if (!safeEqual(expected, sig)) return false;
   if (Number(exp) < Date.now()) return false;
   return scope === "adm";
 }

@@ -12,6 +12,15 @@ export default async function AdmLoginPage({
   if (await isAuthed()) redirect("/adm");
   const { erro } = await searchParams;
 
+  const mensagemErro =
+    erro === "rate"
+      ? "Muitas tentativas. Aguarde alguns minutos e tente novamente."
+      : erro === "config"
+        ? "Painel indisponível: configuração de acesso pendente."
+        : erro
+          ? "Usuário ou senha inválidos."
+          : null;
+
   return (
     <main className="flex min-h-screen items-center justify-center bg-brand-blue-deep p-6">
       <form
@@ -24,9 +33,9 @@ export default async function AdmLoginPage({
         </h1>
         <p className="mt-1 text-sm text-muted">Acesso restrito.</p>
 
-        {erro && (
+        {mensagemErro && (
           <p className="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
-            Usuário ou senha inválidos.
+            {mensagemErro}
           </p>
         )}
 
