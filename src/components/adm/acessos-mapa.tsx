@@ -16,16 +16,19 @@ const H = 480;
 // Brasil usa projecao Mercator ajustada ao pais; Mundo usa Natural Earth.
 export function AcessosMapa({ cidades }: { cidades: CidadePonto[] }) {
   const [vista, setVista] = useState<Vista>("brasil");
-  const [geo, setGeo] = useState<FeatureCollection<Geometry> | null>(null);
-  const [carregando, setCarregando] = useState(true);
+  // Estado do mapa carregado (mantem junto o "vista" a que o geo pertence, para
+  // derivar "carregando" sem precisar de setState sincrono dentro do effect).
+  const [mapa, setMapa] = useState<{
+    vista: Vista;
+    geo: FeatureCollection<Geometry> | null;
+    carregando: boolean;
+  }>({ vista, geo: null, carregando: true });
   const [hover, setHover] = useState<
     { c: CidadePonto; x: number; y: number } | null
   >(null);
 
   useEffect(() => {
     let vivo = true;
-    setCarregando(true);
-    setGeo(null);
 
     const url =
       vista === "brasil" ? "/maps/brazil-states.json" : "/maps/world-110m.json";
@@ -34,22 +37,27 @@ export function AcessosMapa({ cidades }: { cidades: CidadePonto[] }) {
       .then((r) => r.json())
       .then((data) => {
         if (!vivo) return;
-        if (data.type === "Topology") {
-          const obj = data.objects.countries ?? Object.values(data.objects)[0];
-          setGeo(
-            feature(data, obj) as unknown as FeatureCollection<Geometry>,
-          );
-        } else {
-          setGeo(data as FeatureCollection<Geometry>);
-        }
+        const geo =
+          data.type === "Topology"
+            ? (feature(
+                data,
+                data.objects.countries ?? Object.values(data.objects)[0],
+              ) as unknown as FeatureCollection<Geometry>)
+            : (data as FeatureCollection<Geometry>);
+        setMapa({ vista, geo, carregando: false });
       })
-      .catch(() => vivo && setGeo(null))
-      .finally(() => vivo && setCarregando(false));
+      .catch(() => {
+        if (vivo) setMapa({ vista, geo: null, carregando: false });
+      });
 
     return () => {
       vivo = false;
     };
   }, [vista]);
+
+  // Enquanto o geo carregado nao for o da vista atual, mostramos "carregando".
+  const carregando = mapa.carregando || mapa.vista !== vista;
+  const geo = mapa.vista === vista ? mapa.geo : null;
 
   const pontos = useMemo(
     () =>
