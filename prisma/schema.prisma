@@ -90,3 +90,21 @@ model ClubeLead {
   @@index([createdAt])
   @@index([email])
 }
+
+// Mensagem do formulario "Fale com a HCE" (RAF_008).
+// Coletada em /fale-com-a-hce; consultada apenas no /adm/contatos.
+model ContatoMensagem {
+  id              String   @id @default(cuid())
+  nome            String
+  email           String
+  telefone        String?
+  mensagem        String
+  // Permissoes de contato que a pessoa autorizou.
+  permiteEmail    Boolean  @default(false)
+  permiteTelefone Boolean  @default(false)
+  ip              String?
+  userAgent       String?
+  createdAt       DateTime @default(now())
+
+  @@index([createdAt])
+}

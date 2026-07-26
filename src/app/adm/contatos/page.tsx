@@ -20,29 +20,31 @@ const fmtHora = new Intl.DateTimeFormat("pt-BR", {
   timeZone: "America/Sao_Paulo",
 });
 
-export default async function AdmPage() {
+export default async function AdmContatosPage() {
   if (!(await isAuthed())) redirect("/adm/login");
 
-  const leads = await prisma.clubeLead.findMany({
+  const mensagens = await prisma.contatoMensagem.findMany({
     orderBy: { createdAt: "desc" },
   });
 
   return (
     <main className="min-h-screen bg-surface-soft">
-      <AdmHeader active="leads" />
+      <AdmHeader active="contatos" />
 
       <div className="mx-auto max-w-7xl px-6 py-8">
         <div className="mb-5">
           <h1 className="font-display text-xl font-bold text-brand-blue">
-            Leads · Clube +HCE
+            Mensagens · Fale com a HCE
           </h1>
           <p className="text-sm text-muted">
-            {leads.length} {leads.length === 1 ? "cadastro" : "cadastros"}
+            {mensagens.length}{" "}
+            {mensagens.length === 1 ? "mensagem" : "mensagens"}
           </p>
         </div>
-        {leads.length === 0 ? (
+
+        {mensagens.length === 0 ? (
           <p className="rounded-xl border border-line bg-white p-8 text-center text-muted">
-            Nenhum cadastro ainda.
+            Nenhuma mensagem ainda.
           </p>
         ) : (
           <div className="overflow-x-auto rounded-xl border border-line bg-white">
@@ -54,47 +56,44 @@ export default async function AdmPage() {
                   <Th>Nome</Th>
                   <Th>E-mail</Th>
                   <Th>Telefone</Th>
-                  <Th>Meio (aviso)</Th>
-                  <Th>Promoções</Th>
+                  <Th>Mensagem</Th>
+                  <Th>Permissões</Th>
                   <Th>IP</Th>
                 </tr>
               </thead>
               <tbody>
-                {leads.map((l) => {
-                  const meios = [
-                    l.canalEmail && "E-mail",
-                    l.canalSms && "SMS",
-                    l.canalWhatsapp && "WhatsApp",
+                {mensagens.map((m) => {
+                  const permissoes = [
+                    m.permiteEmail && "E-mail",
+                    m.permiteTelefone && "Telefone",
                   ].filter(Boolean) as string[];
                   return (
-                    <tr key={l.id} className="border-b border-line/70">
-                      <Td>{fmtData.format(l.createdAt)}</Td>
-                      <Td>{fmtHora.format(l.createdAt)}</Td>
-                      <Td className="font-medium text-ink">{l.nome}</Td>
-                      <Td>{l.email}</Td>
-                      <Td>{l.telefone}</Td>
+                    <tr key={m.id} className="border-b border-line/70 align-top">
+                      <Td>{fmtData.format(m.createdAt)}</Td>
+                      <Td>{fmtHora.format(m.createdAt)}</Td>
+                      <Td className="font-medium text-ink">{m.nome}</Td>
+                      <Td>{m.email}</Td>
+                      <Td>{m.telefone ?? "—"}</Td>
+                      <Td className="max-w-sm whitespace-normal text-ink">
+                        {m.mensagem}
+                      </Td>
                       <Td>
                         <div className="flex flex-wrap gap-1">
-                          {meios.map((m) => (
-                            <span
-                              key={m}
-                              className="rounded-full bg-brand-blue/10 px-2 py-0.5 text-xs font-semibold text-brand-blue"
-                            >
-                              {m}
-                            </span>
-                          ))}
+                          {permissoes.length > 0 ? (
+                            permissoes.map((p) => (
+                              <span
+                                key={p}
+                                className="rounded-full bg-brand-blue/10 px-2 py-0.5 text-xs font-semibold text-brand-blue"
+                              >
+                                {p}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-muted">—</span>
+                          )}
                         </div>
                       </Td>
-                      <Td>
-                        {l.aceitaPromos ? (
-                          <span className="rounded-full bg-brand-amber/25 px-2 py-0.5 text-xs font-semibold text-brand-amber-dark">
-                            Sim
-                          </span>
-                        ) : (
-                          <span className="text-muted">Não</span>
-                        )}
-                      </Td>
-                      <Td className="text-muted">{l.ip ?? "—"}</Td>
+                      <Td className="text-muted">{m.ip ?? "—"}</Td>
                     </tr>
                   );
                 })}
@@ -118,9 +117,5 @@ function Td({
   children: React.ReactNode;
   className?: string;
 }) {
-  return (
-    <td className={`px-4 py-3 whitespace-nowrap ${className ?? ""}`}>
-      {children}
-    </td>
-  );
+  return <td className={`px-4 py-3 ${className ?? "whitespace-nowrap"}`}>{children}</td>;
 }

@@ -9,13 +9,11 @@ export const dynamic = "force-dynamic";
 const schema = z.object({
   nome: z.string().trim().min(2, "Informe seu nome").max(120),
   email: z.string().trim().email("E-mail invalido").max(160),
-  telefone: z.string().trim().min(8, "Telefone invalido").max(30),
-  canalEmail: z.boolean().default(false),
-  canalSms: z.boolean().default(false),
-  canalWhatsapp: z.boolean().default(false),
-  aceitaPromos: z.boolean().default(false),
+  telefone: z.string().trim().max(30).optional().or(z.literal("")),
+  mensagem: z.string().trim().min(5, "Escreva sua mensagem").max(3000),
+  permiteEmail: z.boolean().default(false),
+  permiteTelefone: z.boolean().default(false),
   captchaToken: z.string().optional(),
-  // Honeypot: bots costumam preencher. Deve vir vazio.
   website: z.string().optional(),
 });
 
@@ -37,7 +35,6 @@ export async function POST(req: Request) {
 
   const data = parsed.data;
 
-  // Honeypot preenchido => provavelmente bot. Fingimos sucesso.
   if (data.website && data.website.trim() !== "") {
     return NextResponse.json({ ok: true });
   }
@@ -51,15 +48,14 @@ export async function POST(req: Request) {
   }
 
   try {
-    await prisma.clubeLead.create({
+    await prisma.contatoMensagem.create({
       data: {
         nome: data.nome,
         email: data.email,
-        telefone: data.telefone,
-        canalEmail: data.canalEmail,
-        canalSms: data.canalSms,
-        canalWhatsapp: data.canalWhatsapp,
-        aceitaPromos: data.aceitaPromos,
+        telefone: data.telefone ? data.telefone : null,
+        mensagem: data.mensagem,
+        permiteEmail: data.permiteEmail,
+        permiteTelefone: data.permiteTelefone,
         ip: getClientIp(req),
         userAgent: req.headers.get("user-agent"),
       },
@@ -67,7 +63,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json(
-      { error: "Nao foi possivel salvar. Tente novamente." },
+      { error: "Nao foi possivel enviar. Tente novamente." },
       { status: 500 },
     );
   }
