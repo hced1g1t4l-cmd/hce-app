@@ -91,6 +91,9 @@ export default function RootLayout({
       className={`${inter.variable} ${poppins.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-white text-ink">
+        <a href="#conteudo" className="skip-link">
+          Pular para o conteúdo
+        </a>
         {children}
       </body>
     </html>

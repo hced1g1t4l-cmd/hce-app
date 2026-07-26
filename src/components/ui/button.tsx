@@ -7,8 +7,9 @@ type Size = "md" | "lg";
 // FAB_004: transicao mais longa ("esfumacar") e padrao azul<->amarelo.
 // Todos os botoes convergem para AMARELO no hover.
 // RAF_002: texto sempre centralizado (inclusive quando quebra em 2 linhas).
+// RAF_012 #11: feedback tatil no toque/clique (active) e respeito a reduced-motion.
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-full text-center leading-snug font-display font-semibold transition-all duration-300 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60";
+  "inline-flex min-h-11 items-center justify-center gap-2 rounded-full text-center leading-snug font-display font-semibold transition-all duration-300 ease-out active:translate-y-0 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transform-none motion-reduce:transition-none";
 
 // FAB_009: regra de cor dos botoes
 //  - fundo AMARELO  => letra AZUL

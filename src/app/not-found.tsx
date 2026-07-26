@@ -10,7 +10,7 @@ export default function NotFound() {
   return (
     <>
       <SiteHeader />
-      <main className="flex-1 bg-gradient-to-b from-brand-blue to-brand-blue-deep text-white">
+      <main id="conteudo" className="flex-1 bg-gradient-to-b from-brand-blue to-brand-blue-deep text-white">
         <Container className="flex flex-col items-center gap-6 py-28 text-center">
           <p className="font-display text-7xl font-extrabold text-brand-amber sm:text-8xl">
             404

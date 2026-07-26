@@ -24,7 +24,7 @@ export function SiteHeader() {
             O proprio quadrado azul da marca ja contrasta com a barra amarela. */}
         <Logo size={44} className="rounded-xl" />
 
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav aria-label="Navegação principal" className="hidden items-center gap-8 md:flex">
           {NAV.map((item) => (
             <Link
               key={item.href}
@@ -47,6 +47,7 @@ export function SiteHeader() {
           onClick={() => setOpen((v) => !v)}
           aria-label={open ? "Fechar menu" : "Abrir menu"}
           aria-expanded={open}
+          aria-controls="menu-mobile"
           className="flex h-11 w-11 items-center justify-center rounded-lg text-brand-blue md:hidden"
         >
           <span className="relative flex h-4 w-6 flex-col justify-between">
@@ -73,7 +74,7 @@ export function SiteHeader() {
       </Container>
 
       {open && (
-        <div className="border-t border-line bg-white md:hidden">
+        <div id="menu-mobile" className="border-t border-line bg-white md:hidden">
           <Container className="flex flex-col gap-1 py-4">
             {NAV.map((item) => (
               <Link

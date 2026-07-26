@@ -47,7 +47,7 @@ export function SocialLinks({ className }: { className?: string }) {
             rel="noopener noreferrer"
             aria-label={`HCE no ${s.label}`}
             title={s.label}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white/80 transition-colors duration-300 hover:bg-brand-amber hover:text-brand-blue-deep"
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white/80 transition-colors duration-300 hover:bg-brand-amber hover:text-brand-blue-deep"
           >
             <svg
               viewBox="0 0 24 24"
