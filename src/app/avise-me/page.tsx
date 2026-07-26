@@ -139,7 +139,7 @@ export default function AviseMePage() {
                 />
               </Field>
 
-              <Field label="Telefone / WhatsApp" htmlFor="telefone">
+              <Field label="Telefone" htmlFor="telefone">
                 <input
                   id="telefone"
                   name="telefone"
@@ -155,14 +155,14 @@ export default function AviseMePage() {
             <div className="mt-7 rounded-xl bg-surface-soft p-4">
               <Checkbox
                 name="canalAviso"
-                label="Autorizo a HCE a me avisar sobre o lançamento do Clube +HCE por e-mail, SMS e/ou WhatsApp."
+                label="Autorizo a HCE a me avisar sobre o lançamento do Clube +HCE por e-mail e/ou SMS."
               />
             </div>
 
             <div className="mt-4 rounded-xl bg-surface-soft p-4">
               <Checkbox
                 name="aceitaPromos"
-                label="Autorizo a HCE a me enviar outras novidades, conteúdos e promoções por e-mail, SMS e WhatsApp. Posso cancelar quando quiser."
+                label="Autorizo a HCE a me enviar outras novidades, conteúdos e promoções por e-mail e SMS. Posso cancelar quando quiser."
               />
             </div>
 

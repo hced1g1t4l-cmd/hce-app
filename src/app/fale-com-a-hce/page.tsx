@@ -127,7 +127,7 @@ export default function FaleComAHcePage() {
                 />
               </Field>
 
-              <Field label="Telefone / WhatsApp (opcional)" htmlFor="telefone">
+              <Field label="Telefone (opcional)" htmlFor="telefone">
                 <input
                   id="telefone"
                   name="telefone"
@@ -161,7 +161,7 @@ export default function FaleComAHcePage() {
                 />
                 <Checkbox
                   name="permiteTelefone"
-                  label="Autorizo contato por telefone / WhatsApp"
+                  label="Autorizo contato por telefone"
                 />
               </div>
             </fieldset>

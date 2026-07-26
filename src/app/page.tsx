@@ -4,7 +4,7 @@ import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { Button } from "@/components/ui/button";
 import { FounderFlipCard } from "@/components/site/founder-flip-card";
-import { WHATSAPP_URL, EMAIL_CONTATO } from "@/lib/site";
+import { EMAIL_CONTATO } from "@/lib/site";
 
 const PILARES = [
   {
@@ -238,8 +238,8 @@ export default function Home() {
                 ajudar.
               </p>
               <div className="relative mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                <Button href={WHATSAPP_URL} size="lg">
-                  Falar no WhatsApp
+                <Button href="/fale-com-a-hce" size="lg">
+                  Falar com a HCE
                 </Button>
                 <Button
                   href={`mailto:${EMAIL_CONTATO}`}
