@@ -30,11 +30,13 @@ const FUNDADORAS = [
     nome: "Cris Leite",
     papel: "Chef, educadora e consultora",
     foto: "/brand/fotos/chef-cris.png",
+    bio: "Mestre em Novas Tecnologias Digitais na Educação, especialista em Gestão de Recursos Humanos e graduada em Gastronomia. Professora, pesquisadora e consultora com ampla experiência em gastronomia, hospitalidade e educação.",
   },
   {
     nome: "Gio Gropello",
     papel: "Chef, educadora e consultora",
     foto: "/brand/fotos/chef-gio.png",
+    bio: "Especialista em Ciência e Tecnologia de Alimentos, MBA em Artes Culinárias e diplomado em Marketing de Alimentos. Professor, chef de cozinha, pesquisador, consultor e produtor de conteúdo, com ampla experiência em gastronomia, educação, hospitalidade e gestão de A&B.",
   },
 ];
 
@@ -116,16 +118,38 @@ export default function Home() {
               {FUNDADORAS.map((f) => (
                 <figure
                   key={f.nome}
-                  className="group overflow-hidden rounded-2xl border border-line bg-surface-soft"
+                  className="overflow-hidden rounded-2xl border border-line bg-surface-soft"
                 >
-                  <div className="relative aspect-[4/5] w-full">
-                    <Image
-                      src={f.foto}
-                      alt={`${f.nome}, ${f.papel} da HCE`}
-                      fill
-                      sizes="(max-width: 768px) 45vw, 300px"
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
+                  <div
+                    className="flip-card relative aspect-[4/5] w-full outline-none"
+                    tabIndex={0}
+                    role="group"
+                    aria-label={`${f.nome}: ${f.bio}`}
+                  >
+                    <div className="flip-card-inner">
+                      {/* Frente: foto */}
+                      <div className="flip-card-face overflow-hidden">
+                        <Image
+                          src={f.foto}
+                          alt={`${f.nome}, ${f.papel} da HCE`}
+                          fill
+                          sizes="(max-width: 768px) 45vw, 300px"
+                          className="object-cover"
+                        />
+                        <span className="absolute right-3 bottom-3 flex items-center gap-1 rounded-full bg-brand-blue/85 px-2.5 py-1 text-[0.7rem] font-semibold text-white backdrop-blur-sm">
+                          <span aria-hidden>↻</span> bio
+                        </span>
+                      </div>
+                      {/* Verso: mini bio */}
+                      <div className="flip-card-face flip-card-back flex flex-col justify-center bg-brand-blue p-5 text-white">
+                        <p className="font-display text-base font-semibold text-brand-amber">
+                          {f.nome}
+                        </p>
+                        <p className="mt-2 text-[0.78rem] leading-relaxed text-white/90">
+                          {f.bio}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                   <figcaption className="p-4">
                     <p className="font-display font-semibold text-brand-blue">
