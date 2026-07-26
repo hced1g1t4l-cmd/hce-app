@@ -19,11 +19,13 @@ export async function GET() {
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
+    // Loga o detalhe no servidor (Vercel), mas NAO expoe na resposta publica
+    // para nao vazar host/credenciais do banco em mensagens de erro.
+    console.error("[health] falha ao conectar no banco:", error);
     return NextResponse.json(
       {
         status: "error",
         db: "disconnected",
-        message: error instanceof Error ? error.message : "erro desconhecido",
         timestamp: new Date().toISOString(),
       },
       { status: 503 },
