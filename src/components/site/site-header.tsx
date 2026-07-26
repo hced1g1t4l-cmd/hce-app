@@ -6,6 +6,7 @@ import { Container } from "@/components/site/container";
 import { Logo } from "@/components/site/logo";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
+import { WHATSAPP_URL } from "@/lib/site";
 
 const NAV = [
   { label: "Sobre", href: "#sobre" },
@@ -20,14 +21,17 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-brand-amber-dark/25 bg-brand-amber/95 backdrop-blur-md">
       <Container className="flex h-20 items-center justify-between py-3">
-        <Logo size={40} />
+        {/* FAB_002: logo sobre chip branco para nao se fundir ao fundo amarelo. */}
+        <span className="inline-flex items-center rounded-xl bg-white p-1.5 shadow-sm ring-1 ring-brand-blue/10">
+          <Logo size={38} />
+        </span>
 
         <nav className="hidden items-center gap-8 md:flex">
           {NAV.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="text-sm font-semibold text-brand-blue transition-colors hover:text-brand-blue-dark"
+              className="text-sm font-semibold text-brand-blue underline-offset-8 transition-colors duration-300 hover:text-brand-blue-dark hover:underline hover:decoration-2"
             >
               {item.label}
             </Link>
@@ -35,7 +39,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden md:block">
-          <Button href="#contato" size="md" variant="blue">
+          <Button href={WHATSAPP_URL} size="md" variant="blue">
             Fale com a HCE
           </Button>
         </div>
@@ -84,7 +88,7 @@ export function SiteHeader() {
               </Link>
             ))}
             <Button
-              href="#contato"
+              href={WHATSAPP_URL}
               size="lg"
               className="mt-2 w-full"
             >

@@ -4,19 +4,22 @@ import { cn } from "@/lib/cn";
 type Variant = "primary" | "secondary" | "ghost" | "blue";
 type Size = "md" | "lg";
 
+// FAB_004: transicao mais longa ("esfumacar") e padrao azul<->amarelo.
+// Todos os botoes convergem para AMARELO no hover.
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-full font-display font-semibold transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60";
+  "inline-flex items-center justify-center gap-2 rounded-full font-display font-semibold transition-all duration-300 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60";
 
 const variants: Record<Variant, string> = {
-  // Botao principal: ambar sobre azul/branco, cor de acao da marca.
+  // Botao principal: ambar (ja e a cor de acao). Hover reforca o ambar.
   primary:
     "bg-brand-amber text-brand-blue-deep hover:bg-brand-amber-dark hover:-translate-y-0.5 shadow-sm hover:shadow-md focus-visible:outline-brand-amber",
-  // Secundario: contorno para superficies claras ou escuras.
+  // Secundario: contorno; hover esfumaca para ambar.
   secondary:
-    "border border-current text-brand-blue hover:bg-brand-blue hover:text-white focus-visible:outline-brand-blue",
-  ghost: "text-brand-blue hover:bg-brand-blue/5 focus-visible:outline-brand-blue",
-  // Azul solido: bom para superficies claras/ambar (ex.: header amarelo).
-  blue: "bg-brand-blue text-white hover:bg-brand-blue-dark hover:-translate-y-0.5 shadow-sm hover:shadow-md focus-visible:outline-brand-blue",
+    "border border-current text-brand-blue hover:border-brand-amber hover:bg-brand-amber hover:text-brand-blue-deep focus-visible:outline-brand-amber",
+  ghost:
+    "text-brand-blue hover:bg-brand-amber hover:text-brand-blue-deep focus-visible:outline-brand-amber",
+  // Azul solido: hover esfumaca para ambar (padrao azul -> amarelo).
+  blue: "bg-brand-blue text-white hover:bg-brand-amber hover:text-brand-blue-deep hover:-translate-y-0.5 shadow-sm hover:shadow-md focus-visible:outline-brand-amber",
 };
 
 const sizes: Record<Size, string> = {
