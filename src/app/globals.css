@@ -172,6 +172,15 @@ p {
   box-shadow: 0 0 0 3px rgba(0, 50, 136, 0.12);
 }
 
+/* Rolagem horizontal sem barra visivel (abas do painel /adm). */
+.hce-scroll-x {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hce-scroll-x::-webkit-scrollbar {
+  display: none;
+}
+
 /* Flip por clique/toque (RAF_003): vale em qualquer aparelho. */
 .flip-card-inner.is-flipped {
   transform: rotateY(180deg);
