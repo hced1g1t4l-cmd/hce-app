@@ -58,14 +58,14 @@ export default function Home() {
             aria-hidden
             className="pointer-events-none absolute -bottom-32 -left-20 h-80 w-80 rounded-full bg-brand-blue-light/40 blur-3xl"
           />
-          <Container className="relative flex flex-col items-center gap-8 py-24 text-center sm:py-32">
+          <Container className="relative flex flex-col items-center gap-5 py-16 text-center sm:gap-6 sm:py-24">
             <Image
               src="/brand/logos/logo-hce.png"
               alt="HCE"
               width={560}
               height={233}
               priority
-              className="h-36 w-auto drop-shadow-[0_6px_20px_rgba(0,0,0,0.28)] sm:h-48 lg:h-56"
+              className="h-56 w-auto max-w-full drop-shadow-[0_6px_20px_rgba(0,0,0,0.28)] sm:h-64 lg:h-72"
             />
             <p className="font-display text-sm font-semibold tracking-[0.28em] text-brand-amber uppercase">
               Hospitalidade · Consultoria · Educação
