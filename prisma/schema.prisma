@@ -69,3 +69,24 @@ model VerificationToken {
 
   @@id([identifier, token])
 }
+
+// Lead de captacao para o lancamento do Clube +HCE (RAF_007).
+// Coletado no formulario publico /avise-me; consultado apenas no /adm.
+model ClubeLead {
+  id            String   @id @default(cuid())
+  nome          String
+  email         String
+  telefone      String
+  // Canais que a pessoa autorizou receber aviso do lancamento.
+  canalEmail    Boolean  @default(false)
+  canalSms      Boolean  @default(false)
+  canalWhatsapp Boolean  @default(false)
+  // Autorizacao para outras comunicacoes e promocoes.
+  aceitaPromos  Boolean  @default(false)
+  ip            String?
+  userAgent     String?
+  createdAt     DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([email])
+}

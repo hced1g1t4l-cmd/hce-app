@@ -190,7 +190,7 @@ export default function Home() {
                 ))}
               </ul>
               <div className="mt-9 flex justify-center lg:justify-start">
-                <Button href={WHATSAPP_URL} size="lg">
+                <Button href="/avise-me" size="lg">
                   Quero ser avisado do lançamento
                 </Button>
               </div>
