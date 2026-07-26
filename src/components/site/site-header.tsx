@@ -18,7 +18,7 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-line/80 bg-white/85 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-brand-amber-dark/25 bg-brand-amber/95 backdrop-blur-md">
       <Container className="flex h-20 items-center justify-between py-3">
         <Logo size={40} />
 
@@ -27,7 +27,7 @@ export function SiteHeader() {
             <Link
               key={item.href}
               href={item.href}
-              className="text-sm font-medium text-muted transition-colors hover:text-brand-blue"
+              className="text-sm font-semibold text-brand-blue transition-colors hover:text-brand-blue-dark"
             >
               {item.label}
             </Link>
@@ -35,7 +35,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden md:block">
-          <Button href="#contato" size="md">
+          <Button href="#contato" size="md" variant="blue">
             Fale com a HCE
           </Button>
         </div>
