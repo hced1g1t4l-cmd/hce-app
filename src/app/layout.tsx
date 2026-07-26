@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, Poppins } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
+import { Analytics } from "@/components/analytics";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -95,6 +97,9 @@ export default function RootLayout({
           Pular para o conteúdo
         </a>
         {children}
+        <Suspense fallback={null}>
+          <Analytics />
+        </Suspense>
       </body>
     </html>
   );
