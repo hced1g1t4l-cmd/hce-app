@@ -20,9 +20,9 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-brand-amber-dark/25 bg-brand-amber/95 backdrop-blur-md">
       <Container className="flex h-20 items-center justify-between py-3">
-        {/* FAB_009: logo do topo SEM borda. O proprio quadrado azul da marca
-            contrasta com a barra amarela; leve relevo para destacar. */}
-        <Logo size={44} className="rounded-xl shadow-md" />
+        {/* FAB_011: logo do topo SEM borda branca e SEM relevo (sombra).
+            O proprio quadrado azul da marca ja contrasta com a barra amarela. */}
+        <Logo size={44} className="rounded-xl" />
 
         <nav className="hidden items-center gap-8 md:flex">
           {NAV.map((item) => (
