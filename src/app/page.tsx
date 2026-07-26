@@ -32,12 +32,15 @@ const FUNDADORAS = [
     nome: "Cris Leite",
     papel: "Chef, educadora e consultora",
     foto: "/brand/fotos/chef-cris.png",
+    // RAF_009: ponto focal para alinhar a linha dos ombros entre as fotos.
+    fotoPos: "center 6%",
     bio: "Mestre em Novas Tecnologias Digitais na Educação, especialista em Gestão de Recursos Humanos e graduada em Gastronomia. Professora, pesquisadora e consultora com ampla experiência em gastronomia, hospitalidade e educação.",
   },
   {
     nome: "Gio Gropello",
     papel: "Chef, educador e consultor",
     foto: "/brand/fotos/chef-gio.png",
+    fotoPos: "center 94%",
     bio: "Especialista em Ciência e Tecnologia de Alimentos, MBA em Artes Culinárias e diplomado em Marketing de Alimentos. Professor, chef de cozinha, pesquisador, consultor e produtor de conteúdo, com ampla experiência em gastronomia, educação, hospitalidade e gestão de A&B.",
   },
 ];
