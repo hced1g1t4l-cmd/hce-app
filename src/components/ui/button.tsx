@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 
-type Variant = "primary" | "secondary" | "ghost" | "blue";
+type Variant = "primary" | "secondary" | "ghost" | "blue" | "nav";
 type Size = "md" | "lg";
 
 // FAB_004: transicao mais longa ("esfumacar") e padrao azul<->amarelo.
@@ -9,17 +9,24 @@ type Size = "md" | "lg";
 const base =
   "inline-flex items-center justify-center gap-2 rounded-full font-display font-semibold transition-all duration-300 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60";
 
+// FAB_009: regra de cor dos botoes
+//  - fundo AMARELO  => letra AZUL
+//  - fundo AZUL     => letra AMARELA
+// FAB_004: no hover o botao "esfumaca" trocando de cor (blue <-> amber).
 const variants: Record<Variant, string> = {
-  // Botao principal: ambar (ja e a cor de acao). Hover reforca o ambar.
+  // Fundo amarelo, letra azul. Hover: escurece o amarelo (mantem letra azul).
   primary:
     "bg-brand-amber text-brand-blue-deep hover:bg-brand-amber-dark hover:-translate-y-0.5 shadow-sm hover:shadow-md focus-visible:outline-brand-amber",
-  // Secundario: contorno; hover esfumaca para ambar.
+  // Contorno em superficie escura: letra amarela; hover vira fundo amarelo com letra azul.
   secondary:
-    "border border-current text-brand-blue hover:border-brand-amber hover:bg-brand-amber hover:text-brand-blue-deep focus-visible:outline-brand-amber",
+    "border border-current text-brand-amber hover:border-brand-amber hover:bg-brand-amber hover:text-brand-blue-deep focus-visible:outline-brand-amber",
   ghost:
     "text-brand-blue hover:bg-brand-amber hover:text-brand-blue-deep focus-visible:outline-brand-amber",
-  // Azul solido: hover esfumaca para ambar (padrao azul -> amarelo).
-  blue: "bg-brand-blue text-white hover:bg-brand-amber hover:text-brand-blue-deep hover:-translate-y-0.5 shadow-sm hover:shadow-md focus-visible:outline-brand-amber",
+  // Fundo azul, letra amarela. Hover: vira amarelo com letra azul.
+  blue: "bg-brand-blue text-brand-amber hover:bg-brand-amber hover:text-brand-blue-deep hover:-translate-y-0.5 shadow-sm hover:shadow-md focus-visible:outline-brand-amber",
+  // CTA sobre a barra amarela: fundo azul, letra amarela. Hover escurece o azul
+  // (nao vira amarelo, senao sumiria no header amarelo).
+  nav: "bg-brand-blue text-brand-amber hover:bg-brand-blue-dark hover:-translate-y-0.5 shadow-sm hover:shadow-md focus-visible:outline-brand-amber",
 };
 
 const sizes: Record<Size, string> = {

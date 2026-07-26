@@ -11,7 +11,12 @@ export function SiteFooter() {
     <footer className="bg-brand-blue-deep text-white/80">
       <Container className="grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
         <div className="sm:col-span-2 lg:col-span-2">
-          <Logo variant="light" size={64} href="/" />
+          <Logo
+            variant="light"
+            size={64}
+            href="/"
+            className="drop-shadow-[0_4px_14px_rgba(0,0,0,0.3)]"
+          />
           <p className="mt-5 max-w-sm text-sm leading-relaxed text-white/70">
             Hospitalidade, Consultoria e Educação em Gastronomia. Unindo as
             trajetórias de Cris Leite e Gio Gropello para transformar
