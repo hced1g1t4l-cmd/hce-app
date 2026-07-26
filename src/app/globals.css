@@ -71,9 +71,13 @@ html {
   transform-style: preserve-3d;
 }
 
-.flip-card:hover .flip-card-inner,
-.flip-card:focus-within .flip-card-inner {
-  transform: rotateY(180deg);
+/* O flip so vale em dispositivos com hover real (desktop).
+   No mobile/touch a bio aparece como texto normal (ver page.tsx). */
+@media (hover: hover) and (pointer: fine) {
+  .flip-card:hover .flip-card-inner,
+  .flip-card:focus-within .flip-card-inner {
+    transform: rotateY(180deg);
+  }
 }
 
 .flip-card-face {
