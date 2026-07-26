@@ -42,23 +42,28 @@ function whereFrom(start: Date | null): Prisma.Sql {
 export type SeriePonto = { rotulo: string; total: number; unicos: number };
 
 // Serie temporal: por hora quando o periodo e 24h, por dia caso contrario.
+// bucket/fmt sao valores controlados (derivados do enum de periodo), por isso
+// entram como SQL literal via Prisma.raw — o Postgres nao infere o tipo de
+// date_trunc($1, ...) quando o 1o argumento vem como parametro vinculado.
 export async function getSerie(periodo: Periodo): Promise<SeriePonto[]> {
   const start = periodoStart(periodo);
   const porHora = periodo === "24h";
-  const bucket = porHora ? "hour" : "day";
-  const fmt = porHora ? "DD/MM HH24:00" : "DD/MM";
+  const bucketExpr = Prisma.raw(
+    `date_trunc('${porHora ? "hour" : "day"}', "createdAt" AT TIME ZONE 'America/Sao_Paulo')`,
+  );
+  const fmtLit = Prisma.raw(`'${porHora ? "DD/MM HH24:00" : "DD/MM"}'`);
 
   const rows = await prisma.$queryRaw<
     { rotulo: string; total: number; unicos: number }[]
   >(Prisma.sql`
     SELECT
-      to_char(date_trunc(${bucket}, "createdAt" AT TIME ZONE 'America/Sao_Paulo'), ${fmt}) AS rotulo,
+      to_char(${bucketExpr}, ${fmtLit}) AS rotulo,
       count(*)::int AS total,
       count(DISTINCT "visitorId")::int AS unicos
     FROM "PageView"
     ${whereFrom(start)}
-    GROUP BY 1, date_trunc(${bucket}, "createdAt" AT TIME ZONE 'America/Sao_Paulo')
-    ORDER BY date_trunc(${bucket}, "createdAt" AT TIME ZONE 'America/Sao_Paulo')
+    GROUP BY ${bucketExpr}
+    ORDER BY ${bucketExpr}
   `);
 
   return rows;
