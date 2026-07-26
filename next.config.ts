@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 // Content-Security-Policy alinhada a doc oficial do Next.js (Context7 /vercel/next.js).
 // Sem nonce (para manter as paginas estaticas), com 'unsafe-inline' onde o Next/
@@ -13,7 +14,7 @@ const csp = [
   "img-src 'self' data: blob: https://www.gstatic.com https://www.google.com",
   "font-src 'self'",
   "frame-src https://www.google.com https://recaptcha.net",
-  "connect-src 'self' https://www.google.com",
+  "connect-src 'self' https://www.google.com https://*.sentry.io",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -49,4 +50,13 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+// Envolve a config com o Sentry. Sem SENTRY_AUTH_TOKEN, o upload de source maps
+// e desligado (build normal); o monitoramento em runtime depende so do DSN.
+export default withSentryConfig(nextConfig, {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  silent: !process.env.CI,
+  sourcemaps: { disable: !process.env.SENTRY_AUTH_TOKEN },
+  disableLogger: true,
+});
