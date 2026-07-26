@@ -91,6 +91,25 @@ model ClubeLead {
   @@index([email])
 }
 
+// Registro de acesso ao site para o painel de analytics (RAF_013).
+// Um registro por pageview publico. visitorId (cookie 1a parte) permite contar
+// "usuarios unicos"; cidade/lat/lng vem do geo-IP da Vercel para o mapa.
+model PageView {
+  id        String   @id @default(cuid())
+  path      String
+  visitorId String
+  country   String?
+  region    String?
+  city      String?
+  lat       Float?
+  lng       Float?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([visitorId])
+  @@index([city])
+}
+
 // Mensagem do formulario "Fale com a HCE" (RAF_008).
 // Coletada em /fale-com-a-hce; consultada apenas no /adm/contatos.
 model ContatoMensagem {

@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 
-export function AdmHeader({ active }: { active: "leads" | "contatos" }) {
+export function AdmHeader({
+  active,
+}: {
+  active: "leads" | "contatos" | "acessos";
+}) {
   return (
     <header className="border-b border-line bg-white">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-6 py-4">
@@ -15,6 +19,11 @@ export function AdmHeader({ active }: { active: "leads" | "contatos" }) {
               href="/adm/contatos"
               label="Mensagens"
               active={active === "contatos"}
+            />
+            <Tab
+              href="/adm/acessos"
+              label="Acessos"
+              active={active === "acessos"}
             />
           </nav>
         </div>
