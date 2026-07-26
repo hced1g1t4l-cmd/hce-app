@@ -3,6 +3,7 @@ import { Container } from "@/components/site/container";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { Button } from "@/components/ui/button";
+import { FounderFlipCard } from "@/components/site/founder-flip-card";
 import { WHATSAPP_URL, EMAIL_CONTATO } from "@/lib/site";
 
 const PILARES = [
@@ -118,52 +119,7 @@ export default function Home() {
 
             <div className="grid grid-cols-2 gap-5">
               {FUNDADORAS.map((f) => (
-                <figure
-                  key={f.nome}
-                  className="overflow-hidden rounded-2xl border border-line bg-surface-soft"
-                >
-                  <div
-                    className="flip-card relative aspect-[4/5] w-full outline-none"
-                    tabIndex={0}
-                    role="group"
-                    aria-label={`${f.nome}: ${f.bio}`}
-                  >
-                    <div className="flip-card-inner">
-                      {/* Frente: foto */}
-                      <div className="flip-card-face overflow-hidden">
-                        <Image
-                          src={f.foto}
-                          alt={`${f.nome}, ${f.papel} da HCE`}
-                          fill
-                          sizes="(max-width: 768px) 45vw, 300px"
-                          className="object-cover"
-                        />
-                        <span className="absolute right-3 bottom-3 hidden items-center gap-1 rounded-full bg-brand-blue/85 px-2.5 py-1 text-[0.7rem] font-semibold text-white backdrop-blur-sm sm:flex">
-                          <span aria-hidden>↻</span> bio
-                        </span>
-                      </div>
-                      {/* Verso: mini bio */}
-                      <div className="flip-card-face flip-card-back flex flex-col justify-center bg-brand-blue p-5 text-white">
-                        <p className="font-display text-base font-semibold text-brand-amber">
-                          {f.nome}
-                        </p>
-                        <p className="mt-2 text-[0.78rem] leading-relaxed text-white/90">
-                          {f.bio}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <figcaption className="p-4">
-                    <p className="font-display font-semibold text-brand-blue">
-                      {f.nome}
-                    </p>
-                    <p className="text-sm text-muted">{f.papel}</p>
-                    {/* RAF_001: no mobile (sem hover) a bio aparece aqui, legivel. */}
-                    <p className="mt-2 text-[0.82rem] leading-relaxed text-muted sm:hidden">
-                      {f.bio}
-                    </p>
-                  </figcaption>
-                </figure>
+                <FounderFlipCard key={f.nome} {...f} />
               ))}
             </div>
           </Container>

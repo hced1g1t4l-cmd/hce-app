@@ -71,11 +71,14 @@ html {
   transform-style: preserve-3d;
 }
 
-/* O flip so vale em dispositivos com hover real (desktop).
-   No mobile/touch a bio aparece como texto normal (ver page.tsx). */
+/* Flip por clique/toque (RAF_003): vale em qualquer aparelho. */
+.flip-card-inner.is-flipped {
+  transform: rotateY(180deg);
+}
+
+/* No desktop tambem vira ao passar o mouse. */
 @media (hover: hover) and (pointer: fine) {
-  .flip-card:hover .flip-card-inner,
-  .flip-card:focus-within .flip-card-inner {
+  .flip-card:hover .flip-card-inner {
     transform: rotateY(180deg);
   }
 }
