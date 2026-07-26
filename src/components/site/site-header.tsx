@@ -21,10 +21,9 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-brand-amber-dark/25 bg-brand-amber/95 backdrop-blur-md">
       <Container className="flex h-20 items-center justify-between py-3">
-        {/* FAB_002: logo sobre chip branco para nao se fundir ao fundo amarelo. */}
-        <span className="inline-flex items-center rounded-xl bg-white p-1.5 shadow-sm ring-1 ring-brand-blue/10">
-          <Logo size={38} />
-        </span>
+        {/* FAB_009: logo do topo SEM borda. O proprio quadrado azul da marca
+            contrasta com a barra amarela; leve relevo para destacar. */}
+        <Logo size={44} className="rounded-xl shadow-md" />
 
         <nav className="hidden items-center gap-8 md:flex">
           {NAV.map((item) => (
@@ -39,7 +38,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden md:block">
-          <Button href={WHATSAPP_URL} size="md" variant="blue">
+          <Button href={WHATSAPP_URL} size="md" variant="nav">
             Fale com a HCE
           </Button>
         </div>
