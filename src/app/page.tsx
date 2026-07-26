@@ -28,12 +28,12 @@ const PILARES = [
 const FUNDADORAS = [
   {
     nome: "Cris Leite",
-    papel: "Chef e educadora",
+    papel: "Chef, educadora e consultora",
     foto: "/brand/fotos/chef-cris.png",
   },
   {
     nome: "Gio Gropello",
-    papel: "Chef e consultora",
+    papel: "Chef, educadora e consultora",
     foto: "/brand/fotos/chef-gio.png",
   },
 ];
