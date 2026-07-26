@@ -49,9 +49,89 @@ body {
   outline-offset: 2px;
 }
 
-/* Rolagem suave para os links ancora do menu. */
+/* Rolagem suave para os links ancora do menu.
+   scroll-padding-top evita que a secao ancorada fique escondida sob o header
+   fixo (altura ~5rem). (RAF_012 #1) */
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem;
+}
+
+/* Tipografia mais legivel: titulos com quebras equilibradas e prosa sem orfaos.
+   (RAF_012 #14) */
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+p {
+  text-wrap: pretty;
+}
+
+/* Selecao de texto na cor da marca. (RAF_012 #16) */
+::selection {
+  background: var(--color-brand-amber);
+  color: var(--color-brand-blue-deep);
+}
+
+/* Link "pular para o conteudo" para teclado/leitor de tela. (RAF_012 #2) */
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  transform: translateY(-160%);
+  border-radius: 0.75rem;
+  background: var(--color-brand-blue);
+  padding: 0.6rem 1rem;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-brand-amber);
+  box-shadow: 0 8px 24px rgba(0, 27, 79, 0.25);
+  transition: transform 0.2s ease-out;
+}
+.skip-link:focus {
+  transform: translateY(0);
+  outline: 2px solid var(--color-brand-amber);
+  outline-offset: 2px;
+}
+
+/* Revelacao suave ao rolar (progressive enhancement).
+   O conteudo ja e visivel por padrao; a animacao so entra em navegadores com
+   scroll-driven animations e some sob prefers-reduced-motion. (RAF_012 #6) */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: reveal-up linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 20%;
+    }
+    @keyframes reveal-up {
+      from {
+        opacity: 0;
+        transform: translateY(26px);
+      }
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  }
+}
+
+/* Respeito total a preferencia de menos movimento. (RAF_012 #5) */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
 
 /*
@@ -82,8 +162,9 @@ html {
   color: var(--color-ink);
   transition: border-color 0.2s, box-shadow 0.2s;
 }
+/* Placeholder mais escuro para atingir contraste AA (>=4.5:1). (RAF_012 #4) */
 .hce-input::placeholder {
-  color: #9aa3b2;
+  color: #667085;
 }
 .hce-input:focus {
   outline: none;

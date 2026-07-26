@@ -50,7 +50,7 @@ export default function Home() {
     <>
       <SiteHeader />
 
-      <main className="flex-1">
+      <main id="conteudo" className="flex-1">
         {/* HERO */}
         <section className="relative overflow-hidden bg-gradient-to-b from-brand-blue to-brand-blue-deep text-white">
           <div
@@ -102,7 +102,7 @@ export default function Home() {
         {/* SOBRE */}
         <section id="sobre" className="bg-white py-24">
           <Container className="grid items-center gap-14 lg:grid-cols-2">
-            <div>
+            <div className="reveal">
               <span className="font-display text-sm font-semibold tracking-widest text-brand-amber-dark uppercase">
                 Quem somos
               </span>
@@ -132,7 +132,7 @@ export default function Home() {
         {/* SERVIÇOS */}
         <section id="servicos" className="bg-surface-soft py-24">
           <Container>
-            <div className="mx-auto max-w-2xl text-center">
+            <div className="reveal mx-auto max-w-2xl text-center">
               <span className="font-display text-sm font-semibold tracking-widest text-brand-amber-dark uppercase">
                 O que fazemos
               </span>
@@ -149,9 +149,12 @@ export default function Home() {
               {PILARES.map((p) => (
                 <article
                   key={p.titulo}
-                  className="flex flex-col rounded-2xl border border-line bg-white p-8 transition-shadow hover:shadow-lg"
+                  className="reveal group flex flex-col rounded-2xl border border-line bg-white p-8 transition-all duration-300 ease-out hover:-translate-y-1 hover:border-brand-amber hover:shadow-xl motion-reduce:transform-none motion-reduce:transition-none"
                 >
-                  <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-brand-blue font-display text-3xl font-extrabold text-brand-amber lowercase">
+                  <span
+                    aria-hidden
+                    className="flex h-14 w-14 items-center justify-center rounded-xl bg-brand-blue font-display text-3xl font-extrabold text-brand-amber lowercase transition-transform duration-300 ease-out group-hover:scale-105 motion-reduce:transform-none"
+                  >
                     {p.letra}
                   </span>
                   <h3 className="mt-6 font-display text-xl font-bold text-brand-blue">
@@ -167,7 +170,7 @@ export default function Home() {
         {/* CLUBE +HCE */}
         <section id="clube" className="bg-brand-blue py-24 text-white">
           <Container className="grid items-center gap-12 lg:grid-cols-2">
-            <div>
+            <div className="reveal">
               <span className="font-display text-sm font-semibold tracking-widest text-brand-amber uppercase">
                 Em breve
               </span>
@@ -186,7 +189,10 @@ export default function Home() {
                   "Comunidade e trocas com os especialistas",
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-3">
-                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-amber text-sm font-bold text-brand-blue-deep">
+                    <span
+                      aria-hidden
+                      className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-amber text-sm font-bold text-brand-blue-deep"
+                    >
                       ✓
                     </span>
                     {item}
@@ -200,13 +206,14 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="relative mx-auto w-full max-w-md">
+            <div className="reveal relative mx-auto w-full max-w-md">
               <div className="overflow-hidden rounded-3xl border border-white/10 shadow-2xl">
                 <Image
                   src="/brand/posts/o-que-oferece.jpeg"
-                  alt="O que a HCE oferece"
+                  alt="Prévia dos conteúdos do Clube +HCE: receitas, fichas técnicas e ebooks"
                   width={819}
                   height={1024}
+                  sizes="(max-width: 1024px) 90vw, 420px"
                   className="h-auto w-full"
                 />
               </div>
@@ -217,7 +224,7 @@ export default function Home() {
         {/* CONTATO */}
         <section id="contato" className="bg-white py-24">
           <Container>
-            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-blue to-brand-blue-deep px-8 py-16 text-center text-white sm:px-16">
+            <div className="reveal relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-blue to-brand-blue-deep px-8 py-16 text-center text-white sm:px-16">
               <div
                 aria-hidden
                 className="pointer-events-none absolute -top-16 -right-10 h-64 w-64 rounded-full bg-brand-amber/15 blur-3xl"

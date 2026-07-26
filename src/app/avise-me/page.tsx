@@ -84,7 +84,7 @@ export default function AviseMePage() {
       )}
       <SiteHeader />
 
-      <main className="flex-1 bg-surface-soft py-16 sm:py-20">
+      <main id="conteudo" className="flex-1 bg-surface-soft py-16 sm:py-20">
         <Container className="max-w-2xl">
           <div className="text-center">
             <span className="font-display text-sm font-semibold tracking-widest text-brand-amber-dark uppercase">
