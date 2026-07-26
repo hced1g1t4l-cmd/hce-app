@@ -13,11 +13,13 @@ export function FounderFlipCard({
   papel,
   foto,
   bio,
+  fotoPos = "center",
 }: {
   nome: string;
   papel: string;
   foto: string;
   bio: string;
+  fotoPos?: string;
 }) {
   const [flipped, setFlipped] = useState(false);
   const backRef = useRef<HTMLDivElement>(null);
@@ -36,7 +38,7 @@ export function FounderFlipCard({
   return (
     <figure className="overflow-hidden rounded-2xl border border-line bg-surface-soft">
       <div
-        className="flip-card relative aspect-[4/5] w-full cursor-pointer outline-none"
+        className="flip-card relative aspect-square w-full cursor-pointer outline-none"
         tabIndex={0}
         role="button"
         aria-pressed={flipped}
@@ -59,6 +61,7 @@ export function FounderFlipCard({
               fill
               sizes="(max-width: 768px) 45vw, 300px"
               className="object-cover"
+              style={{ objectPosition: fotoPos }}
             />
             <span className="absolute right-3 bottom-3 flex items-center gap-1 rounded-full bg-brand-blue/85 px-2.5 py-1 text-[0.7rem] font-semibold text-white backdrop-blur-sm">
               <span aria-hidden>↻</span> bio
