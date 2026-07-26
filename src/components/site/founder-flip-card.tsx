@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/cn";
 
@@ -20,6 +20,18 @@ export function FounderFlipCard({
   bio: string;
 }) {
   const [flipped, setFlipped] = useState(false);
+  const backRef = useRef<HTMLDivElement>(null);
+
+  // RAF_006: a bio deve sempre reabrir do topo. Reseta a rolagem do verso.
+  const resetBioScroll = () => {
+    if (backRef.current) backRef.current.scrollTop = 0;
+  };
+
+  const toggle = () => {
+    // Reseta so ao ABRIR a bio (foto ainda na frente), evitando pulo ao fechar.
+    if (!flipped) resetBioScroll();
+    setFlipped((v) => !v);
+  };
 
   return (
     <figure className="overflow-hidden rounded-2xl border border-line bg-surface-soft">
@@ -29,11 +41,12 @@ export function FounderFlipCard({
         role="button"
         aria-pressed={flipped}
         aria-label={`${nome} — ${flipped ? "voltar para a foto" : "ver mini bio"}`}
-        onClick={() => setFlipped((v) => !v)}
+        onClick={toggle}
+        onMouseLeave={resetBioScroll}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            setFlipped((v) => !v);
+            toggle();
           }
         }}
       >
@@ -52,7 +65,10 @@ export function FounderFlipCard({
             </span>
           </div>
           {/* Verso: mini bio (rola e comeca do topo) */}
-          <div className="flip-card-face flip-card-back flex flex-col items-start justify-start gap-2 overflow-y-auto bg-brand-blue p-5 text-left text-white">
+          <div
+            ref={backRef}
+            className="flip-card-face flip-card-back flex flex-col items-start justify-start gap-2 overflow-y-auto bg-brand-blue p-5 text-left text-white"
+          >
             <p className="font-display text-base font-semibold text-brand-amber">
               {nome}
             </p>
