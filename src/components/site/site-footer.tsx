@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Container } from "@/components/site/container";
 import { Logo } from "@/components/site/logo";
+import { SocialLinks } from "@/components/site/social-links";
+import { WHATSAPP_URL, EMAIL_CONTATO } from "@/lib/site";
 
 const YEAR = new Date().getFullYear();
 
@@ -15,6 +17,8 @@ export function SiteFooter() {
             trajetórias de Cris Leite e Gio Gropello para transformar
             restaurantes e formar pessoas.
           </p>
+          {/* FAB_007: caminhos para as redes sociais. */}
+          <SocialLinks className="mt-6" />
         </div>
 
         <div>
@@ -52,10 +56,20 @@ export function SiteFooter() {
           <ul className="mt-4 space-y-3 text-sm">
             <li>
               <a
-                href="mailto:contato@hcegastronomia.com"
-                className="hover:text-brand-amber"
+                href={`mailto:${EMAIL_CONTATO}`}
+                className="transition-colors hover:text-brand-amber"
               >
-                contato@hcegastronomia.com
+                {EMAIL_CONTATO}
+              </a>
+            </li>
+            <li>
+              <a
+                href={WHATSAPP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition-colors hover:text-brand-amber"
+              >
+                WhatsApp
               </a>
             </li>
             <li className="text-white/60">Rio de Janeiro, Brasil</li>
@@ -66,7 +80,12 @@ export function SiteFooter() {
       <div className="border-t border-white/10">
         <Container className="flex flex-col items-center justify-between gap-2 py-6 text-xs text-white/50 sm:flex-row">
           <span>© {YEAR} HCE Gastronomia. Todos os direitos reservados.</span>
-          <span>hcegastronomia.com</span>
+          {/* FAB_008: credito do desenvolvedor. */}
+          <span>
+            hcegastronomia.com · Desenvolvido por{" "}
+            <span className="font-semibold text-white/70">RQTTE</span> —
+            developer &amp; digital consultant
+          </span>
         </Container>
       </div>
     </footer>

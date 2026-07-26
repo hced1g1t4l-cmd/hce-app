@@ -3,6 +3,7 @@ import { Container } from "@/components/site/container";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { Button } from "@/components/ui/button";
+import { WHATSAPP_URL, EMAIL_CONTATO } from "@/lib/site";
 
 const PILARES = [
   {
@@ -34,7 +35,7 @@ const FUNDADORAS = [
   },
   {
     nome: "Gio Gropello",
-    papel: "Chef, educadora e consultora",
+    papel: "Chef, educador e consultor",
     foto: "/brand/fotos/chef-gio.png",
     bio: "Especialista em Ciência e Tecnologia de Alimentos, MBA em Artes Culinárias e diplomado em Marketing de Alimentos. Professor, chef de cozinha, pesquisador, consultor e produtor de conteúdo, com ampla experiência em gastronomia, educação, hospitalidade e gestão de A&B.",
   },
@@ -68,7 +69,7 @@ export default function Home() {
             <p className="font-display text-sm font-semibold tracking-[0.28em] text-brand-amber uppercase">
               Hospitalidade · Consultoria · Educação
             </p>
-            <h1 className="max-w-4xl font-display text-3xl leading-tight font-extrabold text-balance sm:text-5xl">
+            <h1 className="max-w-4xl font-display text-3xl leading-tight font-extrabold text-balance text-brand-amber sm:text-5xl">
               Transformamos conhecimento em hospitalidade, pessoas em
               profissionais e experiências em resultados.
             </h1>
@@ -85,7 +86,7 @@ export default function Home() {
                 href="#servicos"
                 size="lg"
                 variant="secondary"
-                className="border-white/40 text-white hover:bg-white hover:text-brand-blue"
+                className="border-white/40 text-white hover:border-brand-amber hover:bg-brand-amber hover:text-brand-blue-deep"
               >
                 O que fazemos
               </Button>
@@ -206,7 +207,7 @@ export default function Home() {
               <span className="font-display text-sm font-semibold tracking-widest text-brand-amber uppercase">
                 Em breve
               </span>
-              <h2 className="mt-3 font-display text-3xl font-bold sm:text-4xl">
+              <h2 className="mt-3 font-display text-3xl font-bold text-brand-amber sm:text-4xl">
                 Clube +HCE: conteúdo que vira resultado
               </h2>
               <p className="mt-6 text-lg leading-relaxed text-white/80">
@@ -229,7 +230,7 @@ export default function Home() {
                 ))}
               </ul>
               <div className="mt-9">
-                <Button href="#contato" size="lg">
+                <Button href={WHATSAPP_URL} size="lg">
                   Quero ser avisado do lançamento
                 </Button>
               </div>
@@ -257,7 +258,7 @@ export default function Home() {
                 aria-hidden
                 className="pointer-events-none absolute -top-16 -right-10 h-64 w-64 rounded-full bg-brand-amber/15 blur-3xl"
               />
-              <h2 className="relative font-display text-3xl font-bold text-balance sm:text-4xl">
+              <h2 className="relative font-display text-3xl font-bold text-balance text-brand-amber sm:text-4xl">
                 Vamos transformar o seu negócio?
               </h2>
               <p className="relative mx-auto mt-5 max-w-xl text-lg text-white/80">
@@ -265,12 +266,17 @@ export default function Home() {
                 a equipe ou uma parceria de conteúdo: a HCE está pronta para
                 ajudar.
               </p>
-              <div className="relative mt-9 flex flex-col justify-center gap-3 sm:flex-row">
+              <div className="relative mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                <Button href={WHATSAPP_URL} size="lg">
+                  Falar no WhatsApp
+                </Button>
                 <Button
-                  href="mailto:contato@hcegastronomia.com"
+                  href={`mailto:${EMAIL_CONTATO}`}
                   size="lg"
+                  variant="secondary"
+                  className="border-white/40 text-white hover:border-brand-amber hover:bg-brand-amber hover:text-brand-blue-deep"
                 >
-                  contato@hcegastronomia.com
+                  {EMAIL_CONTATO}
                 </Button>
               </div>
             </div>
