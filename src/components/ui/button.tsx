@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 
-type Variant = "primary" | "secondary" | "ghost";
+type Variant = "primary" | "secondary" | "ghost" | "blue";
 type Size = "md" | "lg";
 
 const base =
@@ -15,6 +15,8 @@ const variants: Record<Variant, string> = {
   secondary:
     "border border-current text-brand-blue hover:bg-brand-blue hover:text-white focus-visible:outline-brand-blue",
   ghost: "text-brand-blue hover:bg-brand-blue/5 focus-visible:outline-brand-blue",
+  // Azul solido: bom para superficies claras/ambar (ex.: header amarelo).
+  blue: "bg-brand-blue text-white hover:bg-brand-blue-dark hover:-translate-y-0.5 shadow-sm hover:shadow-md focus-visible:outline-brand-blue",
 };
 
 const sizes: Record<Size, string> = {
