@@ -68,8 +68,9 @@ export default function Home() {
             <p className="font-display text-sm font-semibold tracking-[0.28em] text-brand-amber uppercase">
               Hospitalidade · Consultoria · Educação
             </p>
-            <h1 className="max-w-3xl font-display text-4xl leading-tight font-extrabold text-balance sm:text-6xl">
-              Transformamos restaurantes e formamos pessoas
+            <h1 className="max-w-4xl font-display text-3xl leading-tight font-extrabold text-balance sm:text-5xl">
+              Transformamos conhecimento em hospitalidade, pessoas em
+              profissionais e experiências em resultados.
             </h1>
             <p className="max-w-2xl text-lg leading-relaxed text-white/80">
               A HCE nasce da união das trajetórias de Cris Leite e Gio
