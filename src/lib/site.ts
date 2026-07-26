@@ -1,15 +1,8 @@
 // Configuracoes centrais do site HCE (links, contatos, redes).
 
-// WhatsApp de acao (FAB_006). ATENCAO: numero provisorio ate a HCE confirmar.
-// Formato E.164 sem "+", so digitos: 55 (Brasil) + DDD + numero.
-export const WHATSAPP_NUMBER = "5521999999999";
-
-const WHATSAPP_MESSAGE =
-  "Olá! Vim pelo site da HCE e gostaria de saber mais.";
-
-export const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-  WHATSAPP_MESSAGE,
-)}`;
+// WhatsApp removido do site neste primeiro momento (sera adicionado depois,
+// quando a HCE tiver o numero/chip oficial). Os CTAs apontam para o
+// formulario "Fale com a HCE" (/fale-com-a-hce).
 
 export const EMAIL_CONTATO = "contato@hcegastronomia.com";
 

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Container } from "@/components/site/container";
 import { Logo } from "@/components/site/logo";
 import { SocialLinks } from "@/components/site/social-links";
-import { WHATSAPP_URL, EMAIL_CONTATO } from "@/lib/site";
+import { EMAIL_CONTATO } from "@/lib/site";
 
 const YEAR = new Date().getFullYear();
 
@@ -68,14 +68,12 @@ export function SiteFooter() {
               </a>
             </li>
             <li>
-              <a
-                href={WHATSAPP_URL}
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                href="/fale-com-a-hce"
                 className="transition-colors hover:text-brand-amber"
               >
-                WhatsApp
-              </a>
+                Fale com a HCE
+              </Link>
             </li>
             <li className="text-white/60">Rio de Janeiro, Brasil</li>
           </ul>
