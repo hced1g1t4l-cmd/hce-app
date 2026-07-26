@@ -52,7 +52,7 @@ export default async function AdmAcessosPage({
 
           <nav
             aria-label="Filtro de período"
-            className="flex flex-wrap gap-1 rounded-full border border-line bg-white p-1"
+            className="flex flex-wrap gap-2"
           >
             {PERIODOS.map((p) => (
               <Link
@@ -63,10 +63,10 @@ export default async function AdmAcessosPage({
                     : `/adm/acessos?periodo=${p.id}`
                 }
                 className={cn(
-                  "rounded-full px-3 py-1.5 text-sm font-semibold transition-colors",
+                  "rounded-full border px-3.5 py-1.5 text-sm font-semibold whitespace-nowrap transition-colors",
                   periodo === p.id
-                    ? "bg-brand-blue text-white"
-                    : "text-brand-blue hover:bg-surface-soft",
+                    ? "border-brand-blue bg-brand-blue text-white"
+                    : "border-line bg-white text-brand-blue hover:bg-surface-soft",
                 )}
               >
                 {p.label}

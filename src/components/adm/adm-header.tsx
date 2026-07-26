@@ -8,33 +8,36 @@ export function AdmHeader({
 }) {
   return (
     <header className="border-b border-line bg-white">
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-6 py-4">
-        <div className="flex items-center gap-6">
-          <span className="font-display text-lg font-bold text-brand-blue">
+      <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 sm:py-4">
+        <div className="flex items-center justify-between gap-3">
+          <span className="font-display text-lg font-bold whitespace-nowrap text-brand-blue">
             Painel HCE
           </span>
-          <nav className="flex items-center gap-1">
-            <Tab href="/adm" label="Leads (Clube)" active={active === "leads"} />
-            <Tab
-              href="/adm/contatos"
-              label="Mensagens"
-              active={active === "contatos"}
-            />
-            <Tab
-              href="/adm/acessos"
-              label="Acessos"
-              active={active === "acessos"}
-            />
-          </nav>
+          <form action="/api/adm/logout" method="post">
+            <button
+              type="submit"
+              className="rounded-full border border-line px-4 py-2 text-sm font-semibold text-brand-blue transition-colors hover:bg-surface-soft"
+            >
+              Sair
+            </button>
+          </form>
         </div>
-        <form action="/api/adm/logout" method="post">
-          <button
-            type="submit"
-            className="rounded-full border border-line px-4 py-2 text-sm font-semibold text-brand-blue transition-colors hover:bg-surface-soft"
-          >
-            Sair
-          </button>
-        </form>
+        <nav
+          aria-label="Seções do painel"
+          className="hce-scroll-x -mx-1 mt-3 flex gap-1 overflow-x-auto px-1 pb-0.5"
+        >
+          <Tab href="/adm" label="Leads (Clube)" active={active === "leads"} />
+          <Tab
+            href="/adm/contatos"
+            label="Mensagens"
+            active={active === "contatos"}
+          />
+          <Tab
+            href="/adm/acessos"
+            label="Acessos"
+            active={active === "acessos"}
+          />
+        </nav>
       </div>
     </header>
   );
@@ -53,7 +56,7 @@ function Tab({
     <Link
       href={href}
       className={cn(
-        "rounded-full px-3 py-1.5 text-sm font-semibold transition-colors",
+        "shrink-0 rounded-full px-4 py-2 text-sm font-semibold whitespace-nowrap transition-colors",
         active
           ? "bg-brand-blue text-white"
           : "text-brand-blue hover:bg-surface-soft",
