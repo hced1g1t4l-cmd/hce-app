@@ -66,7 +66,7 @@ export function SiteFooter() {
       <div className="border-t border-white/10">
         <Container className="flex flex-col items-center justify-between gap-2 py-6 text-xs text-white/50 sm:flex-row">
           <span>© {YEAR} HCE Gastronomia. Todos os direitos reservados.</span>
-          <span>Feito com dedicação por Cris Leite e Gio Gropello.</span>
+          <span>hcegastronomia.com</span>
         </Container>
       </div>
     </footer>
