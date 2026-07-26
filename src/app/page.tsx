@@ -68,6 +68,7 @@ export default function Home() {
               width={560}
               height={233}
               priority
+              sizes="(max-width: 640px) 75vw, 700px"
               className="h-56 w-auto max-w-full sm:h-64 lg:h-72"
             />
             <p className="font-display text-sm font-semibold tracking-[0.28em] text-brand-amber uppercase">
