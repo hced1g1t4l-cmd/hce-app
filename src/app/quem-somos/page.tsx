@@ -276,7 +276,7 @@ export default function QuemSomosPage() {
             </h2>
             <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-white/80">
               Consultoria, treinamento para a equipe, uma parceria de conteúdo ou
-              o Clube +HCE: a HCE está pronta para caminhar com você.
+              o +HCE: a HCE está pronta para caminhar com você.
             </p>
             <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button href="/fale-com-a-hce" size="lg">
@@ -288,7 +288,7 @@ export default function QuemSomosPage() {
                 variant="secondary"
                 className="border-brand-amber/70 text-brand-amber hover:border-brand-amber hover:bg-brand-amber hover:text-brand-blue-deep"
               >
-                Conhecer o Clube +HCE
+                Conhecer o +HCE
               </Button>
             </div>
           </Container>

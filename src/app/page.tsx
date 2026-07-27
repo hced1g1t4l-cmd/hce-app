@@ -85,7 +85,7 @@ export default function Home() {
             </p>
             <div className="mt-2 flex flex-col gap-3 sm:flex-row">
               <Button href="/clube" size="lg">
-                Conheça o Clube +HCE
+                Conheça o +HCE
               </Button>
               <Button
                 href="/servicos"
@@ -180,7 +180,7 @@ export default function Home() {
                 Em breve
               </span>
               <h2 className="mt-3 font-display text-3xl font-bold text-brand-amber sm:text-4xl">
-                Clube +HCE: conteúdo que vira resultado
+                +HCE: conteúdo que vira resultado
               </h2>
               <p className="mt-6 text-lg leading-relaxed text-white/80">
                 Um clube por assinatura com receitas, fichas técnicas, ebooks e
@@ -206,7 +206,7 @@ export default function Home() {
               </ul>
               <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row lg:justify-start">
                 <Button href="/clube" size="lg">
-                  Ver planos do Clube
+                  Ver planos do +HCE
                 </Button>
                 <Button
                   href="/avise-me"
@@ -223,7 +223,7 @@ export default function Home() {
               <div className="overflow-hidden rounded-3xl border border-white/10 shadow-2xl">
                 <Image
                   src="/brand/posts/o-que-oferece.jpeg"
-                  alt="Prévia dos conteúdos do Clube +HCE: receitas, fichas técnicas e ebooks"
+                  alt="Prévia dos conteúdos do +HCE: receitas, fichas técnicas e ebooks"
                   width={819}
                   height={1024}
                   sizes="(max-width: 1024px) 90vw, 420px"

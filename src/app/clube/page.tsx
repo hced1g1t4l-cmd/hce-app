@@ -7,14 +7,14 @@ import { Button } from "@/components/ui/button";
 import { ClubePlanos } from "@/components/site/clube-planos";
 
 export const metadata: Metadata = {
-  title: "Clube +HCE · Planos e assinatura",
+  title: "+HCE · Planos e assinatura",
   description:
-    "O Clube +HCE é o clube por assinatura da HCE: acervo de receitas e fichas técnicas, e-books, soluções da cozinha e comunidade. Conheça os planos.",
+    "O +HCE é o clube por assinatura da HCE: acervo de receitas e fichas técnicas, e-books, soluções da cozinha e comunidade. Conheça os planos.",
   alternates: { canonical: "/clube" },
   openGraph: {
-    title: "Clube +HCE · Planos e assinatura",
+    title: "+HCE · Planos e assinatura",
     description:
-      "Acervo de receitas e fichas técnicas, e-books, soluções da cozinha e comunidade. Conheça os planos do Clube +HCE.",
+      "Acervo de receitas e fichas técnicas, e-books, soluções da cozinha e comunidade. Conheça os planos do +HCE.",
     url: "/clube",
   },
 };
@@ -54,7 +54,7 @@ export default function ClubePage() {
               Em breve
             </span>
             <h1 className="mx-auto mt-3 max-w-3xl font-display text-3xl font-extrabold text-balance text-white sm:text-5xl">
-              + HCE: conteúdo que vira resultado
+              +HCE: conteúdo que vira resultado
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-white/80">
               Uma experiência de aprendizagem por assinatura, com receitas,
@@ -140,11 +140,11 @@ export default function ClubePage() {
           <Container className="grid items-center gap-12 lg:grid-cols-2">
             <div>
               <h2 className="font-display text-3xl font-bold text-brand-amber sm:text-4xl">
-                O Clube ainda não abriu — mas você pode garantir seu lugar
+                O +HCE ainda não abriu — mas você pode garantir seu lugar
               </h2>
               <p className="mt-5 text-lg leading-relaxed text-white/80">
-                Deixe seu contato e avisaremos em primeira mão quando o Clube
-                +HCE for lançado, com condições especiais para quem chegar cedo.
+                Deixe seu contato e avisaremos em primeira mão quando o +HCE for
+                lançado, com condições especiais para quem chegar cedo.
               </p>
               <div className="mt-8 flex justify-center lg:justify-start">
                 <Button href="/avise-me" size="lg">
@@ -157,7 +157,7 @@ export default function ClubePage() {
               <div className="overflow-hidden rounded-3xl border border-white/10 shadow-2xl">
                 <Image
                   src="/brand/posts/o-que-oferece.jpeg"
-                  alt="Prévia dos conteúdos do Clube +HCE: receitas, fichas técnicas e e-books"
+                  alt="Prévia dos conteúdos do +HCE: receitas, fichas técnicas e e-books"
                   width={819}
                   height={1024}
                   sizes="(max-width: 1024px) 90vw, 420px"

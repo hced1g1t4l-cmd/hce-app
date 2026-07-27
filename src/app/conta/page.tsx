@@ -80,7 +80,7 @@ export default async function ContaPage() {
                 Ler o Feed HCE
               </Button>
               <Button href="/clube" size="md" variant="blue">
-                Conhecer o Clube +HCE
+                Conhecer o +HCE
               </Button>
             </div>
           </div>

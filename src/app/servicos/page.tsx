@@ -222,7 +222,7 @@ export default function ServicosPage() {
                 variant="secondary"
                 className="border-brand-amber/70 text-brand-amber hover:border-brand-amber hover:bg-brand-amber hover:text-brand-blue-deep"
               >
-                Conhecer o Clube +HCE
+                Conhecer o +HCE
               </Button>
             </div>
           </Container>
