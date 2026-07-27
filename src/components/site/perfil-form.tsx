@@ -204,40 +204,40 @@ export function PerfilForm({ init }: { init: PerfilInit }) {
       <div className="mt-4 grid gap-5">
         <label className="block">
           <span className="font-display text-sm font-semibold text-brand-blue">
-            LinkedIn <span className="font-normal text-muted">(link)</span>
+            LinkedIn
           </span>
           <input
             value={f.linkedin}
             onChange={set("linkedin")}
             type="url"
             inputMode="url"
-            placeholder="https://linkedin.com/in/seu-perfil"
+            placeholder="Digite ou cole aqui o link do seu LinkedIn"
             className="hce-input mt-1.5"
           />
         </label>
         <label className="block">
           <span className="font-display text-sm font-semibold text-brand-blue">
-            Instagram <span className="font-normal text-muted">(link)</span>
+            Instagram
           </span>
           <input
             value={f.instagram}
             onChange={set("instagram")}
             type="url"
             inputMode="url"
-            placeholder="https://instagram.com/seu-perfil"
+            placeholder="Digite ou cole aqui o link do seu Instagram"
             className="hce-input mt-1.5"
           />
         </label>
         <label className="block">
           <span className="font-display text-sm font-semibold text-brand-blue">
-            Facebook <span className="font-normal text-muted">(link)</span>
+            Facebook
           </span>
           <input
             value={f.facebook}
             onChange={set("facebook")}
             type="url"
             inputMode="url"
-            placeholder="https://facebook.com/seu-perfil"
+            placeholder="Digite ou cole aqui o link do seu Facebook"
             className="hce-input mt-1.5"
           />
         </label>
