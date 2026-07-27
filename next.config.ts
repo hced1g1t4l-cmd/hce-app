@@ -40,10 +40,16 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
-  // Garante que as metricas de fonte do PDFKit (.afm) sejam empacotadas na
-  // funcao serverless da Vercel (a rota de exportacao gera PDF com PDFKit).
+  // PDFKit le os arquivos de fonte (.afm) via fs a partir do seu __dirname.
+  // Mantendo-o como pacote externo (nao empacotado pelo bundler), o __dirname
+  // aponta para node_modules/pdfkit real e os .afm sao encontrados em runtime.
+  serverExternalPackages: ["pdfkit"],
+  // Reforco: garante que os .afm sejam incluidos no bundle serverless da Vercel.
   outputFileTracingIncludes: {
-    "/api/adm/export/**": ["./node_modules/pdfkit/js/data/*.afm"],
+    "/api/adm/export/**": [
+      "./node_modules/pdfkit/js/data/*.afm",
+      "./node_modules/.pnpm/**/pdfkit/js/data/*.afm",
+    ],
   },
   async headers() {
     return [
