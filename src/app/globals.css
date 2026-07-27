@@ -181,16 +181,11 @@ p {
   display: none;
 }
 
-/* Flip por clique/toque (RAF_003): vale em qualquer aparelho. */
+/* Flip controlado por estado (JS): clique/toque em qualquer aparelho e
+   hover no desktop. O hover e feito no JS para nao "prender" o card virado
+   quando o usuario clica para voltar com o mouse ainda em cima. */
 .flip-card-inner.is-flipped {
   transform: rotateY(180deg);
-}
-
-/* No desktop tambem vira ao passar o mouse. */
-@media (hover: hover) and (pointer: fine) {
-  .flip-card:hover .flip-card-inner {
-    transform: rotateY(180deg);
-  }
 }
 
 .flip-card-face {

@@ -1,11 +1,11 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/cn";
 
 // Card das fundadoras com flip.
-//  - Desktop: vira no hover (CSS).
+//  - Desktop: vira ao passar o mouse (via JS, para nao conflitar com o clique).
 //  - Mobile/desktop: clique/toque vira; clicar de novo volta para a foto (RAF_003).
 //  - O verso rola (overflow) e comeca do topo, para bios longas caberem.
 export function FounderFlipCard({
@@ -23,17 +23,26 @@ export function FounderFlipCard({
 }) {
   const [flipped, setFlipped] = useState(false);
   const backRef = useRef<HTMLDivElement>(null);
+  // So aplicamos o "hover vira" em aparelhos com mouse fino (evita hover fantasma no toque).
+  const hoverCapable = useRef(false);
+
+  useEffect(() => {
+    hoverCapable.current = window.matchMedia(
+      "(hover: hover) and (pointer: fine)",
+    ).matches;
+  }, []);
 
   // RAF_006: a bio deve sempre reabrir do topo. Reseta a rolagem do verso.
   const resetBioScroll = () => {
     if (backRef.current) backRef.current.scrollTop = 0;
   };
 
-  const toggle = () => {
-    // Reseta so ao ABRIR a bio (foto ainda na frente), evitando pulo ao fechar.
-    if (!flipped) resetBioScroll();
-    setFlipped((v) => !v);
+  const virar = (valor: boolean) => {
+    if (valor) resetBioScroll(); // reseta so ao ABRIR, evitando pulo ao fechar
+    setFlipped(valor);
   };
+
+  const toggle = () => virar(!flipped);
 
   return (
     <figure className="overflow-hidden rounded-2xl border border-line bg-surface-soft">
@@ -44,7 +53,8 @@ export function FounderFlipCard({
         aria-pressed={flipped}
         aria-label={`${nome} — ${flipped ? "voltar para a foto" : "ver mini bio"}`}
         onClick={toggle}
-        onMouseLeave={resetBioScroll}
+        onMouseEnter={() => hoverCapable.current && virar(true)}
+        onMouseLeave={() => hoverCapable.current && virar(false)}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
