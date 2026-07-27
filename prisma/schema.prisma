@@ -187,6 +187,7 @@ model ContatoMensagem {
   permiteTelefone Boolean  @default(false)
   ip              String?
   userAgent       String?
+  observacoes     String? // anotacoes internas do time (editavel no /adm)
   createdAt       DateTime @default(now())
 
   @@index([createdAt])

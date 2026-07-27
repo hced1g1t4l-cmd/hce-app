@@ -3,13 +3,15 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-// Editor de observacoes internas de um lead (salva inline).
+// Editor de observacoes internas (salva inline). Reutilizado por leads e mensagens.
 export function LeadObs({
   id,
   inicial,
+  endpoint = "/api/adm/leads",
 }: {
   id: string;
   inicial: string | null;
+  endpoint?: string;
 }) {
   const router = useRouter();
   const [valor, setValor] = useState(inicial ?? "");
@@ -19,7 +21,7 @@ export function LeadObs({
   async function salvar() {
     setSalvando(true);
     try {
-      const res = await fetch("/api/adm/leads", {
+      const res = await fetch(endpoint, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, observacoes: valor }),
@@ -85,8 +87,16 @@ export function LeadObs({
   );
 }
 
-// Botao de exclusao de um lead (com confirmacao).
-export function LeadDelete({ id, nome }: { id: string; nome: string }) {
+// Botao de exclusao (com confirmacao). Reutilizado por leads e mensagens.
+export function LeadDelete({
+  id,
+  nome,
+  endpoint = "/api/adm/leads",
+}: {
+  id: string;
+  nome: string;
+  endpoint?: string;
+}) {
   const router = useRouter();
   const [excluindo, setExcluindo] = useState(false);
 
@@ -96,7 +106,7 @@ export function LeadDelete({ id, nome }: { id: string; nome: string }) {
     }
     setExcluindo(true);
     try {
-      const res = await fetch("/api/adm/leads", {
+      const res = await fetch(endpoint, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id }),
