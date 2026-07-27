@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { AdmHeader } from "@/components/adm/adm-header";
 import { UsuariosTabela } from "@/components/adm/usuarios-tabela";
 import { formatarEndereco } from "@/lib/localidades";
+import { capitalizarNome } from "@/lib/nome";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -48,7 +49,7 @@ export default async function AdmUsuariosPage() {
 
   const usuarios = rows.map((u) => ({
     id: u.id,
-    name: u.name,
+    name: capitalizarNome(u.name),
     email: u.email,
     telefone: u.telefone,
     plano: u.plano,

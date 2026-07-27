@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { AdmHeader } from "@/components/adm/adm-header";
 import { LeadObs, LeadDelete } from "@/components/adm/lead-acoes";
 import { ExportButtons } from "@/components/adm/export-buttons";
+import { capitalizarNome } from "@/lib/nome";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -77,7 +78,9 @@ export default async function AdmPage() {
                     <tr key={l.id} className="border-b border-line/70">
                       <Td>{fmtData.format(l.createdAt)}</Td>
                       <Td>{fmtHora.format(l.createdAt)}</Td>
-                      <Td className="font-medium text-ink">{l.nome}</Td>
+                      <Td className="font-medium text-ink">
+                        {capitalizarNome(l.nome)}
+                      </Td>
                       <Td>{l.email}</Td>
                       <Td>{l.telefone}</Td>
                       <Td>
