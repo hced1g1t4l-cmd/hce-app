@@ -40,6 +40,11 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Garante que as metricas de fonte do PDFKit (.afm) sejam empacotadas na
+  // funcao serverless da Vercel (a rota de exportacao gera PDF com PDFKit).
+  outputFileTracingIncludes: {
+    "/api/adm/export/**": ["./node_modules/pdfkit/js/data/*.afm"],
+  },
   async headers() {
     return [
       {

@@ -3,6 +3,7 @@ import { isAuthed } from "@/lib/adm";
 import { prisma } from "@/lib/db";
 import { AdmHeader } from "@/components/adm/adm-header";
 import { LeadObs, LeadDelete } from "@/components/adm/lead-acoes";
+import { ExportButtons } from "@/components/adm/export-buttons";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -33,14 +34,17 @@ export default async function AdmContatosPage() {
       <AdmHeader active="contatos" />
 
       <div className="mx-auto max-w-7xl px-6 py-8">
-        <div className="mb-5">
-          <h1 className="font-display text-xl font-bold text-brand-blue">
-            Mensagens · Fale com a HCE
-          </h1>
-          <p className="text-sm text-muted">
-            {mensagens.length}{" "}
-            {mensagens.length === 1 ? "mensagem" : "mensagens"}
-          </p>
+        <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h1 className="font-display text-xl font-bold text-brand-blue">
+              Mensagens · Fale com a HCE
+            </h1>
+            <p className="text-sm text-muted">
+              {mensagens.length}{" "}
+              {mensagens.length === 1 ? "mensagem" : "mensagens"}
+            </p>
+          </div>
+          {mensagens.length > 0 && <ExportButtons tipo="contatos" />}
         </div>
 
         {mensagens.length === 0 ? (
