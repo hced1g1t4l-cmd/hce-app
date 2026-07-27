@@ -145,6 +145,27 @@ model Imagem {
   createdAt DateTime @default(now())
 }
 
+// Frente B: biblioteca de midia (fichas tecnicas, e-books, planilhas, imagens).
+// Os bytes ficam no Cloudflare R2 (S3-compativel); aqui guardamos so o metadado.
+// Entrega:
+//   - publico  -> /api/midia/{id} redireciona p/ URL (CDN ou assinada)
+//   - privado  -> /api/midia/{id} exige login + plano >= planoMinimo e assina URL curta
+model MediaAsset {
+  id           String   @id @default(cuid())
+  key          String   @unique // caminho do objeto no bucket R2
+  filename     String // nome original do arquivo
+  titulo       String? // rotulo amigavel exibido no painel
+  mime         String
+  tamanho      Int // bytes
+  tipo         String // imagem | pdf | ebook | planilha | outro
+  visibilidade String   @default("privado") // publico | privado
+  planoMinimo  String   @default("free") // free | essencial | profissional | premium
+  createdAt    DateTime @default(now())
+
+  @@index([tipo])
+  @@index([createdAt])
+}
+
 // Mensagem do formulario "Fale com a HCE" (RAF_008).
 // Coletada em /fale-com-a-hce; consultada apenas no /adm/contatos.
 model ContatoMensagem {
