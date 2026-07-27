@@ -3,6 +3,7 @@ import { isAuthed } from "@/lib/adm";
 import { prisma } from "@/lib/db";
 import { AdmHeader } from "@/components/adm/adm-header";
 import { UsuariosTabela } from "@/components/adm/usuarios-tabela";
+import { formatarEndereco } from "@/lib/localidades";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -32,7 +33,13 @@ export default async function AdmUsuariosPage() {
       createdAt: true,
       image: true,
       bio: true,
-      endereco: true,
+      logradouro: true,
+      numero: true,
+      complemento: true,
+      bairro: true,
+      cidade: true,
+      estado: true,
+      pais: true,
       linkedin: true,
       instagram: true,
       facebook: true,
@@ -49,7 +56,7 @@ export default async function AdmUsuariosPage() {
     cadastro: fmt.format(u.createdAt),
     image: u.image,
     bio: u.bio,
-    endereco: u.endereco,
+    endereco: formatarEndereco(u) || null,
     linkedin: u.linkedin,
     instagram: u.instagram,
     facebook: u.facebook,

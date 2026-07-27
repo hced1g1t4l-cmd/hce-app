@@ -33,7 +33,15 @@ model User {
   plano              String  @default("free") // free | essencial | profissional | premium
   // Perfil editavel pela pessoa em /conta.
   bio                String? // pequena apresentacao
-  endereco           String? // cidade/endereco (texto livre)
+  endereco           String? // legado (texto livre) - mantido por compatibilidade
+  // Endereco estruturado.
+  logradouro         String?
+  numero             String?
+  complemento        String?
+  bairro             String?
+  cidade             String?
+  estado             String? // UF (SP, RJ...) ou "N/A" (nao se aplica)
+  pais               String? // nome do pais
   linkedin           String? // URL do perfil
   instagram          String? // URL do perfil
   facebook           String? // URL do perfil

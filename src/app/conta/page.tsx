@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/site/site-footer";
 import { Button } from "@/components/ui/button";
 import { SairButton } from "@/components/site/sair-button";
 import { PerfilForm } from "@/components/site/perfil-form";
+import { AvatarEditor } from "@/components/site/avatar-editor";
 import { getSessionUser } from "@/lib/auth-user";
 import { prisma } from "@/lib/db";
 
@@ -33,7 +34,13 @@ export default async function ContaPage() {
       image: true,
       bio: true,
       telefone: true,
-      endereco: true,
+      logradouro: true,
+      numero: true,
+      complemento: true,
+      bairro: true,
+      cidade: true,
+      estado: true,
+      pais: true,
       linkedin: true,
       instagram: true,
       facebook: true,
@@ -45,12 +52,17 @@ export default async function ContaPage() {
       <SiteHeader />
       <main id="conteudo" className="flex-1 bg-surface-soft py-16 sm:py-20">
         <Container className="max-w-2xl">
-          <h1 className="font-display text-3xl font-bold text-brand-blue sm:text-4xl">
-            Olá, {user.nome?.split(" ")[0] ?? "bem-vindo"}!
-          </h1>
-          <p className="mt-3 text-lg leading-relaxed text-muted">
-            Esta é a sua área na HCE.
-          </p>
+          <div className="flex items-center gap-4 sm:gap-5">
+            <AvatarEditor initialImage={perfil?.image ?? null} nome={user.nome} />
+            <div>
+              <h1 className="font-display text-3xl font-bold text-brand-blue sm:text-4xl">
+                Olá, {user.nome?.split(" ")[0] ?? "bem-vindo"}!
+              </h1>
+              <p className="mt-2 text-lg leading-relaxed text-muted">
+                Esta é a sua área na HCE.
+              </p>
+            </div>
+          </div>
 
           <div className="mt-8 rounded-3xl border border-line bg-white p-6 shadow-sm sm:p-8">
             <h2 className="font-display text-sm font-bold tracking-wide text-brand-blue uppercase">
@@ -88,10 +100,15 @@ export default async function ContaPage() {
 
           <PerfilForm
             init={{
-              image: perfil?.image ?? null,
               bio: perfil?.bio ?? "",
               telefone: perfil?.telefone ?? "",
-              endereco: perfil?.endereco ?? "",
+              logradouro: perfil?.logradouro ?? "",
+              numero: perfil?.numero ?? "",
+              complemento: perfil?.complemento ?? "",
+              bairro: perfil?.bairro ?? "",
+              cidade: perfil?.cidade ?? "",
+              estado: perfil?.estado ?? "",
+              pais: perfil?.pais ?? "",
               linkedin: perfil?.linkedin ?? "",
               instagram: perfil?.instagram ?? "",
               facebook: perfil?.facebook ?? "",
