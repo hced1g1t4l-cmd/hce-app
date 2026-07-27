@@ -4,51 +4,67 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-function destinoSeguro(redirect?: string): string {
-  if (redirect && redirect.startsWith("/") && !redirect.startsWith("//")) {
-    return redirect;
-  }
-  return "/conta";
-}
-
-export function EntrarForm({ redirect }: { redirect?: string }) {
+export function RedefinirSenhaForm({ token }: { token: string }) {
   const router = useRouter();
   const [erro, setErro] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
+  const [ok, setOk] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setErro(null);
     const fd = new FormData(e.currentTarget);
-    const payload = {
-      email: String(fd.get("email") || ""),
-      senha: String(fd.get("senha") || ""),
-    };
+    const senha = String(fd.get("senha") || "");
+    const confirmar = String(fd.get("confirmar") || "");
+
+    if (senha.length < 8) {
+      setErro("A senha precisa de ao menos 8 caracteres.");
+      return;
+    }
+    if (senha !== confirmar) {
+      setErro("As senhas não coincidem.");
+      return;
+    }
 
     setEnviando(true);
     try {
-      const res = await fetch("/api/conta/entrar", {
+      const res = await fetch("/api/conta/redefinir-senha", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ token, senha }),
       });
       if (!res.ok) {
         const d = (await res.json().catch(() => ({}))) as { error?: string };
-        setErro(d.error || "Não foi possível entrar.");
+        setErro(d.error || "Não foi possível redefinir a senha.");
         setEnviando(false);
         return;
       }
-      router.push(destinoSeguro(redirect));
-      router.refresh();
+      setOk(true);
+      setTimeout(() => router.push("/entrar"), 2500);
     } catch {
       setErro("Falha de conexão. Tente novamente.");
       setEnviando(false);
     }
   }
 
-  const criarHref = redirect
-    ? `/criar-conta?redirect=${encodeURIComponent(redirect)}`
-    : "/criar-conta";
+  if (ok) {
+    return (
+      <div className="mt-8 rounded-3xl border border-line bg-white p-6 text-center shadow-sm sm:p-8">
+        <h2 className="font-display text-xl font-bold text-brand-blue">
+          Senha redefinida!
+        </h2>
+        <p className="mt-3 leading-relaxed text-muted">
+          Sua senha foi atualizada. Você já pode entrar com a nova senha.
+        </p>
+        <Link
+          href="/entrar"
+          className="mt-6 inline-block font-semibold text-brand-blue hover:underline"
+        >
+          Ir para o login
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <form
@@ -58,36 +74,31 @@ export function EntrarForm({ redirect }: { redirect?: string }) {
       <div className="grid gap-5">
         <label className="block">
           <span className="font-display text-sm font-semibold text-brand-blue">
-            E-mail
-          </span>
-          <input
-            name="email"
-            type="email"
-            required
-            autoComplete="email"
-            placeholder="voce@email.com"
-            className="hce-input mt-1.5"
-          />
-        </label>
-
-        <label className="block">
-          <span className="font-display text-sm font-semibold text-brand-blue">
-            Senha
+            Nova senha
           </span>
           <input
             name="senha"
             type="password"
             required
-            autoComplete="current-password"
-            placeholder="Sua senha"
+            minLength={8}
+            autoComplete="new-password"
+            placeholder="Mínimo de 8 caracteres"
             className="hce-input mt-1.5"
           />
-          <Link
-            href="/esqueci-senha"
-            className="mt-2 inline-block text-sm font-semibold text-brand-blue hover:underline"
-          >
-            Esqueci minha senha
-          </Link>
+        </label>
+        <label className="block">
+          <span className="font-display text-sm font-semibold text-brand-blue">
+            Confirmar nova senha
+          </span>
+          <input
+            name="confirmar"
+            type="password"
+            required
+            minLength={8}
+            autoComplete="new-password"
+            placeholder="Repita a senha"
+            className="hce-input mt-1.5"
+          />
         </label>
       </div>
 
@@ -102,18 +113,8 @@ export function EntrarForm({ redirect }: { redirect?: string }) {
         disabled={enviando}
         className="mt-7 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-brand-blue px-6 py-3 text-center font-display text-base font-semibold text-brand-amber transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-brand-blue-dark disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {enviando ? "Entrando…" : "Entrar"}
+        {enviando ? "Salvando…" : "Redefinir senha"}
       </button>
-
-      <p className="mt-5 text-center text-sm text-muted">
-        Ainda não tem conta?{" "}
-        <Link
-          href={criarHref}
-          className="font-semibold text-brand-blue hover:underline"
-        >
-          Criar conta grátis
-        </Link>
-      </p>
     </form>
   );
 }

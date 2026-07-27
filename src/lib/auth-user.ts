@@ -40,6 +40,21 @@ export function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
 }
 
+// Hash de token de uso unico (reset de senha). Guardamos o hash no banco e
+// mandamos o token cru no link; assim, vazar o banco nao revela links validos.
+export function sha256(value: string): string {
+  return crypto.createHash("sha256").update(value).digest("hex");
+}
+
+export function randomToken(): string {
+  return crypto.randomBytes(32).toString("hex");
+}
+
+// Encerra todas as sessoes de um usuario (ex.: apos redefinir a senha).
+export async function destroyAllSessions(userId: string): Promise<void> {
+  await prisma.session.deleteMany({ where: { userId } }).catch(() => null);
+}
+
 // Cria a sessao no banco e grava o cookie. So chamar em Route Handler / Server Action.
 export async function createSession(userId: string): Promise<void> {
   const token = crypto.randomBytes(32).toString("hex");
