@@ -54,12 +54,13 @@ export default function ClubePage() {
               Em breve
             </span>
             <h1 className="mx-auto mt-3 max-w-3xl font-display text-3xl font-extrabold text-balance text-white sm:text-5xl">
-              Clube +HCE: conteúdo que vira resultado
+              + HCE: conteúdo que vira resultado
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-white/80">
-              Um clube por assinatura com receitas, fichas técnicas, e-books e
-              uma comunidade para quem quer evoluir na cozinha e na gestão do seu
-              negócio, no seu ritmo.
+              Uma experiência de aprendizagem por assinatura, com receitas,
+              fichas técnicas, e-books e conteúdos desenvolvidos para fortalecer
+              a prática profissional em gastronomia. Uma comunidade para quem quer
+              evoluir na cozinha e na gestão do seu negócio, no seu ritmo.
             </p>
             <div className="mt-8 flex justify-center">
               <Button href="/avise-me" size="lg">
