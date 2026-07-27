@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { isAuthed } from "@/lib/adm";
 import { prisma } from "@/lib/db";
 import { AdmHeader } from "@/components/adm/adm-header";
+import { LeadObs, LeadDelete } from "@/components/adm/lead-acoes";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -56,7 +57,9 @@ export default async function AdmPage() {
                   <Th>Telefone</Th>
                   <Th>Meio (aviso)</Th>
                   <Th>Promoções</Th>
+                  <Th>Observações</Th>
                   <Th>IP</Th>
+                  <Th>Ações</Th>
                 </tr>
               </thead>
               <tbody>
@@ -94,7 +97,13 @@ export default async function AdmPage() {
                           <span className="text-muted">Não</span>
                         )}
                       </Td>
+                      <td className="px-4 py-3 align-top">
+                        <LeadObs id={l.id} inicial={l.observacoes} />
+                      </td>
                       <Td className="text-muted">{l.ip ?? "—"}</Td>
+                      <td className="px-4 py-3 align-top whitespace-nowrap">
+                        <LeadDelete id={l.id} nome={l.nome} />
+                      </td>
                     </tr>
                   );
                 })}
