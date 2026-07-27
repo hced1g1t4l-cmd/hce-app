@@ -42,6 +42,16 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
+              <Link href="/feed" className="hover:text-brand-amber">
+                Feed HCE
+              </Link>
+            </li>
+            <li>
+              <Link href="/podcast" className="hover:text-brand-amber">
+                Podcast
+              </Link>
+            </li>
+            <li>
               <Link href="/clube" className="hover:text-brand-amber">
                 Clube +HCE
               </Link>
