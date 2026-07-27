@@ -66,9 +66,9 @@ const PLANOS: Plano[] = [
     precoAnual: "89,90",
     precoAvulso: "94,90",
     itens: [
-      "Tudo do Profissional",
-      "E-books e materiais exclusivos",
-      "Contato com especialistas",
+      "Todos os recursos do plano Profissional",
+      "Biblioteca exclusiva de e-books e materiais",
+      "Interação com especialistas da HCE",
       "Comunidade premium",
     ],
     cta: "Assinar Premium",
