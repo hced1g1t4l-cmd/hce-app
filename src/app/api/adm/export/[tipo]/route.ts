@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { isAuthed } from "@/lib/adm";
 import { prisma } from "@/lib/db";
 import { toCSV, toPDF, toXLS, type Planilha } from "@/lib/export";
+import { capitalizarNome } from "@/lib/nome";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -33,7 +34,7 @@ async function montarLeads(): Promise<Planilha> {
     ],
     linhas: leads.map((l) => [
       fmtDataHora.format(l.createdAt),
-      l.nome,
+      capitalizarNome(l.nome),
       l.email,
       l.telefone,
       [l.canalEmail && "E-mail", l.canalSms && "SMS", l.canalWhatsapp && "WhatsApp"]
@@ -64,7 +65,7 @@ async function montarContatos(): Promise<Planilha> {
     ],
     linhas: msgs.map((m) => [
       fmtDataHora.format(m.createdAt),
-      m.nome,
+      capitalizarNome(m.nome),
       m.email,
       m.telefone ?? "",
       m.mensagem,

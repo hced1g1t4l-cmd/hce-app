@@ -9,6 +9,7 @@ import { PerfilForm } from "@/components/site/perfil-form";
 import { AvatarEditor } from "@/components/site/avatar-editor";
 import { getSessionUser } from "@/lib/auth-user";
 import { prisma } from "@/lib/db";
+import { capitalizarNome } from "@/lib/nome";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -56,7 +57,7 @@ export default async function ContaPage() {
             <AvatarEditor initialImage={perfil?.image ?? null} nome={user.nome} />
             <div>
               <h1 className="font-display text-3xl font-bold text-brand-blue sm:text-4xl">
-                Olá, {user.nome?.split(" ")[0] ?? "bem-vindo"}!
+                Olá, {capitalizarNome(user.nome)?.split(" ")[0] || "bem-vindo"}!
               </h1>
               <p className="mt-2 text-lg leading-relaxed text-muted">
                 Esta é a sua área na HCE.
@@ -74,7 +75,7 @@ export default async function ContaPage() {
                   Nome
                 </dt>
                 <dd className="mt-1 font-medium text-ink">
-                  {user.nome ?? "—"}
+                  {capitalizarNome(user.nome) || "—"}
                 </dd>
               </div>
               <div>
