@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { isAuthed } from "@/lib/adm";
 import { prisma } from "@/lib/db";
 import { AdmHeader } from "@/components/adm/adm-header";
+import { UsuariosTabela } from "@/components/adm/usuarios-tabela";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -16,17 +17,10 @@ const fmt = new Intl.DateTimeFormat("pt-BR", {
   timeZone: "America/Sao_Paulo",
 });
 
-const PLANO_LABEL: Record<string, string> = {
-  free: "Gratuito",
-  essencial: "Essencial",
-  profissional: "Profissional",
-  premium: "Premium",
-};
-
 export default async function AdmUsuariosPage() {
   if (!(await isAuthed())) redirect("/adm/login");
 
-  const usuarios = await prisma.user.findMany({
+  const rows = await prisma.user.findMany({
     orderBy: { createdAt: "desc" },
     select: {
       id: true,
@@ -36,8 +30,30 @@ export default async function AdmUsuariosPage() {
       plano: true,
       aceitaComunicacoes: true,
       createdAt: true,
+      image: true,
+      bio: true,
+      endereco: true,
+      linkedin: true,
+      instagram: true,
+      facebook: true,
     },
   });
+
+  const usuarios = rows.map((u) => ({
+    id: u.id,
+    name: u.name,
+    email: u.email,
+    telefone: u.telefone,
+    plano: u.plano,
+    aceitaComunicacoes: u.aceitaComunicacoes,
+    cadastro: fmt.format(u.createdAt),
+    image: u.image,
+    bio: u.bio,
+    endereco: u.endereco,
+    linkedin: u.linkedin,
+    instagram: u.instagram,
+    facebook: u.facebook,
+  }));
 
   const optIn = usuarios.filter((u) => u.aceitaComunicacoes).length;
 
@@ -52,7 +68,7 @@ export default async function AdmUsuariosPage() {
           </h1>
           <p className="text-sm text-muted">
             {usuarios.length} {usuarios.length === 1 ? "conta" : "contas"} ·{" "}
-            {optIn} aceitam comunicações
+            {optIn} aceitam comunicações · clique numa linha para ver o perfil
           </p>
         </div>
 
@@ -61,58 +77,7 @@ export default async function AdmUsuariosPage() {
             Nenhuma conta criada ainda.
           </p>
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-line bg-white">
-            <table className="w-full border-collapse text-left text-sm">
-              <thead>
-                <tr className="border-b border-line bg-surface-soft text-xs tracking-wide text-muted uppercase">
-                  <th className="px-4 py-3 font-semibold whitespace-nowrap">
-                    Cadastro
-                  </th>
-                  <th className="px-4 py-3 font-semibold">Nome</th>
-                  <th className="px-4 py-3 font-semibold">E-mail</th>
-                  <th className="px-4 py-3 font-semibold whitespace-nowrap">
-                    Telefone
-                  </th>
-                  <th className="px-4 py-3 font-semibold whitespace-nowrap">
-                    Plano
-                  </th>
-                  <th className="px-4 py-3 font-semibold whitespace-nowrap">
-                    Comunicações
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {usuarios.map((u) => (
-                  <tr key={u.id} className="border-b border-line/70">
-                    <td className="px-4 py-3 whitespace-nowrap text-muted">
-                      {fmt.format(u.createdAt)}
-                    </td>
-                    <td className="px-4 py-3 font-medium text-ink">
-                      {u.name ?? "—"}
-                    </td>
-                    <td className="px-4 py-3 break-all">{u.email ?? "—"}</td>
-                    <td className="px-4 py-3 whitespace-nowrap text-muted">
-                      {u.telefone ?? "—"}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <span className="rounded-full bg-brand-blue/10 px-2 py-0.5 text-xs font-semibold text-brand-blue">
-                        {PLANO_LABEL[u.plano] ?? u.plano}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      {u.aceitaComunicacoes ? (
-                        <span className="rounded-full bg-brand-amber/25 px-2 py-0.5 text-xs font-semibold text-brand-amber-dark">
-                          Sim
-                        </span>
-                      ) : (
-                        <span className="text-muted">Não</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <UsuariosTabela usuarios={usuarios} />
         )}
       </div>
     </main>
