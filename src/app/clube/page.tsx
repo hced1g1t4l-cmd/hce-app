@@ -78,12 +78,12 @@ export default function ClubePage() {
                 Planos
               </span>
               <h2 className="mt-3 font-display text-3xl font-bold text-brand-blue sm:text-4xl">
-                Escolha o plano ideal para o seu momento
+                Encontre a assinatura ideal para você
               </h2>
               <p className="mt-5 text-lg leading-relaxed text-muted">
-                Comece de graça pelo FEED HCE e evolua conforme a sua
-                necessidade. Do aprender ao aprofundar, tem um plano para cada
-                fase.
+                Comece pelo Feed HCE, gratuitamente, e avance conforme seus
+                objetivos. Do conteúdo aberto ao aprofundamento técnico, há uma
+                opção para cada etapa da sua jornada.
               </p>
             </div>
 
