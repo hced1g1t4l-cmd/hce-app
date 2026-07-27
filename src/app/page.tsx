@@ -61,15 +61,15 @@ export default function Home() {
             aria-hidden
             className="pointer-events-none absolute -bottom-32 -left-20 h-80 w-80 rounded-full bg-brand-blue-light/40 blur-3xl"
           />
-          <Container className="relative flex flex-col items-center gap-4 pt-4 pb-12 text-center sm:gap-5 sm:pt-10 sm:pb-14">
+          <Container className="relative flex flex-col items-center gap-4 pt-6 pb-12 text-center sm:gap-5 sm:pt-8 sm:pb-14">
             <Image
-              src="/brand/logos/logo-hce.png"
+              src="/brand/logos/logo-hce-tight.png"
               alt="HCE"
-              width={560}
-              height={233}
+              width={640}
+              height={375}
               priority
-              sizes="(max-width: 640px) 75vw, 700px"
-              className="h-56 w-auto max-w-full sm:h-64 lg:h-72"
+              sizes="(max-width: 640px) 60vw, 460px"
+              className="h-24 w-auto max-w-full sm:h-28 lg:h-32"
             />
             <p className="font-display text-sm font-semibold tracking-[0.28em] text-brand-amber uppercase">
               Hospitalidade · Consultoria · Educação
