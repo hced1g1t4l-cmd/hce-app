@@ -136,11 +136,18 @@ export function ClubePlanos() {
             <div className="mt-5 min-h-[76px]">
               {p.precoAnual ? (
                 <>
-                  <p className="flex items-baseline gap-1 whitespace-nowrap">
-                    <span className="font-display text-[length:clamp(1.5rem,13cqi,2.25rem)] leading-none font-extrabold whitespace-nowrap text-brand-blue">
-                      R$&nbsp;{p.precoAnual}
+                  <p className="flex flex-nowrap items-baseline gap-1">
+                    <span
+                      className="font-display leading-none font-extrabold whitespace-nowrap text-brand-blue"
+                      style={{
+                        fontSize: "clamp(1.375rem, 11cqi, 2.25rem)",
+                      }}
+                    >
+                      {"R$\u00A0" + p.precoAnual}
                     </span>
-                    <span className="text-sm font-medium text-muted">/mês</span>
+                    <span className="text-sm font-medium whitespace-nowrap text-muted">
+                      /mês
+                    </span>
                   </p>
                   <p className="mt-1 text-sm text-muted">
                     no plano anual · ou R$ {p.precoAvulso} avulso
@@ -148,7 +155,10 @@ export function ClubePlanos() {
                 </>
               ) : (
                 <>
-                  <p className="font-display text-[length:clamp(1.5rem,13cqi,2.25rem)] leading-none font-extrabold whitespace-nowrap text-brand-blue">
+                  <p
+                    className="font-display leading-none font-extrabold whitespace-nowrap text-brand-blue"
+                    style={{ fontSize: "clamp(1.375rem, 11cqi, 2.25rem)" }}
+                  >
                     Grátis
                   </p>
                   <p className="mt-1 text-sm text-muted">para sempre</p>
