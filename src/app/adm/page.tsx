@@ -3,6 +3,7 @@ import { isAuthed } from "@/lib/adm";
 import { prisma } from "@/lib/db";
 import { AdmHeader } from "@/components/adm/adm-header";
 import { LeadObs, LeadDelete } from "@/components/adm/lead-acoes";
+import { ExportButtons } from "@/components/adm/export-buttons";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -33,13 +34,16 @@ export default async function AdmPage() {
       <AdmHeader active="leads" />
 
       <div className="mx-auto max-w-7xl px-6 py-8">
-        <div className="mb-5">
-          <h1 className="font-display text-xl font-bold text-brand-blue">
-            Leads · +HCE
-          </h1>
-          <p className="text-sm text-muted">
-            {leads.length} {leads.length === 1 ? "cadastro" : "cadastros"}
-          </p>
+        <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h1 className="font-display text-xl font-bold text-brand-blue">
+              Leads · +HCE
+            </h1>
+            <p className="text-sm text-muted">
+              {leads.length} {leads.length === 1 ? "cadastro" : "cadastros"}
+            </p>
+          </div>
+          {leads.length > 0 && <ExportButtons tipo="leads" />}
         </div>
         {leads.length === 0 ? (
           <p className="rounded-xl border border-line bg-white p-8 text-center text-muted">
