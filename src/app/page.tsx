@@ -61,7 +61,7 @@ export default function Home() {
             aria-hidden
             className="pointer-events-none absolute -bottom-32 -left-20 h-80 w-80 rounded-full bg-brand-blue-light/40 blur-3xl"
           />
-          <Container className="relative flex flex-col items-center gap-5 pt-6 pb-16 text-center sm:gap-6 sm:py-24">
+          <Container className="relative flex flex-col items-center gap-4 pt-4 pb-12 text-center sm:gap-5 sm:pt-10 sm:pb-14">
             <Image
               src="/brand/logos/logo-hce.png"
               alt="HCE"
