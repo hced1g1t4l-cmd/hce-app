@@ -28,8 +28,8 @@ const PLANOS: Plano[] = [
     precoAnual: null,
     precoAvulso: null,
     itens: [
-      "FEED HCE: textos, artigos e notícias",
-      "Novidades e conteúdos abertos",
+      "FEED HCE: artigos e conteúdos exclusivos e novidades",
+      "FEED HCE: Referências para aprender e aplicar",
     ],
     cta: "Quero começar",
   },
