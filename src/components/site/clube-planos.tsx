@@ -114,7 +114,7 @@ export function ClubePlanos() {
           <article
             key={p.id}
             className={cn(
-              "reveal relative flex flex-col rounded-2xl border bg-white p-8 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl motion-reduce:transform-none motion-reduce:transition-none",
+              "reveal relative flex flex-col rounded-2xl border bg-white p-8 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl motion-reduce:transform-none motion-reduce:transition-none @container",
               p.destaque
                 ? "border-brand-amber ring-2 ring-brand-amber/60"
                 : "border-line hover:border-brand-amber",
@@ -136,9 +136,9 @@ export function ClubePlanos() {
             <div className="mt-5 min-h-[76px]">
               {p.precoAnual ? (
                 <>
-                  <p className="flex items-baseline gap-1">
-                    <span className="font-display text-4xl font-extrabold text-brand-blue">
-                      R$ {p.precoAnual}
+                  <p className="flex items-baseline gap-1 whitespace-nowrap">
+                    <span className="font-display text-[length:clamp(1.5rem,13cqi,2.25rem)] leading-none font-extrabold whitespace-nowrap text-brand-blue">
+                      R$&nbsp;{p.precoAnual}
                     </span>
                     <span className="text-sm font-medium text-muted">/mês</span>
                   </p>
@@ -148,7 +148,7 @@ export function ClubePlanos() {
                 </>
               ) : (
                 <>
-                  <p className="font-display text-4xl font-extrabold text-brand-blue">
+                  <p className="font-display text-[length:clamp(1.5rem,13cqi,2.25rem)] leading-none font-extrabold whitespace-nowrap text-brand-blue">
                     Grátis
                   </p>
                   <p className="mt-1 text-sm text-muted">para sempre</p>
