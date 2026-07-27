@@ -104,14 +104,15 @@ export default function ClubePage() {
           <Container>
             <div className="mx-auto max-w-2xl text-center">
               <span className="font-display text-sm font-semibold tracking-widest text-brand-amber-dark uppercase">
-                Sempre novo
+                Aprendizado contínuo
               </span>
               <h2 className="mt-3 font-display text-3xl font-bold text-brand-blue sm:text-4xl">
-                Um acervo que cresce com você
+                Sempre há algo novo para explorar
               </h2>
               <p className="mt-5 text-lg leading-relaxed text-muted">
-                O Clube é atualizado o tempo todo: você sempre tem algo novo para
-                aprender e aplicar.
+                O +HCE recebe atualizações frequentes com novos materiais para
+                apoiar seu desenvolvimento na gastronomia, na hospitalidade e na
+                gestão.
               </p>
             </div>
 
