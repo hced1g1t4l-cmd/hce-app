@@ -40,8 +40,8 @@ const PLANOS: Plano[] = [
     precoAnual: "29,90",
     precoAvulso: "34,90",
     itens: [
-      "Tudo do Gratuito",
-      "Soluções da Cozinha (novas toda semana)",
+      "Todos os recursos da versão gratuita",
+      "Atualizações semanais de soluções para a cozinha",
       "Leitor online",
     ],
     cta: "Assinar Essencial",
