@@ -84,7 +84,7 @@ export default function Home() {
               gastronomia, pela educação e pelo desenvolvimento de pessoas.
             </p>
             <div className="mt-2 flex flex-col gap-3 sm:flex-row">
-              <Button href="#clube" size="lg">
+              <Button href="/clube" size="lg">
                 Conheça o Clube +HCE
               </Button>
               <Button
@@ -199,9 +199,17 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <div className="mt-9 flex justify-center lg:justify-start">
-                <Button href="/avise-me" size="lg">
-                  Quero ser avisado do lançamento
+              <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row lg:justify-start">
+                <Button href="/clube" size="lg">
+                  Ver planos do Clube
+                </Button>
+                <Button
+                  href="/avise-me"
+                  size="lg"
+                  variant="secondary"
+                  className="border-brand-amber/70 text-brand-amber hover:border-brand-amber hover:bg-brand-amber hover:text-brand-blue-deep"
+                >
+                  Quero ser avisado
                 </Button>
               </div>
             </div>
