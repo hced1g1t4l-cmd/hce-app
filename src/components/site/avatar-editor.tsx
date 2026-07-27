@@ -7,18 +7,54 @@ import { useRouter } from "next/navigation";
 const MAX_DIM = 512;
 const JPEG_Q = 0.85;
 
+// Decodifica a imagem de forma robusta: tenta createImageBitmap (rapido) e,
+// se falhar (ex.: HEIC do iPhone em alguns navegadores), cai para <img>.
+async function decodificar(
+  file: File,
+): Promise<{ w: number; h: number; draw: (ctx: CanvasRenderingContext2D, w: number, h: number) => void }> {
+  try {
+    const bmp = await createImageBitmap(file);
+    return {
+      w: bmp.width,
+      h: bmp.height,
+      draw: (ctx, w, h) => {
+        ctx.drawImage(bmp, 0, 0, w, h);
+        bmp.close?.();
+      },
+    };
+  } catch {
+    const url = URL.createObjectURL(file);
+    try {
+      const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const el = new window.Image();
+        el.onload = () => resolve(el);
+        el.onerror = () => reject(new Error("decode"));
+        el.src = url;
+      });
+      return {
+        w: img.naturalWidth,
+        h: img.naturalHeight,
+        draw: (ctx, w, h) => ctx.drawImage(img, 0, 0, w, h),
+      };
+    } finally {
+      // revoga depois do desenho (no microtask); seguro deixar aqui.
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+    }
+  }
+}
+
 async function reduzirImagem(file: File): Promise<Blob> {
-  const bitmap = await createImageBitmap(file);
-  const escala = Math.min(1, MAX_DIM / Math.max(bitmap.width, bitmap.height));
-  const w = Math.round(bitmap.width * escala);
-  const h = Math.round(bitmap.height * escala);
+  const src = await decodificar(file);
+  if (!src.w || !src.h) throw new Error("dimensoes");
+  const escala = Math.min(1, MAX_DIM / Math.max(src.w, src.h));
+  const w = Math.max(1, Math.round(src.w * escala));
+  const h = Math.max(1, Math.round(src.h * escala));
   const canvas = document.createElement("canvas");
   canvas.width = w;
   canvas.height = h;
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("canvas");
-  ctx.drawImage(bitmap, 0, 0, w, h);
-  bitmap.close?.();
+  src.draw(ctx, w, h);
   return await new Promise<Blob>((resolve, reject) => {
     canvas.toBlob(
       (b) => (b ? resolve(b) : reject(new Error("blob"))),
@@ -79,7 +115,9 @@ export function AvatarEditor({
       setAvatar(`${data.url}?t=${Date.now()}`);
       router.refresh();
     } catch {
-      setErro("Não foi possível processar a imagem.");
+      setErro(
+        "Não conseguimos ler essa imagem. Tente outra foto (JPG ou PNG) ou tire um print.",
+      );
     } finally {
       setOcupado(false);
       if (fileRef.current) fileRef.current.value = "";
@@ -219,8 +257,8 @@ export function AvatarEditor({
               )}
             </div>
             <p className="mt-4 text-xs text-muted">
-              A imagem é reduzida automaticamente (até {MAX_DIM}px) para ficar
-              leve.
+              Pode enviar a foto direto do celular — nós ajustamos o tamanho
+              automaticamente para carregar rápido.
             </p>
           </div>
         </div>
