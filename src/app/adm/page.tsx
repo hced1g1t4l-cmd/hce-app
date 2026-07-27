@@ -34,7 +34,7 @@ export default async function AdmPage() {
       <div className="mx-auto max-w-7xl px-6 py-8">
         <div className="mb-5">
           <h1 className="font-display text-xl font-bold text-brand-blue">
-            Leads · Clube +HCE
+            Leads · +HCE
           </h1>
           <p className="text-sm text-muted">
             {leads.length} {leads.length === 1 ? "cadastro" : "cadastros"}

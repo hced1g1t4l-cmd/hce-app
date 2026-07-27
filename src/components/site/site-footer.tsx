@@ -53,7 +53,7 @@ export function SiteFooter() {
             </li>
             <li>
               <Link href="/clube" className="hover:text-brand-amber">
-                Clube +HCE
+                +HCE
               </Link>
             </li>
             <li>

@@ -223,14 +223,14 @@ export function ClubePlanos() {
               id="clube-construcao-title"
               className="mt-4 font-display text-2xl font-bold text-brand-blue"
             >
-              O Clube +HCE está chegando
+              O +HCE está chegando
             </h2>
             <p
               id="clube-construcao-desc"
               className="mt-3 text-sm leading-relaxed text-muted"
             >
               Estamos preparando tudo com muito cuidado. Em breve o{" "}
-              <strong className="text-brand-blue">Clube +HCE</strong> estará no
+              <strong className="text-brand-blue">+HCE</strong> estará no
               ar, com acervo, receitas, e-books e comunidade. Quer ser o primeiro
               a saber quando lançar?
             </p>

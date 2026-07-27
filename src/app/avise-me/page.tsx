@@ -88,15 +88,14 @@ export default function AviseMePage() {
         <Container className="max-w-2xl">
           <div className="text-center">
             <span className="font-display text-sm font-semibold tracking-widest text-brand-amber-dark uppercase">
-              Clube +HCE · Em breve
+              +HCE · Em breve
             </span>
             <h1 className="mt-3 font-display text-3xl font-bold text-brand-blue sm:text-4xl">
               Quero ser avisado do lançamento
             </h1>
             <p className="mt-4 text-lg leading-relaxed text-muted">
-              Deixe seus dados e avisaremos você em primeira mão quando o Clube
-              +HCE for lançado — com receitas, fichas técnicas, ebooks e
-              comunidade.
+              Deixe seus dados e avisaremos você em primeira mão quando o +HCE
+              for lançado — com receitas, fichas técnicas, ebooks e comunidade.
             </p>
           </div>
 
@@ -155,7 +154,7 @@ export default function AviseMePage() {
             <div className="mt-7 rounded-xl bg-surface-soft p-4">
               <Checkbox
                 name="canalAviso"
-                label="Autorizo a HCE a me avisar sobre o lançamento do Clube +HCE por e-mail e/ou SMS."
+                label="Autorizo a HCE a me avisar sobre o lançamento do +HCE por e-mail e/ou SMS."
               />
             </div>
 
@@ -210,7 +209,7 @@ export default function AviseMePage() {
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-muted">
               Recebemos seus dados. Avisaremos você assim que o{" "}
-              <strong className="text-brand-blue">Clube +HCE</strong> for lançado.
+              <strong className="text-brand-blue">+HCE</strong> for lançado.
             </p>
             <div className="mt-6">
               <Button href="/" size="md" variant="blue">

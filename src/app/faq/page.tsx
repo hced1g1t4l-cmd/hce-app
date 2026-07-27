@@ -10,12 +10,12 @@ import { EMAIL_CONTATO } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Perguntas frequentes · HCE",
   description:
-    "Tire suas dúvidas sobre a HCE: serviços de consultoria e educação, o Clube +HCE, planos, atendimento e contato.",
+    "Tire suas dúvidas sobre a HCE: serviços de consultoria e educação, o +HCE, planos, atendimento e contato.",
   alternates: { canonical: "/faq" },
   openGraph: {
     title: "Perguntas frequentes · HCE",
     description:
-      "Dúvidas sobre a HCE, os serviços de consultoria e educação e o Clube +HCE.",
+      "Dúvidas sobre a HCE, os serviços de consultoria e educação e o +HCE.",
     url: "/faq",
   },
 };
@@ -80,14 +80,14 @@ const GRUPOS: Grupo[] = [
     ],
   },
   {
-    titulo: "Clube +HCE",
+    titulo: "+HCE",
     itens: [
       {
-        q: "O que é o Clube +HCE?",
+        q: "O que é o +HCE?",
         a: "É o clube por assinatura da HCE: um acervo de receitas e fichas técnicas, e-books, soluções da cozinha e uma comunidade para quem quer evoluir na cozinha e na gestão do negócio, no seu ritmo.",
       },
       {
-        q: "Quando o Clube será lançado?",
+        q: "Quando o +HCE será lançado?",
         a: (
           <>
             Estamos finalizando os últimos detalhes. Cadastre-se em{" "}
@@ -106,7 +106,7 @@ const GRUPOS: Grupo[] = [
             Serão quatro planos, do Gratuito ao Premium, com opção avulsa e anual
             (com desconto). Veja os detalhes na página do{" "}
             <Link href="/clube" className={linkClasses}>
-              Clube +HCE
+              +HCE
             </Link>
             .
           </>
@@ -162,7 +162,7 @@ export default function FaqPage() {
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-white/80">
               Reunimos as principais dúvidas sobre a HCE, os nossos serviços e o
-              Clube +HCE. Não achou o que procurava? Fale com a gente.
+              +HCE. Não achou o que procurava? Fale com a gente.
             </p>
           </Container>
         </section>

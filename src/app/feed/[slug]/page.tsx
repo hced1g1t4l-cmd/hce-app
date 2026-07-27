@@ -115,12 +115,12 @@ export default async function ArtigoPage({
               Gostou do conteúdo?
             </h2>
             <p className="mx-auto mt-3 max-w-xl leading-relaxed text-muted">
-              O Clube +HCE reúne receitas, fichas técnicas, e-books e comunidade
+              O +HCE reúne receitas, fichas técnicas, e-books e comunidade
               para quem quer ir além.
             </p>
             <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button href="/clube" size="lg">
-                Conhecer o Clube +HCE
+                Conhecer o +HCE
               </Button>
               <Button
                 href="/feed"
