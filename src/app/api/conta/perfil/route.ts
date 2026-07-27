@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth-user";
+import { PAIS_VALIDO, UF_VALIDOS } from "@/lib/localidades";
 
 // Atualiza o perfil editavel da pessoa (bio, telefone, endereco, redes sociais).
 export const runtime = "nodejs";
@@ -54,12 +55,24 @@ export async function POST(req: Request) {
     );
   }
 
+  // Endereco estruturado.
+  const estadoRaw = texto(body.estado, 10);
+  const estado = estadoRaw && UF_VALIDOS.has(estadoRaw) ? estadoRaw : null;
+  const paisRaw = texto(body.pais, 60);
+  const pais = paisRaw && PAIS_VALIDO.has(paisRaw) ? paisRaw : null;
+
   await prisma.user.update({
     where: { id: user.id },
     data: {
       bio: texto(body.bio, 600),
       telefone: texto(body.telefone, 40),
-      endereco: texto(body.endereco, 200),
+      logradouro: texto(body.logradouro, 160),
+      numero: texto(body.numero, 20),
+      complemento: texto(body.complemento, 80),
+      bairro: texto(body.bairro, 80),
+      cidade: texto(body.cidade, 80),
+      estado,
+      pais,
       linkedin,
       instagram,
       facebook,
