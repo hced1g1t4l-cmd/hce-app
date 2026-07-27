@@ -88,7 +88,7 @@ export default function Home() {
                 Conheça o Clube +HCE
               </Button>
               <Button
-                href="#servicos"
+                href="/servicos"
                 size="lg"
                 variant="secondary"
                 className="border-brand-amber/70 text-brand-amber hover:border-brand-amber hover:bg-brand-amber hover:text-brand-blue-deep"

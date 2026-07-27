@@ -1,0 +1,234 @@
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
+import Link from "next/link";
+import { Container } from "@/components/site/container";
+import { SiteHeader } from "@/components/site/site-header";
+import { SiteFooter } from "@/components/site/site-footer";
+import { Button } from "@/components/ui/button";
+import { EMAIL_CONTATO } from "@/lib/site";
+
+export const metadata: Metadata = {
+  title: "Perguntas frequentes · HCE",
+  description:
+    "Tire suas dúvidas sobre a HCE: serviços de consultoria e educação, o Clube +HCE, planos, atendimento e contato.",
+  alternates: { canonical: "/faq" },
+  openGraph: {
+    title: "Perguntas frequentes · HCE",
+    description:
+      "Dúvidas sobre a HCE, os serviços de consultoria e educação e o Clube +HCE.",
+    url: "/faq",
+  },
+};
+
+const linkClasses =
+  "font-semibold text-brand-blue underline underline-offset-2 transition-colors hover:text-brand-amber-dark";
+
+type QA = { q: string; a: ReactNode };
+type Grupo = { titulo: string; itens: QA[] };
+
+const GRUPOS: Grupo[] = [
+  {
+    titulo: "Sobre a HCE",
+    itens: [
+      {
+        q: "O que significa HCE?",
+        a: "HCE é a sigla de Hospitalidade, Consultoria e Educação. Somos a união das trajetórias de Cris Leite e Gio Gropello, dedicada a desenvolver pessoas, fortalecer equipes e impulsionar resultados no setor de Alimentos & Bebidas.",
+      },
+      {
+        q: "Para quem a HCE trabalha?",
+        a: "Para pequenas e médias empresas de A&B e foodservice, profissionais de cozinha, gestores e empreendedores, estudantes de gastronomia e também para amadores e curiosos que querem cozinhar com mais técnica.",
+      },
+    ],
+  },
+  {
+    titulo: "Serviços e consultoria",
+    itens: [
+      {
+        q: "Quais serviços vocês oferecem?",
+        a: (
+          <>
+            Consultoria e diagnóstico de operações, elaboração de cardápio,
+            padronização de processos, gestão de custos (CMV), treinamento de
+            equipes, hospitalidade, cursos e palestras. Veja todas as áreas em{" "}
+            <Link href="/servicos" className={linkClasses}>
+              O que fazemos
+            </Link>
+            .
+          </>
+        ),
+      },
+      {
+        q: "Como funciona a consultoria?",
+        a: "Começamos por um diagnóstico da operação, construímos um plano de ação priorizado e apoiamos a implementação. O trabalho pode ser um projeto pontual, um acompanhamento recorrente ou um programa in company para a sua equipe.",
+      },
+      {
+        q: "O atendimento é presencial ou online?",
+        a: "A HCE fica no Rio de Janeiro e atende presencialmente na região. Para consultorias, cursos e mentorias, também atendemos online em todo o Brasil.",
+      },
+      {
+        q: "Como peço um orçamento?",
+        a: (
+          <>
+            É só contar o seu desafio pelo formulário{" "}
+            <Link href="/fale-com-a-hce" className={linkClasses}>
+              Fale com a HCE
+            </Link>
+            . A partir disso, desenhamos a proposta ideal para o seu momento.
+          </>
+        ),
+      },
+    ],
+  },
+  {
+    titulo: "Clube +HCE",
+    itens: [
+      {
+        q: "O que é o Clube +HCE?",
+        a: "É o clube por assinatura da HCE: um acervo de receitas e fichas técnicas, e-books, soluções da cozinha e uma comunidade para quem quer evoluir na cozinha e na gestão do negócio, no seu ritmo.",
+      },
+      {
+        q: "Quando o Clube será lançado?",
+        a: (
+          <>
+            Estamos finalizando os últimos detalhes. Cadastre-se em{" "}
+            <Link href="/avise-me" className={linkClasses}>
+              Quero ser avisado
+            </Link>{" "}
+            para saber em primeira mão — com condições especiais para quem chegar
+            cedo.
+          </>
+        ),
+      },
+      {
+        q: "Quais são os planos e preços?",
+        a: (
+          <>
+            Serão quatro planos, do Gratuito ao Premium, com opção avulsa e anual
+            (com desconto). Veja os detalhes na página do{" "}
+            <Link href="/clube" className={linkClasses}>
+              Clube +HCE
+            </Link>
+            .
+          </>
+        ),
+      },
+      {
+        q: "Como será o pagamento?",
+        a: "Por cartão recorrente ou PIX, com desconto no plano anual. Enquanto o checkout não está disponível, você pode se cadastrar para ser avisado do lançamento.",
+      },
+    ],
+  },
+  {
+    titulo: "Contato",
+    itens: [
+      {
+        q: "Como falo com a HCE?",
+        a: (
+          <>
+            Pelo formulário{" "}
+            <Link href="/fale-com-a-hce" className={linkClasses}>
+              Fale com a HCE
+            </Link>{" "}
+            ou pelo e-mail{" "}
+            <a href={`mailto:${EMAIL_CONTATO}`} className={linkClasses}>
+              {EMAIL_CONTATO}
+            </a>
+            . Você também nos encontra nas redes sociais no rodapé do site.
+          </>
+        ),
+      },
+    ],
+  },
+];
+
+export default function FaqPage() {
+  return (
+    <>
+      <SiteHeader />
+
+      <main id="conteudo" className="flex-1">
+        {/* INTRO */}
+        <section className="relative overflow-hidden bg-gradient-to-b from-brand-blue to-brand-blue-deep py-16 text-white sm:py-20">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -top-24 -right-24 h-96 w-96 rounded-full bg-brand-amber/15 blur-3xl"
+          />
+          <Container className="relative text-center">
+            <span className="font-display text-sm font-semibold tracking-[0.28em] text-brand-amber uppercase">
+              Dúvidas
+            </span>
+            <h1 className="mx-auto mt-3 max-w-3xl font-display text-3xl font-extrabold text-balance text-white sm:text-5xl">
+              Perguntas frequentes
+            </h1>
+            <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-white/80">
+              Reunimos as principais dúvidas sobre a HCE, os nossos serviços e o
+              Clube +HCE. Não achou o que procurava? Fale com a gente.
+            </p>
+          </Container>
+        </section>
+
+        {/* PERGUNTAS */}
+        <section className="bg-surface-soft py-20 sm:py-24">
+          <Container className="max-w-3xl">
+            <div className="space-y-12">
+              {GRUPOS.map((g) => (
+                <div key={g.titulo}>
+                  <h2 className="font-display text-2xl font-bold text-brand-blue">
+                    {g.titulo}
+                  </h2>
+                  <div className="mt-6 space-y-4">
+                    {g.itens.map((item) => (
+                      <details
+                        key={item.q}
+                        className="group rounded-2xl border border-line bg-white p-6 open:shadow-sm"
+                      >
+                        <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-display text-lg font-semibold text-brand-blue [&::-webkit-details-marker]:hidden">
+                          <span>{item.q}</span>
+                          <span
+                            aria-hidden
+                            className="ml-2 shrink-0 text-2xl leading-none text-brand-amber-dark transition-transform duration-300 group-open:rotate-45 motion-reduce:transition-none"
+                          >
+                            +
+                          </span>
+                        </summary>
+                        <div className="mt-4 leading-relaxed text-muted">
+                          {item.a}
+                        </div>
+                      </details>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Container>
+        </section>
+
+        {/* CTA FINAL */}
+        <section className="bg-white py-20 sm:py-24">
+          <Container>
+            <div className="reveal relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-blue to-brand-blue-deep px-8 py-14 text-center text-white sm:px-16">
+              <div
+                aria-hidden
+                className="pointer-events-none absolute -top-16 -right-10 h-64 w-64 rounded-full bg-brand-amber/15 blur-3xl"
+              />
+              <h2 className="relative font-display text-2xl font-bold text-brand-amber sm:text-3xl">
+                Ainda tem dúvidas?
+              </h2>
+              <p className="relative mx-auto mt-4 max-w-xl text-lg text-white/80">
+                Estamos por aqui para ajudar. Envie a sua pergunta e retornamos o
+                quanto antes.
+              </p>
+              <div className="relative mt-8 flex justify-center">
+                <Button href="/fale-com-a-hce" size="lg">
+                  Falar com a HCE
+                </Button>
+              </div>
+            </div>
+          </Container>
+        </section>
+      </main>
+
+      <SiteFooter />
+    </>
+  );
+}
