@@ -17,6 +17,14 @@ export function LeadObs({
   const [valor, setValor] = useState(inicial ?? "");
   const [editando, setEditando] = useState(false);
   const [salvando, setSalvando] = useState(false);
+  // Popover (pic-in-pic) com o texto completo ao passar o mouse.
+  const [pop, setPop] = useState<{ top: number; left: number } | null>(null);
+
+  const mostrarPop = (e: React.MouseEvent<HTMLElement>) => {
+    if (!valor) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    setPop({ top: r.bottom + 6, left: r.left });
+  };
 
   async function salvar() {
     setSalvando(true);
@@ -37,18 +45,34 @@ export function LeadObs({
 
   if (!editando) {
     return (
-      <button
-        type="button"
-        onClick={() => setEditando(true)}
-        className="max-w-[240px] text-left text-sm text-brand-blue hover:underline"
-        title="Clique para editar"
-      >
-        {valor ? (
-          <span className="whitespace-normal text-ink">{valor}</span>
-        ) : (
-          <span className="text-muted">+ adicionar nota</span>
+      <>
+        <button
+          type="button"
+          onClick={() => {
+            setPop(null);
+            setEditando(true);
+          }}
+          onMouseEnter={mostrarPop}
+          onMouseLeave={() => setPop(null)}
+          className="block max-w-[220px] truncate text-left text-sm text-brand-blue hover:underline"
+          title="Passe o mouse para ver tudo · clique para editar"
+        >
+          {valor ? (
+            <span className="text-ink">{valor}</span>
+          ) : (
+            <span className="text-muted">+ adicionar nota</span>
+          )}
+        </button>
+        {pop && valor && (
+          <div
+            role="tooltip"
+            style={{ top: pop.top, left: pop.left }}
+            className="fixed z-50 max-w-xs rounded-lg border border-line bg-white px-3 py-2 text-sm whitespace-pre-wrap text-ink shadow-xl"
+          >
+            {valor}
+          </div>
         )}
-      </button>
+      </>
     );
   }
 
