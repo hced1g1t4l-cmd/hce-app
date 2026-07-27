@@ -31,6 +31,13 @@ model User {
   telefone           String?
   aceitaComunicacoes Boolean @default(false) // consentimento LGPD p/ novidades
   plano              String  @default("free") // free | essencial | profissional | premium
+  // Perfil editavel pela pessoa em /conta.
+  bio                String? // pequena apresentacao
+  endereco           String? // cidade/endereco (texto livre)
+  linkedin           String? // URL do perfil
+  instagram          String? // URL do perfil
+  facebook           String? // URL do perfil
+  // image (avatar) ja existe acima; guarda /api/img/{id} da foto reduzida.
   accounts      Account[]
   sessions      Session[]
   createdAt     DateTime  @default(now())

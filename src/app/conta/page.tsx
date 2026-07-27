@@ -5,7 +5,9 @@ import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { Button } from "@/components/ui/button";
 import { SairButton } from "@/components/site/sair-button";
+import { PerfilForm } from "@/components/site/perfil-form";
 import { getSessionUser } from "@/lib/auth-user";
+import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -24,6 +26,19 @@ const PLANO_LABEL: Record<string, string> = {
 export default async function ContaPage() {
   const user = await getSessionUser();
   if (!user) redirect("/entrar?redirect=/conta");
+
+  const perfil = await prisma.user.findUnique({
+    where: { id: user.id },
+    select: {
+      image: true,
+      bio: true,
+      telefone: true,
+      endereco: true,
+      linkedin: true,
+      instagram: true,
+      facebook: true,
+    },
+  });
 
   return (
     <>
@@ -70,6 +85,18 @@ export default async function ContaPage() {
               </div>
             </dl>
           </div>
+
+          <PerfilForm
+            init={{
+              image: perfil?.image ?? null,
+              bio: perfil?.bio ?? "",
+              telefone: perfil?.telefone ?? "",
+              endereco: perfil?.endereco ?? "",
+              linkedin: perfil?.linkedin ?? "",
+              instagram: perfil?.instagram ?? "",
+              facebook: perfil?.facebook ?? "",
+            }}
+          />
 
           <div className="mt-6 rounded-3xl border border-line bg-white p-6 shadow-sm sm:p-8">
             <h2 className="font-display text-sm font-bold tracking-wide text-brand-blue uppercase">
