@@ -26,10 +26,17 @@ model User {
   emailVerified DateTime?
   image         String?
   role          Role      @default(MEMBER)
+  // Frente A: conta de usuario do site (cadastro free obrigatorio p/ ler o Feed).
+  passwordHash       String? // hash scrypt (scrypt$salt$hash); null = so login social (futuro)
+  telefone           String?
+  aceitaComunicacoes Boolean @default(false) // consentimento LGPD p/ novidades
+  plano              String  @default("free") // free | essencial | profissional | premium
   accounts      Account[]
   sessions      Session[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+
+  @@index([createdAt])
 }
 
 model Account {

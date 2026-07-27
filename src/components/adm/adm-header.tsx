@@ -4,7 +4,7 @@ import { cn } from "@/lib/cn";
 export function AdmHeader({
   active,
 }: {
-  active: "leads" | "contatos" | "acessos" | "feed";
+  active: "leads" | "contatos" | "acessos" | "feed" | "usuarios";
 }) {
   return (
     <header className="border-b border-line bg-white">
@@ -38,6 +38,11 @@ export function AdmHeader({
             active={active === "acessos"}
           />
           <Tab href="/adm/feed" label="Feed HCE" active={active === "feed"} />
+          <Tab
+            href="/adm/usuarios"
+            label="Usuários"
+            active={active === "usuarios"}
+          />
         </nav>
       </div>
     </header>

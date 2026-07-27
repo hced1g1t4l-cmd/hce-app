@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Container } from "@/components/site/container";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { prisma } from "@/lib/db";
 import { dataLonga } from "@/lib/feed";
+import { getSessionUser } from "@/lib/auth-user";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -23,6 +25,10 @@ export const metadata: Metadata = {
 };
 
 export default async function FeedPage() {
+  // Frente A: o Feed (mesmo gratuito) exige conta. Visitante sem sessao vai
+  // para o cadastro grátis e volta para o Feed depois de entrar.
+  if (!(await getSessionUser())) redirect("/criar-conta?redirect=/feed");
+
   const artigos = await prisma.artigo.findMany({
     where: { publicado: true },
     orderBy: [{ publicadoEm: "desc" }, { updatedAt: "desc" }],
