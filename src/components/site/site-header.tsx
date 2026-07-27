@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
 
 const NAV = [
-  { label: "Sobre", href: "#sobre" },
+  { label: "Sobre", href: "/quem-somos" },
   { label: "O que fazemos", href: "#servicos" },
   { label: "Clube +HCE", href: "/clube" },
   { label: "Contato", href: "#contato" },

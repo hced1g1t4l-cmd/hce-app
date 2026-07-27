@@ -119,6 +119,11 @@ export default function Home() {
                 Por isso reunimos consultoria, educação e conteúdo em um só
                 ecossistema, para elevar o padrão de quem vive de gastronomia.
               </p>
+              <div className="mt-8">
+                <Button href="/quem-somos" variant="blue" size="lg">
+                  Conheça nossa história
+                </Button>
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-5">
