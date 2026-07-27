@@ -32,23 +32,23 @@ export function SiteFooter() {
           </h3>
           <ul className="mt-4 space-y-3 text-sm">
             <li>
-              <Link href="#sobre" className="hover:text-brand-amber">
+              <Link href="/quem-somos" className="hover:text-brand-amber">
                 Sobre a HCE
               </Link>
             </li>
             <li>
-              <Link href="#servicos" className="hover:text-brand-amber">
+              <Link href="/servicos" className="hover:text-brand-amber">
                 O que fazemos
               </Link>
             </li>
             <li>
-              <Link href="#clube" className="hover:text-brand-amber">
+              <Link href="/clube" className="hover:text-brand-amber">
                 Clube +HCE
               </Link>
             </li>
             <li>
-              <Link href="#contato" className="hover:text-brand-amber">
-                Contato
+              <Link href="/faq" className="hover:text-brand-amber">
+                Perguntas frequentes
               </Link>
             </li>
           </ul>
