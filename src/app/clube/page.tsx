@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 const CADENCIA = [
   {
     ritmo: "Toda semana",
-    titulo: "Novas Soluções da Cozinha",
+    titulo: "Novas soluções para Cozinha",
     texto: "Conteúdo técnico prático, publicado semanalmente.",
   },
   {
