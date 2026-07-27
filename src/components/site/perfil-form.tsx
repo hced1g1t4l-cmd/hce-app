@@ -7,6 +7,7 @@ import { UFS, ESTADO_NA, PAISES } from "@/lib/localidades";
 type PerfilInit = {
   bio: string;
   telefone: string;
+  cep: string;
   logradouro: string;
   numero: string;
   complemento: string;
@@ -29,6 +30,43 @@ export function PerfilForm({ init }: { init: PerfilInit }) {
   const set = (campo: keyof PerfilInit) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
   ) => setF((v) => ({ ...v, [campo]: e.target.value }));
+
+  const [cepBuscando, setCepBuscando] = useState(false);
+  const [cepMsg, setCepMsg] = useState<string | null>(null);
+
+  // Mascara visual do CEP: 00000-000
+  function formatarCep(v: string): string {
+    const d = v.replace(/\D/g, "").slice(0, 8);
+    return d.length > 5 ? `${d.slice(0, 5)}-${d.slice(5)}` : d;
+  }
+
+  async function buscarCep(valor: string) {
+    const cep = valor.replace(/\D/g, "");
+    if (cep.length !== 8) return;
+    setCepBuscando(true);
+    setCepMsg(null);
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      const data = await res.json();
+      if (data?.erro) {
+        setCepMsg("CEP não encontrado. Você pode preencher manualmente.");
+        return;
+      }
+      setF((v) => ({
+        ...v,
+        logradouro: data.logradouro || v.logradouro,
+        bairro: data.bairro || v.bairro,
+        cidade: data.localidade || v.cidade,
+        estado: data.uf || v.estado,
+        pais: v.pais || "Brasil",
+      }));
+      setCepMsg("Endereço preenchido pelo CEP. Confira e ajuste o número.");
+    } catch {
+      setCepMsg("Não foi possível buscar o CEP agora. Preencha manualmente.");
+    } finally {
+      setCepBuscando(false);
+    }
+  }
 
   async function salvar(e: React.FormEvent) {
     e.preventDefault();
@@ -99,6 +137,31 @@ export function PerfilForm({ init }: { init: PerfilInit }) {
         Endereço
       </h3>
       <div className="mt-4 grid gap-5 sm:grid-cols-6">
+        <label className="block sm:col-span-2">
+          <span className="font-display text-sm font-semibold text-brand-blue">
+            CEP
+          </span>
+          <input
+            value={formatarCep(f.cep)}
+            onChange={(e) => {
+              const d = e.target.value.replace(/\D/g, "").slice(0, 8);
+              setF((v) => ({ ...v, cep: d }));
+              if (d.length === 8) buscarCep(d);
+            }}
+            onBlur={(e) => buscarCep(e.target.value)}
+            type="text"
+            inputMode="numeric"
+            autoComplete="postal-code"
+            placeholder="00000-000"
+            className="hce-input mt-1.5"
+          />
+          <span className="mt-1 block text-xs text-muted">
+            {cepBuscando
+              ? "Buscando endereço…"
+              : "Digite o CEP para preencher o endereço automaticamente."}
+          </span>
+        </label>
+        <div className="hidden sm:col-span-4 sm:block" aria-hidden="true" />
         <label className="block sm:col-span-4">
           <span className="font-display text-sm font-semibold text-brand-blue">
             Logradouro
@@ -196,6 +259,9 @@ export function PerfilForm({ init }: { init: PerfilInit }) {
           </select>
         </label>
       </div>
+      {cepMsg && (
+        <p className="mt-3 text-xs text-brand-blue">{cepMsg}</p>
+      )}
 
       {/* Redes sociais */}
       <h3 className="mt-8 font-display text-sm font-bold tracking-wide text-brand-blue uppercase">

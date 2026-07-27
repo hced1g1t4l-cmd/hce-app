@@ -35,6 +35,7 @@ model User {
   bio                String? // pequena apresentacao
   endereco           String? // legado (texto livre) - mantido por compatibilidade
   // Endereco estruturado.
+  cep                String? // CEP (so digitos), usado p/ autocompletar
   logradouro         String?
   numero             String?
   complemento        String?

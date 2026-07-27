@@ -60,12 +60,16 @@ export async function POST(req: Request) {
   const estado = estadoRaw && UF_VALIDOS.has(estadoRaw) ? estadoRaw : null;
   const paisRaw = texto(body.pais, 60);
   const pais = paisRaw && PAIS_VALIDO.has(paisRaw) ? paisRaw : null;
+  // CEP: guarda so digitos (ate 8).
+  const cepDigitos = typeof body.cep === "string" ? body.cep.replace(/\D/g, "").slice(0, 8) : "";
+  const cep = cepDigitos.length ? cepDigitos : null;
 
   await prisma.user.update({
     where: { id: user.id },
     data: {
       bio: texto(body.bio, 600),
       telefone: texto(body.telefone, 40),
+      cep,
       logradouro: texto(body.logradouro, 160),
       numero: texto(body.numero, 20),
       complemento: texto(body.complemento, 80),

@@ -35,6 +35,7 @@ export default async function ContaPage() {
       image: true,
       bio: true,
       telefone: true,
+      cep: true,
       logradouro: true,
       numero: true,
       complemento: true,
@@ -103,6 +104,7 @@ export default async function ContaPage() {
             init={{
               bio: perfil?.bio ?? "",
               telefone: perfil?.telefone ?? "",
+              cep: perfil?.cep ?? "",
               logradouro: perfil?.logradouro ?? "",
               numero: perfil?.numero ?? "",
               complemento: perfil?.complemento ?? "",
