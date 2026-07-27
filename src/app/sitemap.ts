@@ -1,10 +1,14 @@
 import type { MetadataRoute } from "next";
+import { prisma } from "@/lib/db";
+
+export const dynamic = "force-dynamic";
 
 const BASE_URL = "https://www.hcegastronomia.com";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
-  return [
+
+  const estaticas: MetadataRoute.Sitemap = [
     { url: `${BASE_URL}/`, lastModified: now, changeFrequency: "weekly", priority: 1 },
     {
       url: `${BASE_URL}/clube`,
@@ -25,6 +29,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      url: `${BASE_URL}/feed`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    {
+      url: `${BASE_URL}/podcast`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    {
       url: `${BASE_URL}/faq`,
       lastModified: now,
       changeFrequency: "monthly",
@@ -43,4 +59,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     },
   ];
+
+  let artigos: MetadataRoute.Sitemap = [];
+  try {
+    const publicados = await prisma.artigo.findMany({
+      where: { publicado: true },
+      select: { slug: true, updatedAt: true },
+    });
+    artigos = publicados.map((a) => ({
+      url: `${BASE_URL}/feed/${a.slug}`,
+      lastModified: a.updatedAt,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    }));
+  } catch {
+    // Se o banco estiver indisponivel no build, publica so as rotas estaticas.
+  }
+
+  return [...estaticas, ...artigos];
 }

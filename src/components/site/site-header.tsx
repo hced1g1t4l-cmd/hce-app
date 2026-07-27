@@ -10,8 +10,9 @@ import { cn } from "@/lib/cn";
 const NAV = [
   { label: "Sobre", href: "/quem-somos" },
   { label: "O que fazemos", href: "/servicos" },
+  { label: "Feed", href: "/feed" },
   { label: "Clube +HCE", href: "/clube" },
-  { label: "Contato", href: "#contato" },
+  { label: "Contato", href: "/#contato" },
 ];
 
 export function SiteHeader() {

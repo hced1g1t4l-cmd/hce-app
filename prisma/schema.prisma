@@ -110,6 +110,34 @@ model PageView {
   @@index([city])
 }
 
+// Artigo do Feed HCE (F1-5): blog/CMS em tom de materia.
+// Criado e editado no /adm/feed (editor rico TipTap); publicado em /feed.
+// conteudoHtml guarda o HTML do editor; capaUrl aponta para /api/img/{id}.
+model Artigo {
+  id           String    @id @default(cuid())
+  slug         String    @unique
+  titulo       String
+  resumo       String? // "olho"/subtitulo da materia
+  capaUrl      String? // URL da imagem de capa (/api/img/{id} ou externa)
+  autor        String // "Redigido por ..."
+  conteudoHtml String    @db.Text
+  publicado    Boolean   @default(false)
+  publicadoEm  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([publicado, publicadoEm])
+}
+
+// Imagem armazenada no proprio Postgres (capa e imagens do corpo dos artigos).
+// Servida publicamente por /api/img/{id}. Enviada via /api/adm/upload (protegido).
+model Imagem {
+  id        String   @id @default(cuid())
+  mime      String
+  dados     Bytes
+  createdAt DateTime @default(now())
+}
+
 // Mensagem do formulario "Fale com a HCE" (RAF_008).
 // Coletada em /fale-com-a-hce; consultada apenas no /adm/contatos.
 model ContatoMensagem {
