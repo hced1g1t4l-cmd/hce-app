@@ -59,10 +59,7 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  icons: {
-    icon: "/brand/logos/logo-1x1.png",
-    apple: "/brand/logos/logo-1x1.png",
-  },
+  // Ícones vêm da convenção de arquivos do Next: src/app/{icon.png,apple-icon.png,favicon.ico}.
   openGraph: {
     title: "HCE — Hospitalidade, Consultoria e Educação em Gastronomia",
     description:
