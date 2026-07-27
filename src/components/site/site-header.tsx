@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Container } from "@/components/site/container";
 import { Logo } from "@/components/site/logo";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
+
+type ContaEstado = { nome: string | null } | null | undefined;
 
 const NAV = [
   { label: "Sobre", href: "/quem-somos" },
@@ -17,6 +19,23 @@ const NAV = [
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  // undefined = carregando; null = deslogado; objeto = logado.
+  const [conta, setConta] = useState<ContaEstado>(undefined);
+
+  useEffect(() => {
+    let vivo = true;
+    fetch("/api/conta/me")
+      .then((r) => (r.ok ? r.json() : { user: null }))
+      .then((d: { user: { nome: string | null } | null }) => {
+        if (vivo) setConta(d.user);
+      })
+      .catch(() => {
+        if (vivo) setConta(null);
+      });
+    return () => {
+      vivo = false;
+    };
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 border-b border-brand-amber-dark/25 bg-brand-amber/95 backdrop-blur-md">
@@ -37,7 +56,23 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <div className="hidden md:block">
+        <div className="hidden items-center gap-5 md:flex">
+          {conta === null && (
+            <Link
+              href="/entrar"
+              className="text-sm font-semibold text-brand-blue underline-offset-8 transition-colors duration-300 hover:text-brand-blue-dark hover:underline hover:decoration-2"
+            >
+              Entrar
+            </Link>
+          )}
+          {conta && (
+            <Link
+              href="/conta"
+              className="text-sm font-semibold text-brand-blue underline-offset-8 transition-colors duration-300 hover:text-brand-blue-dark hover:underline hover:decoration-2"
+            >
+              Minha conta
+            </Link>
+          )}
           <Button href="/fale-com-a-hce" size="md" variant="nav">
             Fale com a HCE
           </Button>
@@ -87,6 +122,13 @@ export function SiteHeader() {
                 {item.label}
               </Link>
             ))}
+            <Link
+              href={conta ? "/conta" : "/entrar"}
+              onClick={() => setOpen(false)}
+              className="rounded-lg px-2 py-3 text-base font-semibold text-brand-blue hover:bg-surface-soft"
+            >
+              {conta ? "Minha conta" : "Entrar / Criar conta"}
+            </Link>
             <Button
               href="/fale-com-a-hce"
               size="lg"

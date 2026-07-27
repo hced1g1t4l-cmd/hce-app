@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Container } from "@/components/site/container";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { Button } from "@/components/ui/button";
 import { prisma } from "@/lib/db";
 import { dataLonga } from "@/lib/feed";
+import { getSessionUser } from "@/lib/auth-user";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -45,6 +46,11 @@ export default async function ArtigoPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  // Frente A: matéria só abre para quem tem conta (cadastro grátis).
+  if (!(await getSessionUser())) {
+    redirect(`/criar-conta?redirect=/feed/${slug}`);
+  }
+
   const artigo = await getArtigo(slug);
   if (!artigo) notFound();
 
