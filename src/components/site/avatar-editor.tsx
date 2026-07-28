@@ -81,17 +81,55 @@ export function AvatarEditor({
 }) {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const [avatar, setAvatar] = useState<string | null>(initialImage);
   const [aberto, setAberto] = useState(false);
   const [ocupado, setOcupado] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
+  const [modo, setModo] = useState<"menu" | "camera">("menu");
+  const [contagem, setContagem] = useState<number | null>(null);
+
+  function pararCamera() {
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+    streamRef.current = null;
+  }
+
+  function fechar() {
+    pararCamera();
+    setModo("menu");
+    setContagem(null);
+    setAberto(false);
+  }
 
   useEffect(() => {
     if (!aberto) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setAberto(false);
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && fechar();
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [aberto]);
+
+  // Ao desmontar, garante que a câmera seja liberada.
+  useEffect(() => () => pararCamera(), []);
+
+  // Conecta o stream ao <video> quando entra no modo câmera.
+  useEffect(() => {
+    if (modo === "camera" && videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+      videoRef.current.play().catch(() => {});
+    }
+  }, [modo]);
+
+  async function enviarBlob(blob: Blob) {
+    const fd = new FormData();
+    fd.append("file", blob, "avatar.jpg");
+    const res = await fetch("/api/conta/avatar", { method: "POST", body: fd });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || "Falha ao enviar a foto.");
+    setAvatar(`${data.url}?t=${Date.now()}`);
+    router.refresh();
+  }
 
   async function escolher(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -104,23 +142,88 @@ export function AvatarEditor({
     setOcupado(true);
     try {
       const reduzida = await reduzirImagem(file);
-      const fd = new FormData();
-      fd.append("file", reduzida, "avatar.jpg");
-      const res = await fetch("/api/conta/avatar", { method: "POST", body: fd });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        setErro(data.error || "Falha ao enviar a foto.");
-        return;
-      }
-      setAvatar(`${data.url}?t=${Date.now()}`);
-      router.refresh();
-    } catch {
+      await enviarBlob(reduzida);
+    } catch (err) {
       setErro(
-        "Não conseguimos ler essa imagem. Tente outra foto (JPG ou PNG) ou tire um print.",
+        err instanceof Error && err.message.includes("Falha")
+          ? err.message
+          : "Não conseguimos ler essa imagem. Tente outra foto (JPG ou PNG) ou tire um print.",
       );
     } finally {
       setOcupado(false);
       if (fileRef.current) fileRef.current.value = "";
+    }
+  }
+
+  async function abrirCamera() {
+    setErro(null);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "user" },
+        audio: false,
+      });
+      streamRef.current = stream;
+      setModo("camera");
+    } catch {
+      setErro(
+        "Não conseguimos acessar a câmera. Verifique a permissão do navegador e tente de novo.",
+      );
+    }
+  }
+
+  async function capturar() {
+    const video = videoRef.current;
+    if (!video || ocupado) return;
+    setErro(null);
+    // Contagem regressiva 3, 2, 1 sobre a tela.
+    for (let n = 3; n >= 1; n--) {
+      setContagem(n);
+      await new Promise((r) => setTimeout(r, 800));
+    }
+    setContagem(null);
+
+    const vw = video.videoWidth;
+    const vh = video.videoHeight;
+    if (!vw || !vh) {
+      setErro("A câmera ainda não está pronta. Tente de novo.");
+      return;
+    }
+    const escala = Math.min(1, MAX_DIM / Math.max(vw, vh));
+    const w = Math.max(1, Math.round(vw * escala));
+    const h = Math.max(1, Math.round(vh * escala));
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      setErro("Não foi possível capturar a foto.");
+      return;
+    }
+    // Espelha para bater com a prévia (efeito selfie).
+    ctx.translate(w, 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(video, 0, 0, w, h);
+
+    setOcupado(true);
+    try {
+      const blob = await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob(
+          (b) => (b ? resolve(b) : reject(new Error("blob"))),
+          "image/jpeg",
+          JPEG_Q,
+        );
+      });
+      await enviarBlob(blob);
+      pararCamera();
+      setModo("menu");
+    } catch (err) {
+      setErro(
+        err instanceof Error && err.message.includes("Falha")
+          ? err.message
+          : "Falha ao enviar a foto.",
+      );
+    } finally {
+      setOcupado(false);
     }
   }
 
@@ -181,7 +284,7 @@ export function AvatarEditor({
           role="dialog"
           aria-modal="true"
           aria-label="Atualizar foto de perfil"
-          onClick={() => setAberto(false)}
+          onClick={fechar}
           className="fixed inset-0 z-50 flex items-center justify-center bg-brand-blue-deep/60 p-4 backdrop-blur-sm"
         >
           <div
@@ -194,32 +297,12 @@ export function AvatarEditor({
               </h2>
               <button
                 type="button"
-                onClick={() => setAberto(false)}
+                onClick={fechar}
                 aria-label="Fechar"
                 className="rounded-full p-1 text-2xl leading-none text-muted hover:bg-surface-soft hover:text-brand-blue"
               >
                 ×
               </button>
-            </div>
-
-            <div className="relative mx-auto mt-5 h-32 w-32 overflow-hidden rounded-full border border-line bg-surface-soft">
-              {avatar ? (
-                <Image
-                  src={avatar}
-                  alt="Prévia"
-                  fill
-                  sizes="128px"
-                  className="object-cover"
-                  unoptimized
-                />
-              ) : (
-                <span
-                  aria-hidden
-                  className="flex h-full w-full items-center justify-center font-display text-4xl font-bold text-brand-blue/40"
-                >
-                  {iniciais(nome)}
-                </span>
-              )}
             </div>
 
             <input
@@ -230,36 +313,144 @@ export function AvatarEditor({
               className="hidden"
             />
 
-            {erro && (
-              <p className="mt-4 rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">
-                {erro}
-              </p>
-            )}
+            {modo === "menu" ? (
+              <>
+                <div className="relative mx-auto mt-5 h-32 w-32 overflow-hidden rounded-full border border-line bg-surface-soft">
+                  {avatar ? (
+                    <Image
+                      src={avatar}
+                      alt="Prévia"
+                      fill
+                      sizes="128px"
+                      className="object-cover"
+                      unoptimized
+                    />
+                  ) : (
+                    <span
+                      aria-hidden
+                      className="flex h-full w-full items-center justify-center font-display text-4xl font-bold text-brand-blue/40"
+                    >
+                      {iniciais(nome)}
+                    </span>
+                  )}
+                </div>
 
-            <div className="mt-6 flex flex-col gap-2">
-              <button
-                type="button"
-                onClick={() => fileRef.current?.click()}
-                disabled={ocupado}
-                className="inline-flex min-h-11 items-center justify-center rounded-full bg-brand-amber px-5 py-2.5 font-display text-sm font-semibold text-brand-blue-deep transition-colors hover:bg-brand-amber-dark disabled:opacity-60"
-              >
-                {ocupado ? "Processando…" : avatar ? "Trocar foto" : "Enviar foto"}
-              </button>
-              {avatar && (
-                <button
-                  type="button"
-                  onClick={remover}
-                  disabled={ocupado}
-                  className="inline-flex min-h-11 items-center justify-center rounded-full border border-line px-5 py-2.5 text-sm font-semibold text-brand-blue transition-colors hover:bg-surface-soft disabled:opacity-60"
-                >
-                  Remover foto
-                </button>
-              )}
-            </div>
-            <p className="mt-4 text-xs text-muted">
-              Pode enviar a foto direto do celular — nós ajustamos o tamanho
-              automaticamente para carregar rápido.
-            </p>
+                {erro && (
+                  <p className="mt-4 rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">
+                    {erro}
+                  </p>
+                )}
+
+                <div className="mt-6 flex flex-col gap-2">
+                  <button
+                    type="button"
+                    onClick={() => fileRef.current?.click()}
+                    disabled={ocupado}
+                    className="inline-flex min-h-11 items-center justify-center rounded-full bg-brand-amber px-5 py-2.5 font-display text-sm font-semibold text-brand-blue-deep transition-colors hover:bg-brand-amber-dark disabled:opacity-60"
+                  >
+                    {ocupado
+                      ? "Processando…"
+                      : avatar
+                        ? "Trocar foto"
+                        : "Enviar foto"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={abrirCamera}
+                    disabled={ocupado}
+                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-line px-5 py-2.5 text-sm font-semibold text-brand-blue transition-colors hover:bg-surface-soft disabled:opacity-60"
+                  >
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                      <circle cx="12" cy="13" r="4" />
+                    </svg>
+                    Tirar foto agora
+                  </button>
+                  {avatar && (
+                    <button
+                      type="button"
+                      onClick={remover}
+                      disabled={ocupado}
+                      className="inline-flex min-h-11 items-center justify-center rounded-full border border-line px-5 py-2.5 text-sm font-semibold text-brand-blue transition-colors hover:bg-surface-soft disabled:opacity-60"
+                    >
+                      Remover foto
+                    </button>
+                  )}
+                </div>
+                <p className="mt-4 text-xs text-muted">
+                  Pode enviar a foto direto do celular ou tirar uma na hora — nós
+                  ajustamos o tamanho automaticamente para carregar rápido.
+                </p>
+              </>
+            ) : (
+              <>
+                <div className="relative mx-auto mt-5 aspect-square w-full overflow-hidden rounded-2xl border border-line bg-brand-blue-deep">
+                  <video
+                    ref={videoRef}
+                    playsInline
+                    muted
+                    className="h-full w-full -scale-x-100 object-cover"
+                  />
+                  {contagem !== null && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-brand-blue-deep/40">
+                      <span
+                        key={contagem}
+                        className="hce-contagem font-display text-8xl font-extrabold text-white drop-shadow-lg"
+                      >
+                        {contagem}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {erro && (
+                  <p className="mt-4 rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">
+                    {erro}
+                  </p>
+                )}
+
+                <div className="mt-6 flex flex-col gap-2">
+                  <button
+                    type="button"
+                    onClick={capturar}
+                    disabled={ocupado || contagem !== null}
+                    className="inline-flex min-h-11 items-center justify-center rounded-full bg-brand-amber px-5 py-2.5 font-display text-sm font-semibold text-brand-blue-deep transition-colors hover:bg-brand-amber-dark disabled:opacity-60"
+                  >
+                    {ocupado
+                      ? "Enviando…"
+                      : contagem !== null
+                        ? "Prepare-se…"
+                        : "Capturar foto"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      pararCamera();
+                      setModo("menu");
+                      setContagem(null);
+                    }}
+                    disabled={ocupado || contagem !== null}
+                    className="inline-flex min-h-11 items-center justify-center rounded-full border border-line px-5 py-2.5 text-sm font-semibold text-brand-blue transition-colors hover:bg-surface-soft disabled:opacity-60"
+                  >
+                    Voltar
+                  </button>
+                </div>
+                <p className="mt-4 text-xs text-muted">
+                  Enquadre o rosto e toque em “Capturar foto”. Vamos contar 3, 2,
+                  1 antes de registrar.
+                </p>
+              </>
+            )}
           </div>
         </div>
       )}
