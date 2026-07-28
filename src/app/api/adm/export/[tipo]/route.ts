@@ -69,7 +69,11 @@ async function montarContatos(): Promise<Planilha> {
       m.email,
       m.telefone ?? "",
       m.mensagem,
-      [m.permiteEmail && "E-mail", m.permiteTelefone && "Telefone"]
+      [
+        m.permiteEmail && "E-mail",
+        m.permiteTelefone && "Telefone",
+        m.permiteWhatsapp && "WhatsApp",
+      ]
         .filter(Boolean)
         .join(", "),
       m.observacoes ?? "",

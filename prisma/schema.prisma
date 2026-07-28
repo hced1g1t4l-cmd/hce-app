@@ -195,6 +195,7 @@ model ContatoMensagem {
   // Permissoes de contato que a pessoa autorizou.
   permiteEmail    Boolean  @default(false)
   permiteTelefone Boolean  @default(false)
+  permiteWhatsapp Boolean  @default(false)
   ip              String?
   userAgent       String?
   observacoes     String? // anotacoes internas do time (editavel no /adm)

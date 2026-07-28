@@ -41,6 +41,7 @@ export default function FaleComAHcePage() {
       mensagem: String(fd.get("mensagem") || ""),
       permiteEmail: fd.get("permiteEmail") === "on",
       permiteTelefone: fd.get("permiteTelefone") === "on",
+      permiteWhatsapp: fd.get("permiteWhatsapp") === "on",
       website: String(fd.get("website") || ""),
       captchaToken,
     };
@@ -162,6 +163,10 @@ export default function FaleComAHcePage() {
                 <Checkbox
                   name="permiteTelefone"
                   label="Autorizo contato por telefone"
+                />
+                <Checkbox
+                  name="permiteWhatsapp"
+                  label="Autorizo contato por WhatsApp"
                 />
               </div>
             </fieldset>

@@ -14,6 +14,7 @@ const schema = z.object({
   mensagem: z.string().trim().min(5, "Escreva sua mensagem").max(3000),
   permiteEmail: z.boolean().default(false),
   permiteTelefone: z.boolean().default(false),
+  permiteWhatsapp: z.boolean().default(false),
   captchaToken: z.string().optional(),
   website: z.string().optional(),
 });
@@ -66,6 +67,7 @@ export async function POST(req: Request) {
         mensagem: data.mensagem,
         permiteEmail: data.permiteEmail,
         permiteTelefone: data.permiteTelefone,
+        permiteWhatsapp: data.permiteWhatsapp,
         ip,
         userAgent: req.headers.get("user-agent"),
       },
