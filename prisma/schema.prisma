@@ -31,6 +31,7 @@ model User {
   telefone           String?
   aceitaComunicacoes Boolean @default(false) // consentimento LGPD p/ novidades
   plano              String  @default("free") // free | essencial | profissional | premium
+  ultimoAcesso       DateTime? // atualizado quando a pessoa navega logada (throttle ~10min)
   // Perfil editavel pela pessoa em /conta.
   bio                String? // pequena apresentacao
   endereco           String? // legado (texto livre) - mantido por compatibilidade

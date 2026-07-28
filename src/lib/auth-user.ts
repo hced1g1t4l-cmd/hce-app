@@ -93,6 +93,17 @@ export async function getSessionUser(): Promise<SessionUser | null> {
   if (!sess || sess.expires < new Date()) return null;
 
   const u = sess.user;
+
+  // Registra o "ultimo acesso" com granularidade de ~10 min (evita escrever a
+  // cada navegacao). Falha silenciosa: nunca deve quebrar a leitura da sessao.
+  const agora = Date.now();
+  const ultimo = u.ultimoAcesso ? u.ultimoAcesso.getTime() : 0;
+  if (agora - ultimo > 10 * 60 * 1000) {
+    await prisma.user
+      .update({ where: { id: u.id }, data: { ultimoAcesso: new Date() } })
+      .catch(() => null);
+  }
+
   return {
     id: u.id,
     nome: u.name,
