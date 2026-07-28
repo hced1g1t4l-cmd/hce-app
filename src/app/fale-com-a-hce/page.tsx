@@ -84,9 +84,9 @@ export default function FaleComAHcePage() {
               Fale com a HCE
             </h1>
             <p className="mt-4 text-lg leading-relaxed text-muted">
-              Conte-nos sobre seu objetivo, sua ideia ou seu desafio. Seja para
-              aprender, desenvolver um projeto, capacitar uma equipe ou aprimorar
-              um negócio, a HCE está pronta para conversar com você.
+              Conte-nos seu objetivo, sua ideia ou seu desafio. Seja para
+              aprender, aperfeiçoar seus conhecimentos, desenvolver uma equipe ou
+              fortalecer um negócio, retornaremos o mais breve possível.
             </p>
           </div>
 
