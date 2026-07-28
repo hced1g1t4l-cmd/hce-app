@@ -72,6 +72,28 @@ export async function deleteObject(key: string): Promise<void> {
   );
 }
 
+// URL assinada de PUT: permite o navegador enviar o arquivo DIRETO para o R2,
+// sem passar pela funcao serverless da Vercel (que limita o corpo a ~4,5 MB).
+// Ideal para e-books e fichas grandes. Requer CORS liberado no bucket R2.
+export async function signedPutUrl(
+  key: string,
+  contentType: string,
+  { expiresIn = 600 }: { expiresIn?: number } = {},
+): Promise<string> {
+  const cmd = new PutObjectCommand({
+    Bucket: bucket,
+    Key: key,
+    ContentType: contentType,
+  });
+  return getSignedUrl(client(), cmd, { expiresIn });
+}
+
+// Endpoint publico do R2 (para liberar no CORS/CSP do navegador).
+export function r2Endpoint(): string | null {
+  if (!accountId) return null;
+  return `https://${accountId}.r2.cloudflarestorage.com`;
+}
+
 // URL assinada de GET, valida por poucos minutos. downloadName forca "salvar como".
 export async function signedGetUrl(
   key: string,
