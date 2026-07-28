@@ -141,11 +141,12 @@ export default function Home() {
                 O que fazemos
               </span>
               <h2 className="mt-3 font-display text-3xl font-bold text-brand-blue sm:text-4xl">
-                Cursos, treinamentos e consultoria
+                Consultoria, educação e hospitalidade para A&amp;B
               </h2>
               <p className="mt-5 text-lg leading-relaxed text-muted">
                 Contribuímos para a formação de profissionais mais preparados,
-                empresas mais qualificadas e experiências mais memoráveis.
+                empresas mais qualificadas e experiências mais memoráveis, do
+                diagnóstico da operação ao desenvolvimento das pessoas.
               </p>
             </div>
 
