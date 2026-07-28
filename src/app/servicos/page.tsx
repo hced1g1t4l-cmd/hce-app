@@ -69,7 +69,7 @@ const SERVICOS = [
   {
     titulo: "Palestras, mentorias e conteúdo",
     texto:
-      "Palestras, mentorias e produções autorais que compartilham conhecimento em gastronomia, hospitalidade e gestão.",
+      "Palestras presenciais e on-line, mentorias e produções autorais desenvolvidas para inspirar, qualificar e transformar a prática profissional.",
     modelos: ["Palestra", "Mentoria"],
   },
 ];
