@@ -20,7 +20,13 @@ type PerfilInit = {
   facebook: string;
 };
 
-export function PerfilForm({ init }: { init: PerfilInit }) {
+export function PerfilForm({
+  init,
+  embutido = false,
+}: {
+  init: PerfilInit;
+  embutido?: boolean;
+}) {
   const router = useRouter();
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
@@ -96,13 +102,19 @@ export function PerfilForm({ init }: { init: PerfilInit }) {
   return (
     <form
       onSubmit={salvar}
-      className="mt-6 rounded-3xl border border-line bg-white p-6 shadow-sm sm:p-8"
+      className={
+        embutido
+          ? ""
+          : "mt-6 rounded-3xl border border-line bg-white p-6 shadow-sm sm:p-8"
+      }
     >
-      <h2 className="font-display text-sm font-bold tracking-wide text-brand-blue uppercase">
-        Meu perfil
-      </h2>
+      {!embutido && (
+        <h2 className="font-display text-sm font-bold tracking-wide text-brand-blue uppercase">
+          Meu perfil
+        </h2>
+      )}
 
-      <div className="mt-5 grid gap-5">
+      <div className={`${embutido ? "" : "mt-5"} grid gap-5`}>
         <label className="block">
           <span className="font-display text-sm font-semibold text-brand-blue">
             Bio <span className="font-normal text-muted">(opcional)</span>
