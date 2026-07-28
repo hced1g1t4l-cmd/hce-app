@@ -199,7 +199,7 @@ export function VerificarEmail({
       </div>
 
       {fase === "inicio" && (
-        <div className="mt-4">
+        <div className="mt-4 flex justify-center">
           <button
             type="button"
             onClick={enviar}
