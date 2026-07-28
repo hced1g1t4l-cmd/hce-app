@@ -131,6 +131,11 @@ export function toPDF(p: Planilha, dataGeracao: string): Promise<Buffer> {
     // ---- Rodape com paginacao ----
     const desenharRodape = () => {
       const y = doc.page.height - 40;
+      // Desenhar texto abaixo da margem inferior faz o PDFKit criar uma pagina
+      // extra (auto page-break). Zeramos a margem inferior so durante o rodape
+      // para elevar o maxY() e evitar a quebra; depois restauramos.
+      const bottomOrig = doc.page.margins.bottom;
+      doc.page.margins.bottom = 0;
       doc.save();
       doc.rect(left, y, contentW, 0.8).fill("#e5e9f2");
       doc
@@ -141,9 +146,10 @@ export function toPDF(p: Planilha, dataGeracao: string): Promise<Buffer> {
           "HCE — Hospitalidade, Consultoria e Educação em Gastronomia · www.hcegastronomia.com",
           left,
           y + 6,
-          { width: contentW, align: "left" },
+          { width: contentW, align: "left", lineBreak: false },
         );
       doc.restore();
+      doc.page.margins.bottom = bottomOrig;
     };
 
     // Larguras proporcionais das colunas
