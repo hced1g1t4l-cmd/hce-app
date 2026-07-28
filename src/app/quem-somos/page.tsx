@@ -114,17 +114,17 @@ export default function QuemSomosPage() {
               Hospitalidade · Consultoria · Educação
             </span>
             <h2 className="mt-3 font-display text-2xl font-bold text-brand-blue sm:text-3xl">
-              Conhecimento que transforma pessoas, negócios e experiências
+              Conhecimento que transforma pessoas, equipes e negócios
             </h2>
             <p className="mt-6 text-lg leading-relaxed text-muted">
-              Acreditamos que a hospitalidade, a gastronomia e a gestão são
-              capazes de fortalecer pessoas, desenvolver equipes e impulsionar
-              negócios.
+              Acreditamos que a gastronomia vai além da cozinha. Ela envolve
+              técnica, gestão, hospitalidade e o desenvolvimento contínuo de
+              pessoas.
             </p>
             <p className="mt-4 text-lg leading-relaxed text-muted">
-              Por isso, reunimos consultoria, educação e conteúdos técnicos para
-              apoiar quem deseja aprimorar competências, qualificar processos e
-              alcançar resultados consistentes.
+              Por isso, reunimos consultoria, educação e produção de conhecimento
+              para apoiar quem deseja aprender, aperfeiçoar competências,
+              fortalecer equipes e desenvolver negócios na gastronomia.
             </p>
           </Container>
         </section>
