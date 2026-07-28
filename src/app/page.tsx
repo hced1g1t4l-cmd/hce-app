@@ -246,8 +246,8 @@ export default function Home() {
                 Vamos transformar o seu negócio?
               </h2>
               <p className="relative mx-auto mt-5 max-w-xl text-lg text-white/80">
-                Conte para a gente o seu desafio. Consultoria, treinamento para
-                a equipe ou uma parceria de conteúdo: a HCE está pronta para
+                Compartilhe o que você deseja realizar. Consultoria, treinamento
+                para a equipe ou uma parceria de conteúdo, a HCE está pronta para
                 ajudar.
               </p>
               <div className="relative mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
