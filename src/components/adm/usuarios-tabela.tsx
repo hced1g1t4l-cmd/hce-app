@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export type UsuarioAdm = {
   id: string;
@@ -64,7 +65,11 @@ function Avatar({
 }
 
 export function UsuariosTabela({ usuarios }: { usuarios: UsuarioAdm[] }) {
+  const router = useRouter();
   const [aberto, setAberto] = useState<UsuarioAdm | null>(null);
+  const [confirmar, setConfirmar] = useState<UsuarioAdm | null>(null);
+  const [excluindo, setExcluindo] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
 
   useEffect(() => {
     if (!aberto) return;
@@ -72,6 +77,25 @@ export function UsuariosTabela({ usuarios }: { usuarios: UsuarioAdm[] }) {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [aberto]);
+
+  async function excluir(u: UsuarioAdm) {
+    setExcluindo(true);
+    setErro(null);
+    try {
+      const res = await fetch(`/api/adm/usuarios/${u.id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        throw new Error(d.error || "Não foi possível excluir a conta.");
+      }
+      setConfirmar(null);
+      setAberto(null);
+      router.refresh();
+    } catch (e) {
+      setErro(e instanceof Error ? e.message : "Erro ao excluir.");
+    } finally {
+      setExcluindo(false);
+    }
+  }
 
   return (
     <>
@@ -223,6 +247,84 @@ export function UsuariosTabela({ usuarios }: { usuarios: UsuarioAdm[] }) {
                 </div>
               </div>
             )}
+
+            <div className="mt-6 border-t border-line pt-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setErro(null);
+                  setConfirmar(aberto);
+                }}
+                className="inline-flex items-center gap-2 rounded-lg border border-red-200 px-3 py-2 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M3 6h18" />
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                  <path d="M10 11v6" />
+                  <path d="M14 11v6" />
+                </svg>
+                Excluir conta
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {confirmar && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Confirmar exclusão"
+          onClick={() => !excluindo && setConfirmar(null)}
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-brand-blue-deep/60 p-4 backdrop-blur-sm"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl"
+          >
+            <h2 className="font-display text-lg font-bold text-brand-blue">
+              Excluir conta
+            </h2>
+            <p className="mt-2 text-sm text-ink">
+              Tem certeza que deseja excluir a conta de{" "}
+              <strong>{confirmar.name ?? confirmar.email ?? "usuário"}</strong>?
+              Esta ação é permanente e não pode ser desfeita.
+            </p>
+
+            {erro && (
+              <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
+                {erro}
+              </p>
+            )}
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                disabled={excluindo}
+                onClick={() => setConfirmar(null)}
+                className="rounded-lg border border-line px-4 py-2 text-sm font-semibold text-ink transition-colors hover:bg-surface-soft disabled:opacity-60"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                disabled={excluindo}
+                onClick={() => excluir(confirmar)}
+                className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-700 disabled:opacity-60"
+              >
+                {excluindo ? "Excluindo…" : "Excluir"}
+              </button>
+            </div>
           </div>
         </div>
       )}
