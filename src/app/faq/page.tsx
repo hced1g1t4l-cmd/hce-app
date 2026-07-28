@@ -62,8 +62,8 @@ const GRUPOS: Grupo[] = [
         a: "Começamos por um diagnóstico da operação, construímos um plano de ação priorizado e apoiamos a implementação. O trabalho pode ser um projeto pontual, um acompanhamento recorrente ou um programa in company para a sua equipe.",
       },
       {
-        q: "O atendimento é presencial ou online?",
-        a: "A HCE fica no Rio de Janeiro e atende presencialmente na região. Para consultorias, cursos e mentorias, também atendemos online em todo o Brasil.",
+        q: "O atendimento é presencial ou on-line?",
+        a: "A HCE está sediada no Rio de Janeiro e atende presencialmente na região. Para consultorias, cursos e mentorias, também oferece atendimento on-line em todo o Brasil.",
       },
       {
         q: "Como peço um orçamento?",
