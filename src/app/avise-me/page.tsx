@@ -188,8 +188,9 @@ export default function AviseMePage() {
             </div>
 
             <p className="mt-4 text-center text-xs text-muted">
-              Seus dados serão usados apenas para comunicação da HCE, conforme a
-              LGPD. Não compartilhamos com terceiros.
+              Seus dados serão utilizados exclusivamente para atender à sua
+              solicitação, em conformidade com a Lei Geral de Proteção de Dados
+              (LGPD).
             </p>
           </form>
         </Container>
