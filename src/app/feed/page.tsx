@@ -27,7 +27,10 @@ export const metadata: Metadata = {
 export default async function FeedPage() {
   // Frente A: o Feed (mesmo gratuito) exige conta. Visitante sem sessao vai
   // para o cadastro grátis e volta para o Feed depois de entrar.
-  if (!(await getSessionUser())) redirect("/criar-conta?redirect=/feed");
+  const sessao = await getSessionUser();
+  if (!sessao) redirect("/criar-conta?redirect=/feed");
+  // E-mail obrigatoriamente confirmado.
+  if (!sessao.emailVerificado) redirect("/verificar-email?apos=/feed");
 
   const artigos = await prisma.artigo.findMany({
     where: { publicado: true },

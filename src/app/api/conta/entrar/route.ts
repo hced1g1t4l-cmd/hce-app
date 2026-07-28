@@ -44,6 +44,12 @@ export async function POST(req: Request) {
   if (!user || !user.passwordHash) return invalido();
   if (!verifyPassword(data.senha, user.passwordHash)) return invalido();
 
+  // Senha correta. Abrimos a sessao, mas se o e-mail ainda nao foi confirmado a
+  // pessoa fica "presa" na verificacao: todas as areas protegidas redirecionam
+  // para /verificar-email ate ela digitar o codigo enviado ao e-mail real.
   await createSession(user.id);
+  if (!user.emailVerified) {
+    return NextResponse.json({ ok: true, needsVerification: true });
+  }
   return NextResponse.json({ ok: true });
 }

@@ -63,7 +63,10 @@ export function CriarContaForm({ redirect }: { redirect?: string }) {
         setEnviando(false);
         return;
       }
-      router.push(destinoSeguro(redirect));
+      // Conta criada e sessão aberta. A verificação de e-mail é obrigatória:
+      // levamos a pessoa para a tela que envia e confere o código.
+      const dest = destinoSeguro(redirect);
+      router.push(`/verificar-email?apos=${encodeURIComponent(dest)}`);
       router.refresh();
     } catch {
       setErro("Falha de conexão. Tente novamente.");

@@ -24,12 +24,15 @@ const PLANO_LABEL: Record<string, string> = {
 export default async function ContaPage() {
   const user = await getSessionUser();
   if (!user) redirect("/entrar?redirect=/conta");
+  // E-mail obrigatoriamente confirmado para usar a conta.
+  if (!user.emailVerificado) redirect("/verificar-email?apos=/conta");
 
   const perfil = await prisma.user.findUnique({
     where: { id: user.id },
     select: {
       image: true,
       createdAt: true,
+      emailVerified: true,
       bio: true,
       telefone: true,
       cep: true,
@@ -64,6 +67,7 @@ export default async function ContaPage() {
             plano={user.plano}
             planoLabel={PLANO_LABEL[user.plano] ?? "Gratuito"}
             avatar={perfil?.image ?? null}
+            emailVerified={Boolean(perfil?.emailVerified)}
             membroDesde={membroDesde}
             perfil={{
               bio: perfil?.bio ?? "",
