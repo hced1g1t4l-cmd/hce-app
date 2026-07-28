@@ -145,7 +145,7 @@ export default function Home() {
               </h2>
               <p className="mt-5 text-lg leading-relaxed text-muted">
                 Contribuímos para a formação de profissionais mais preparados,
-                empresas mais qualificadas e serviços mais humanos.
+                empresas mais qualificadas e experiências mais memoráveis.
               </p>
             </div>
 
