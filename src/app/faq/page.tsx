@@ -114,7 +114,7 @@ const GRUPOS: Grupo[] = [
       },
       {
         q: "Como será o pagamento?",
-        a: "Por cartão recorrente ou PIX, com desconto no plano anual. Enquanto o checkout não está disponível, você pode se cadastrar para ser avisado do lançamento.",
+        a: "Com cartão de crédito (cobrança recorrente) ou PIX. Enquanto o checkout não está disponível, você pode se cadastrar para ser avisado do lançamento.",
       },
     ],
   },
