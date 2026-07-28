@@ -160,7 +160,9 @@ export function CriarContaForm({ redirect }: { redirect?: string }) {
             className="mt-0.5 h-5 w-5 shrink-0 rounded border-line accent-brand-blue"
           />
           <span className="leading-snug">
-            Li e aceito criar minha conta gratuita na HCE, conforme a LGPD.
+            Li e concordo com os Termos de Uso e a Política de Privacidade,
+            autorizando o tratamento dos meus dados conforme a Lei Geral de
+            Proteção de Dados (LGPD).
           </span>
         </label>
         <label className="flex items-start gap-3 text-sm text-ink">
@@ -170,8 +172,8 @@ export function CriarContaForm({ redirect }: { redirect?: string }) {
             className="mt-0.5 h-5 w-5 shrink-0 rounded border-line accent-brand-blue"
           />
           <span className="leading-snug">
-            Quero receber novidades, conteúdos e promoções da HCE por e-mail.
-            Posso cancelar quando quiser.
+            Desejo receber artigos, novidades e informações da HCE por e-mail.
+            Posso cancelar o recebimento a qualquer momento.
           </span>
         </label>
       </div>
