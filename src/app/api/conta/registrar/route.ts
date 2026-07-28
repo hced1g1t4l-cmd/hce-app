@@ -12,7 +12,18 @@ export const dynamic = "force-dynamic";
 const schema = z.object({
   nome: z.string().trim().min(2, "Informe seu nome").max(120),
   email: z.string().trim().email("E-mail inválido").max(180),
-  senha: z.string().min(8, "A senha precisa de ao menos 8 caracteres").max(200),
+  senha: z
+    .string()
+    .max(200)
+    .refine(
+      (s) =>
+        s.length >= 6 &&
+        /[A-Z]/.test(s) &&
+        /[a-z]/.test(s) &&
+        /[0-9]/.test(s) &&
+        /[^A-Za-z0-9]/.test(s),
+      "A senha precisa ter ao menos 6 caracteres, com maiúscula, minúscula, número e caractere especial.",
+    ),
   telefone: z.string().trim().max(40).optional().nullable(),
   aceitaComunicacoes: z.boolean().optional(),
   website: z.string().max(200).optional(), // honeypot: humano deixa vazio

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { rateLimit } from "@/lib/rate-limit";
 import { getSessionUser, randomOtp, sha256 } from "@/lib/auth-user";
-import { sendEmail } from "@/lib/email";
+import { emailConfigured, sendEmail } from "@/lib/email";
 
 // Verificacao de e-mail (opcional). Passo 1: gera um codigo de 6 digitos, guarda
 // so o hash com validade de 100s e envia por e-mail. Exige sessao (a pessoa ja
@@ -43,6 +43,17 @@ export async function POST() {
     return NextResponse.json(
       { error: "Sua conta não tem um e-mail para verificar." },
       { status: 400 },
+    );
+  }
+
+  // Sem provedor de e-mail configurado não adianta gerar código.
+  if (!emailConfigured()) {
+    return NextResponse.json(
+      {
+        error:
+          "O envio de e-mail ainda não está ativo no servidor. Avise a equipe da HCE (falta configurar o remetente).",
+      },
+      { status: 503 },
     );
   }
 
