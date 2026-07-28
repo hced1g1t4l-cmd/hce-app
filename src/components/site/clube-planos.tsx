@@ -24,7 +24,7 @@ const PLANOS: Plano[] = [
   {
     id: "gratuito",
     nome: "Gratuito",
-    foco: "Atrair",
+    foco: "Para começar",
     precoAnual: null,
     precoAvulso: null,
     itens: [
@@ -36,7 +36,7 @@ const PLANOS: Plano[] = [
   {
     id: "essencial",
     nome: "Essencial",
-    foco: "Aprender",
+    foco: "Para aprender",
     precoAnual: "29,90",
     precoAvulso: "34,90",
     itens: [
@@ -49,7 +49,7 @@ const PLANOS: Plano[] = [
   {
     id: "profissional",
     nome: "Profissional",
-    foco: "Aplicar",
+    foco: "Para aplicar",
     precoAnual: "59,90",
     precoAvulso: "64,90",
     itens: [
@@ -62,7 +62,7 @@ const PLANOS: Plano[] = [
   {
     id: "premium",
     nome: "Premium",
-    foco: "Aprofundar",
+    foco: "Para se aprofundar",
     precoAnual: "89,90",
     precoAvulso: "94,90",
     itens: [
@@ -161,7 +161,7 @@ export function ClubePlanos() {
                   >
                     Grátis
                   </p>
-                  <p className="mt-1 text-sm text-muted">para sempre</p>
+                  <p className="mt-1 text-sm text-muted">sem cartão de crédito</p>
                 </>
               )}
             </div>
