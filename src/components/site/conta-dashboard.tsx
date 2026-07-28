@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { SairButton } from "@/components/site/sair-button";
 import { AvatarEditor } from "@/components/site/avatar-editor";
 import { PerfilForm } from "@/components/site/perfil-form";
+import { VerificarEmail } from "@/components/site/verificar-email";
 import { capitalizarNome } from "@/lib/nome";
 import { planoAtende } from "@/lib/planos";
 
@@ -16,6 +17,7 @@ type Props = {
   plano: string;
   planoLabel: string;
   avatar: string | null;
+  emailVerified: boolean;
   membroDesde: string | null;
   perfil: PerfilInit;
 };
@@ -122,7 +124,8 @@ function Icone({ children }: { children: React.ReactNode }) {
 }
 
 export function ContaDashboard(props: Props) {
-  const { nome, email, plano, planoLabel, avatar, membroDesde, perfil } = props;
+  const { nome, email, plano, planoLabel, avatar, emailVerified, membroDesde, perfil } =
+    props;
   const [secao, setSecao] = useState<SecaoId>("visao");
   const nomeCap = capitalizarNome(nome) || "—";
   const primeiro = nomeCap.split(" ")[0];
@@ -139,9 +142,28 @@ export function ContaDashboard(props: Props) {
                 {nomeCap}
               </p>
               <p className="truncate text-xs text-muted">{email}</p>
-              <span className="mt-1.5 inline-block rounded-full bg-brand-amber/25 px-3 py-0.5 text-xs font-semibold text-brand-amber-dark">
-                Plano {planoLabel}
-              </span>
+              <div className="mt-1.5 flex flex-wrap items-center gap-1.5 lg:justify-center">
+                <span className="inline-block rounded-full bg-brand-amber/25 px-3 py-0.5 text-xs font-semibold text-brand-amber-dark">
+                  Plano {planoLabel}
+                </span>
+                {emailVerified && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-3 w-3"
+                      aria-hidden="true"
+                    >
+                      <path d="m5 12 4.5 4.5L19 7" />
+                    </svg>
+                    Verificado
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -365,6 +387,7 @@ export function ContaDashboard(props: Props) {
           <Painel titulo="Segurança" subtitulo="Cuide do acesso à sua conta.">
             <div className="grid gap-4">
               <Dado rotulo="E-mail de acesso" valor={email ?? "—"} quebrar />
+              <VerificarEmail email={email} emailVerified={emailVerified} />
               <div className="rounded-2xl border border-line bg-surface-soft p-5">
                 <p className="font-display font-semibold text-brand-blue">
                   Senha

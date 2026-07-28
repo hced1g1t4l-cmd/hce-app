@@ -50,6 +50,12 @@ export function randomToken(): string {
   return crypto.randomBytes(32).toString("hex");
 }
 
+// Codigo numerico de 6 digitos (OTP) para verificacao de e-mail. Uniforme e
+// imprevisivel (crypto.randomInt). Guardamos so o hash (sha256) no banco.
+export function randomOtp(): string {
+  return crypto.randomInt(0, 1_000_000).toString().padStart(6, "0");
+}
+
 // Encerra todas as sessoes de um usuario (ex.: apos redefinir a senha).
 export async function destroyAllSessions(userId: string): Promise<void> {
   await prisma.session.deleteMany({ where: { userId } }).catch(() => null);
@@ -78,6 +84,7 @@ export type SessionUser = {
   email: string | null;
   role: "MEMBER" | "ADMIN";
   plano: string;
+  emailVerificado: boolean; // e-mail confirmado (obrigatorio p/ usar a conta)
 };
 
 // Le a sessao a partir do cookie. Pode ser usado em Server Components (so leitura).
@@ -110,6 +117,7 @@ export async function getSessionUser(): Promise<SessionUser | null> {
     email: u.email,
     role: u.role,
     plano: u.plano,
+    emailVerificado: Boolean(u.emailVerified),
   };
 }
 

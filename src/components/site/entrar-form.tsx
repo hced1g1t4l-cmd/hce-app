@@ -32,10 +32,20 @@ export function EntrarForm({ redirect }: { redirect?: string }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
+      const d = (await res.json().catch(() => ({}))) as {
+        error?: string;
+        needsVerification?: boolean;
+      };
       if (!res.ok) {
-        const d = (await res.json().catch(() => ({}))) as { error?: string };
         setErro(d.error || "Não foi possível entrar.");
         setEnviando(false);
+        return;
+      }
+      // E-mail ainda não confirmado: manda para a verificação obrigatória.
+      if (d.needsVerification) {
+        const dest = destinoSeguro(redirect);
+        router.push(`/verificar-email?apos=${encodeURIComponent(dest)}`);
+        router.refresh();
         return;
       }
       router.push(destinoSeguro(redirect));

@@ -47,8 +47,13 @@ export default async function ArtigoPage({
 }) {
   const { slug } = await params;
   // Frente A: matéria só abre para quem tem conta (cadastro grátis).
-  if (!(await getSessionUser())) {
+  const sessao = await getSessionUser();
+  if (!sessao) {
     redirect(`/criar-conta?redirect=/feed/${slug}`);
+  }
+  // E-mail obrigatoriamente confirmado.
+  if (!sessao.emailVerificado) {
+    redirect(`/verificar-email?apos=/feed/${slug}`);
   }
 
   const artigo = await getArtigo(slug);
