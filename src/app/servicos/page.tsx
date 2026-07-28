@@ -69,7 +69,7 @@ const SERVICOS = [
   {
     titulo: "Palestras, mentorias e conteúdo",
     texto:
-      "Palestras e mentorias sobre gastronomia, hospitalidade e gestão, além de conteúdo autoral (como o podcast HCE).",
+      "Palestras, mentorias e produções autorais que compartilham conhecimento em gastronomia, hospitalidade e gestão.",
     modelos: ["Palestra", "Mentoria"],
   },
 ];
