@@ -42,8 +42,9 @@ const VALORES = [
       "Fundamento e método em cada detalhe, do preparo ao processo de gestão.",
   },
   {
-    titulo: "Hospitalidade genuína",
-    texto: "As pessoas em primeiro lugar, no atendimento, na equipe e na sala.",
+    titulo: "Hospitalidade como cultura",
+    texto:
+      "Desenvolvemos ambientes em que hospitalidade, profissionalismo e excelência orientam as relações entre clientes, equipes e gestores.",
   },
   {
     titulo: "Educação que transforma",
