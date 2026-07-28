@@ -41,6 +41,11 @@ function client(): S3Client {
         accessKeyId: accessKeyId as string,
         secretAccessKey: secretAccessKey as string,
       },
+      // Cloudflare R2 nao implementa os checksums CRC32 que o AWS SDK v3 recente
+      // envia por padrao (WHEN_SUPPORTED) -> o upload falha. Restringimos para
+      // WHEN_REQUIRED, evitando os headers x-amz-checksum-* nao suportados.
+      requestChecksumCalculation: "WHEN_REQUIRED",
+      responseChecksumValidation: "WHEN_REQUIRED",
     });
   }
   return _client;

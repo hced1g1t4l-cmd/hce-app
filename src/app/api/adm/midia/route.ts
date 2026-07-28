@@ -98,9 +98,14 @@ export async function POST(req: Request) {
   const bytes = Buffer.from(await file.arrayBuffer());
   try {
     await putObject(key, bytes, mime);
-  } catch {
+  } catch (e) {
+    const detalhe =
+      e instanceof Error ? e.message : "erro desconhecido no armazenamento";
+    console.error("[midia] falha no upload R2:", detalhe);
     return NextResponse.json(
-      { error: "Falha ao enviar para o armazenamento. Tente novamente." },
+      {
+        error: `Falha ao enviar para o armazenamento: ${detalhe}`,
+      },
       { status: 502 },
     );
   }
