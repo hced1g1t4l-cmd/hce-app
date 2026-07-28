@@ -192,7 +192,7 @@ export function ContaDashboard(props: Props) {
                 Seu conteúdo na HCE
               </h3>
               <p className="mt-1 text-sm text-muted">
-                Onde você está na jornada — e o que dá para desbloquear.
+                      Onde você está na jornada e o que dá para desbloquear.
               </p>
               <ul className="mt-4 grid gap-3">
                 {CONTEUDOS.map((c) => {
