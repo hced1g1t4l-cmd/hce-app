@@ -21,7 +21,7 @@ const SERVICOS = [
   {
     titulo: "Consultoria e diagnóstico de operações",
     texto:
-      "Análise completa da operação de A&B — gestão, processos e qualidade — com um plano de ação claro e priorizado.",
+      "Análise completa da operação de A&B, gestão, processos e qualidade, com um plano de ação claro e priorizado.",
     modelos: ["Projeto", "Recorrente"],
   },
   {
