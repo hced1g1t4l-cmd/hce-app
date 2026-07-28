@@ -118,8 +118,8 @@ export default function ServicosPage() {
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-white/80">
               Contribuímos para a formação de profissionais mais preparados,
-              empresas mais qualificadas e serviços mais humanos — do diagnóstico
-              da operação ao desenvolvimento das pessoas.
+              empresas mais qualificadas e experiências mais memoráveis, do
+              diagnóstico da operação ao desenvolvimento das pessoas.
             </p>
           </Container>
         </section>
