@@ -89,7 +89,7 @@ const MODELOS = [
   },
   {
     nome: "Curso / Workshop",
-    texto: "Formações abertas ou fechadas, presenciais ou online.",
+    texto: "Disponíveis em formatos presenciais e on-line, para pessoas, equipes e empresas.",
   },
   {
     nome: "Palestra / Mentoria",
