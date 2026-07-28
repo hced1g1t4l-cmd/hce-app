@@ -272,11 +272,12 @@ export default function QuemSomosPage() {
         <section className="bg-brand-blue py-20 text-white sm:py-24">
           <Container className="text-center">
             <h2 className="font-display text-3xl font-bold text-brand-amber sm:text-4xl">
-              Vamos construir algo juntos?
+              Como a HCE pode contribuir com você?
             </h2>
             <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-white/80">
-              Consultoria, treinamento para a equipe, uma parceria de conteúdo ou
-              o +HCE: a HCE está pronta para caminhar com você.
+              Consultoria, treinamento para equipes, desenvolvimento de projetos,
+              produção de material técnico ou o +HCE. Conheça as soluções que
+              desenvolvemos para pessoas e negócios da gastronomia.
             </p>
             <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button href="/fale-com-a-hce" size="lg">
