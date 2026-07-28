@@ -63,7 +63,7 @@ const SERVICOS = [
   {
     titulo: "Cursos, workshops e formação",
     texto:
-      "Cursos e workshops de gastronomia, técnica e gestão — abertos ao público ou fechados para a sua equipe.",
+      "Formação prática, cursos e workshops em gastronomia, hospitalidade e gestão, disponível em turmas abertas ou desenvolvida sob medida para empresas.",
     modelos: ["Curso", "Workshop"],
   },
   {
