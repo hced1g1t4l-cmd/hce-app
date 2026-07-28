@@ -4,21 +4,24 @@
 
 type SendArgs = { to: string; subject: string; html: string };
 
+// True quando o provedor de e-mail (Brevo) está configurado (chave presente).
+export function emailConfigured(): boolean {
+  return Boolean(process.env.BREVO_API_KEY);
+}
+
 export async function sendEmail({
   to,
   subject,
   html,
 }: SendArgs): Promise<boolean> {
   const key = process.env.BREVO_API_KEY;
-  const from = process.env.EMAIL_FROM || "contato@hcegastronomia.com";
+  const from = process.env.EMAIL_FROM || "naoresponda@hcegastronomia.com";
   const fromName = process.env.EMAIL_FROM_NAME || "HCE";
 
   if (!key) {
-    if (process.env.NODE_ENV !== "production") {
-      console.warn(
-        `[email] BREVO_API_KEY ausente — e-mail NÃO enviado. Assunto: "${subject}" para ${to}`,
-      );
-    }
+    console.warn(
+      `[email] BREVO_API_KEY ausente — e-mail NÃO enviado. Assunto: "${subject}" para ${to}`,
+    );
     return false;
   }
 
@@ -37,8 +40,16 @@ export async function sendEmail({
         htmlContent: html,
       }),
     });
+    if (!res.ok) {
+      // Motivo real da Brevo (ex.: remetente não verificado, IP bloqueado, plano).
+      const detalhe = await res.text().catch(() => "");
+      console.error(
+        `[email] Brevo recusou o envio (HTTP ${res.status}) de "${from}" p/ ${to}: ${detalhe}`,
+      );
+    }
     return res.ok;
-  } catch {
+  } catch (e) {
+    console.error("[email] Falha de rede ao chamar a Brevo:", e);
     return false;
   }
 }

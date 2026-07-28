@@ -192,8 +192,8 @@ export function VerificarEmail({
             E-mail ainda não verificado
           </p>
           <p className="mt-1 text-sm text-muted">
-            Confirmar seu e-mail é opcional, mas ajuda a proteger sua conta e
-            garante que você receba nossas comunicações.
+            Digite o código que enviamos para o seu e-mail. Confirmar é
+            necessário para acessar a sua conta.
           </p>
         </div>
       </div>
