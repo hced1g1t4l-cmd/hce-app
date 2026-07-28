@@ -121,7 +121,7 @@ export function ClubePlanos() {
             )}
           >
             {p.destaque && (
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-brand-amber px-4 py-1 font-display text-xs font-bold tracking-wide text-brand-blue-deep uppercase">
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-brand-amber px-4 py-1 text-center font-display text-xs font-bold tracking-wide text-brand-blue-deep uppercase">
                 Mais completo
               </span>
             )}
