@@ -213,8 +213,12 @@ export function VerificarEmail({
 
       {fase === "codigo" && (
         <form onSubmit={confirmar} className="mt-4">
-          {info && <p className="text-sm text-ink">{info}</p>}
-          <div className="mt-3 flex flex-wrap items-center gap-3">
+          {info && <p className="text-center text-sm text-ink">{info}</p>}
+          <p className="mt-1 text-center text-xs text-muted">
+            Não recebeu? Verifique também a caixa de <strong>spam</strong> ou
+            lixo eletrônico.
+          </p>
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-3">
             <input
               value={codigo}
               onChange={(ev) =>
@@ -235,9 +239,9 @@ export function VerificarEmail({
             </button>
           </div>
 
-          <div className="mt-3 text-sm">
+          <div className="mt-3 text-center text-sm">
             {expirado ? (
-              <div className="flex flex-wrap items-center gap-2 text-muted">
+              <div className="flex flex-wrap items-center justify-center gap-2 text-muted">
                 <span>O código expirou.</span>
                 <button
                   type="button"

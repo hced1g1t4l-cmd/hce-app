@@ -22,6 +22,7 @@ function emailHtml(codigo: string): string {
       <span style="display:inline-block;background:#f4f6fb;border:1px solid #e5e9f2;color:#003288;font-size:30px;font-weight:bold;letter-spacing:8px;padding:14px 24px;border-radius:14px">${codigo}</span>
     </p>
     <p style="font-size:13px;color:#5a6473">Se você não pediu isso, pode ignorar este e-mail.</p>
+    <p style="font-size:12px;color:#8a93a3;border-top:1px solid #e5e9f2;margin-top:18px;padding-top:12px">Este é um e-mail automático enviado de um endereço que não recebe respostas. Por favor, não responda.</p>
   </div>`;
 }
 
