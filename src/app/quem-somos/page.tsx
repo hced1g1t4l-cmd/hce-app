@@ -43,7 +43,7 @@ const VALORES = [
   },
   {
     titulo: "Hospitalidade genuína",
-    texto: "As pessoas em primeiro lugar — no atendimento, na equipe e na sala.",
+    texto: "As pessoas em primeiro lugar, no atendimento, na equipe e na sala.",
   },
   {
     titulo: "Educação que transforma",
