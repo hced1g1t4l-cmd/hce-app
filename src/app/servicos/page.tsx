@@ -51,7 +51,7 @@ const SERVICOS = [
   {
     titulo: "Hospitalidade e experiência do cliente",
     texto:
-      "Cultura de serviço, atendimento e fidelização — transformando hospitalidade em um diferencial competitivo.",
+      "Cultura de serviço, atendimento e fidelização, transformando hospitalidade em um diferencial competitivo.",
     modelos: ["In company", "Palestra"],
   },
   {
