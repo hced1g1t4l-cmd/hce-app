@@ -110,14 +110,13 @@ export default function Home() {
                 Duas trajetórias, uma paixão pela gastronomia
               </h2>
               <p className="mt-6 text-lg leading-relaxed text-muted">
-                Acreditamos que a hospitalidade, a gestão, a qualidade e a
-                gastronomia podem transformar pessoas, equipes e organizações,
-                gerando experiências mais significativas e resultados mais
-                sustentáveis.
+                Acreditamos que o conhecimento transforma a gastronomia quando é
+                aplicado com técnica, hospitalidade e propósito.
               </p>
               <p className="mt-4 text-lg leading-relaxed text-muted">
-                Por isso reunimos consultoria, educação e conteúdo em um só
-                ecossistema, para elevar o padrão de quem vive de gastronomia.
+                Por isso, reunimos consultoria, educação e produção de
+                conhecimento para apoiar pessoas, equipes e empresas em sua
+                trajetória de desenvolvimento.
               </p>
               <div className="mt-8">
                 <Button href="/quem-somos" variant="blue" size="lg">
