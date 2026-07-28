@@ -84,7 +84,7 @@ export default function FaleComAHcePage() {
             </h1>
             <p className="mt-4 text-lg leading-relaxed text-muted">
               Conte seu desafio ou sua ideia. Consultoria, treinamento para a
-              equipe ou parceria de conteúdo — retornaremos o mais breve
+              equipe ou parceria de conteúdo, retornaremos o mais breve
               possível.
             </p>
           </div>
