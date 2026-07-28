@@ -41,7 +41,7 @@ export default function PodcastPage() {
             </h1>
             <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-white/80">
               Conversas sobre hospitalidade, atendimento, fidelização e gestão de
-              Alimentos &amp; Bebidas — conteúdo para inspirar e destravar o seu
+              Alimentos &amp; Bebidas, conteúdo para inspirar e destravar o seu
               negócio. Estamos preparando os primeiros episódios.
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
