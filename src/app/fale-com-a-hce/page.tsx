@@ -194,8 +194,9 @@ export default function FaleComAHcePage() {
             </div>
 
             <p className="mt-4 text-center text-xs text-muted">
-              Seus dados serão usados apenas para responder seu contato, conforme
-              a LGPD. Não compartilhamos com terceiros.
+              As informações enviadas serão tratadas com confidencialidade e
+              utilizadas exclusivamente para o atendimento da sua solicitação, em
+              conformidade com a Lei Geral de Proteção de Dados (LGPD).
             </p>
           </form>
         </Container>
