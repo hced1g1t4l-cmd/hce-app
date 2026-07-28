@@ -181,6 +181,25 @@ p {
   display: none;
 }
 
+/* FAB_016: seta que sugere rolagem na bio do card (movimento suave, sem bounce). */
+@keyframes hce-scroll-nudge {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(3px);
+  }
+}
+.hce-scroll-nudge {
+  animation: hce-scroll-nudge 1.6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hce-scroll-nudge {
+    animation: none;
+  }
+}
+
 /* Flip controlado por estado (JS): clique/toque em qualquer aparelho e
    hover no desktop. O hover e feito no JS para nao "prender" o card virado
    quando o usuario clica para voltar com o mouse ainda em cima. */
