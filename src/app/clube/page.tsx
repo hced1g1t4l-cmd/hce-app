@@ -92,9 +92,10 @@ export default function ClubePage() {
             </div>
 
             <p className="mx-auto mt-10 max-w-2xl text-center text-sm text-muted">
-              Pagamento por cartão recorrente ou PIX. Plano anual com desconto —
-              e promoção de <strong className="text-brand-blue">-10%</strong>{" "}
-              para os 10 primeiros assinantes anuais.
+              Pague com cartão de crédito (cobrança recorrente) ou PIX. Assine o
+              plano anual com desconto e garanta mais{" "}
+              <strong className="text-brand-blue">10% de desconto</strong> se
+              estiver entre os 10 primeiros assinantes anuais.
             </p>
           </Container>
         </section>
