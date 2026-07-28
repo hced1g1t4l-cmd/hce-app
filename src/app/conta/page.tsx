@@ -3,13 +3,9 @@ import { redirect } from "next/navigation";
 import { Container } from "@/components/site/container";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
-import { Button } from "@/components/ui/button";
-import { SairButton } from "@/components/site/sair-button";
-import { PerfilForm } from "@/components/site/perfil-form";
-import { AvatarEditor } from "@/components/site/avatar-editor";
+import { ContaDashboard } from "@/components/site/conta-dashboard";
 import { getSessionUser } from "@/lib/auth-user";
 import { prisma } from "@/lib/db";
-import { capitalizarNome } from "@/lib/nome";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -33,6 +29,7 @@ export default async function ContaPage() {
     where: { id: user.id },
     select: {
       image: true,
+      createdAt: true,
       bio: true,
       telefone: true,
       cep: true,
@@ -49,59 +46,26 @@ export default async function ContaPage() {
     },
   });
 
+  const membroDesde = perfil?.createdAt
+    ? new Intl.DateTimeFormat("pt-BR", {
+        month: "long",
+        year: "numeric",
+      }).format(perfil.createdAt)
+    : null;
+
   return (
     <>
       <SiteHeader />
-      <main id="conteudo" className="flex-1 bg-surface-soft py-16 sm:py-20">
-        <Container className="max-w-2xl">
-          <div className="flex items-center gap-4 sm:gap-5">
-            <AvatarEditor initialImage={perfil?.image ?? null} nome={user.nome} />
-            <div>
-              <h1 className="font-display text-3xl font-bold text-brand-blue sm:text-4xl">
-                Olá, {capitalizarNome(user.nome)?.split(" ")[0] || "bem-vindo"}!
-              </h1>
-              <p className="mt-2 text-lg leading-relaxed text-muted">
-                Esta é a sua área na HCE.
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-8 rounded-3xl border border-line bg-white p-6 shadow-sm sm:p-8">
-            <h2 className="font-display text-sm font-bold tracking-wide text-brand-blue uppercase">
-              Seus dados
-            </h2>
-            <dl className="mt-4 grid gap-4 sm:grid-cols-2">
-              <div>
-                <dt className="text-xs tracking-wide text-muted uppercase">
-                  Nome
-                </dt>
-                <dd className="mt-1 font-medium text-ink">
-                  {capitalizarNome(user.nome) || "—"}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs tracking-wide text-muted uppercase">
-                  E-mail
-                </dt>
-                <dd className="mt-1 font-medium break-all text-ink">
-                  {user.email ?? "—"}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs tracking-wide text-muted uppercase">
-                  Plano
-                </dt>
-                <dd className="mt-1">
-                  <span className="rounded-full bg-brand-amber/25 px-3 py-1 text-sm font-semibold text-brand-amber-dark">
-                    {PLANO_LABEL[user.plano] ?? "Gratuito"}
-                  </span>
-                </dd>
-              </div>
-            </dl>
-          </div>
-
-          <PerfilForm
-            init={{
+      <main id="conteudo" className="flex-1 bg-surface-soft py-12 sm:py-16">
+        <Container className="max-w-5xl">
+          <ContaDashboard
+            nome={user.nome}
+            email={user.email}
+            plano={user.plano}
+            planoLabel={PLANO_LABEL[user.plano] ?? "Gratuito"}
+            avatar={perfil?.image ?? null}
+            membroDesde={membroDesde}
+            perfil={{
               bio: perfil?.bio ?? "",
               telefone: perfil?.telefone ?? "",
               cep: perfil?.cep ?? "",
@@ -117,24 +81,6 @@ export default async function ContaPage() {
               facebook: perfil?.facebook ?? "",
             }}
           />
-
-          <div className="mt-6 rounded-3xl border border-line bg-white p-6 shadow-sm sm:p-8">
-            <h2 className="font-display text-sm font-bold tracking-wide text-brand-blue uppercase">
-              Atalhos
-            </h2>
-            <div className="mt-4 flex flex-wrap gap-3">
-              <Button href="/feed" size="md">
-                Ler o Feed HCE
-              </Button>
-              <Button href="/clube" size="md" variant="blue">
-                Conhecer o +HCE
-              </Button>
-            </div>
-          </div>
-
-          <div className="mt-8">
-            <SairButton />
-          </div>
         </Container>
       </main>
       <SiteFooter />
