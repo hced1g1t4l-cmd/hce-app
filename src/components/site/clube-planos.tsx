@@ -77,7 +77,7 @@ const PLANOS: Plano[] = [
 ];
 
 const ctaBase =
-  "mt-8 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full px-6 py-3 text-center font-display text-sm font-semibold leading-snug shadow-sm transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber active:translate-y-0 active:scale-[0.98] motion-reduce:transform-none motion-reduce:transition-none sm:text-base";
+  "mt-8 inline-flex h-12 w-full items-center justify-center gap-2 whitespace-nowrap rounded-full px-6 text-center font-display text-sm font-semibold leading-snug shadow-sm transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber active:translate-y-0 active:scale-[0.98] motion-reduce:transform-none motion-reduce:transition-none sm:text-base";
 
 export function ClubePlanos() {
   const [open, setOpen] = useState(false);
