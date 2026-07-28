@@ -84,7 +84,7 @@ const GRUPOS: Grupo[] = [
     itens: [
       {
         q: "O que é o +HCE?",
-        a: "É o clube por assinatura da HCE: um acervo de receitas e fichas técnicas, e-books, soluções da cozinha e uma comunidade para quem quer evoluir na cozinha e na gestão do negócio, no seu ritmo.",
+        a: "O +HCE oferece diferentes planos de assinatura com acesso a receitas, e-books, artigos, notícias, soluções para a cozinha e uma comunidade desenvolvida para amadores, profissionais, gestores e empresas que desejam evoluir na gastronomia.",
       },
       {
         q: "Quando o +HCE será lançado?",
