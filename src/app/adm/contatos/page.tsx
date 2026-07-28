@@ -74,6 +74,7 @@ export default async function AdmContatosPage() {
                   const permissoes = [
                     m.permiteEmail && "E-mail",
                     m.permiteTelefone && "Telefone",
+                    m.permiteWhatsapp && "WhatsApp",
                   ].filter(Boolean) as string[];
                   return (
                     <tr key={m.id} className="border-b border-line/70 align-top">
