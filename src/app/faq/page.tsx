@@ -90,12 +90,12 @@ const GRUPOS: Grupo[] = [
         q: "Quando o +HCE será lançado?",
         a: (
           <>
-            Estamos finalizando os últimos detalhes. Cadastre-se em{" "}
+            Estamos nos últimos ajustes. Cadastre-se em{" "}
             <Link href="/avise-me" className={linkClasses}>
               Quero ser avisado
             </Link>{" "}
-            para saber em primeira mão — com condições especiais para quem chegar
-            cedo.
+            para receber o lançamento em primeira mão e garantir condições
+            especiais para os primeiros assinantes.
           </>
         ),
       },
