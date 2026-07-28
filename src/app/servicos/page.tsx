@@ -77,7 +77,7 @@ const SERVICOS = [
 const MODELOS = [
   {
     nome: "Projeto pontual",
-    texto: "Escopo definido com início, meio e entrega — ideal para uma demanda específica.",
+    texto: "Projeto com objetivos, prazo e entregas previamente definidos, ideal para atender a uma necessidade específica.",
   },
   {
     nome: "Consultoria recorrente",
