@@ -1,48 +1,24 @@
-import crypto from "crypto";
 import { NextResponse } from "next/server";
 import { isAuthed } from "@/lib/adm";
 import { prisma } from "@/lib/db";
 import { deleteObject, putObject, r2Configured } from "@/lib/storage";
 import { PLANOS } from "@/lib/planos";
+import { MAX_BYTES, montarKey, tipoDe, keyValida } from "@/lib/midia";
 
 // Frente B: gerencia a biblioteca de midia (fichas, e-books, planilhas, imagens).
 // Protegido pelo login do /adm. Os bytes vao para o Cloudflare R2; o metadado, no Postgres.
+//
+// Dois fluxos de POST:
+//  - JSON  -> confirmacao: o arquivo ja foi enviado direto ao R2 via URL assinada
+//             (presign). Aqui so gravamos o metadado. Ignora o limite de ~4,5 MB
+//             da funcao serverless -> ideal para e-books/fichas grandes.
+//  - multipart/form-data -> upload pelo servidor (fallback p/ arquivos pequenos).
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const MAX_BYTES = 50 * 1024 * 1024; // 50 MB (PDFs/e-books)
-
-// mime -> tipo logico exibido na biblioteca.
-const TIPOS: { test: (m: string, name: string) => boolean; tipo: string }[] = [
-  { test: (m) => m.startsWith("image/"), tipo: "imagem" },
-  { test: (m) => m === "application/pdf", tipo: "pdf" },
-  {
-    test: (m, n) => m === "application/epub+zip" || /\.epub$/i.test(n),
-    tipo: "ebook",
-  },
-  {
-    test: (m, n) =>
-      m.includes("spreadsheet") ||
-      m === "text/csv" ||
-      /\.(xlsx|xls|csv|ods)$/i.test(n),
-    tipo: "planilha",
-  },
-];
-
-function tipoDe(mime: string, name: string): string {
-  for (const t of TIPOS) if (t.test(mime, name)) return t.tipo;
-  return "outro";
-}
-
-function sanitize(name: string): string {
-  return (
-    name
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-zA-Z0-9._-]/g, "-")
-      .replace(/-+/g, "-")
-      .slice(0, 120) || "arquivo"
-  );
+function normalizarPlano(v: string | null): string {
+  const plano = v || "free";
+  return PLANOS.includes(plano as (typeof PLANOS)[number]) ? plano : "free";
 }
 
 export async function POST(req: Request) {
@@ -59,6 +35,59 @@ export async function POST(req: Request) {
     );
   }
 
+  const contentType = req.headers.get("content-type") || "";
+
+  // -------- Fluxo 1: confirmacao (arquivo ja no R2 via URL assinada) --------
+  if (contentType.includes("application/json")) {
+    let body: {
+      key?: string;
+      filename?: string;
+      titulo?: string;
+      mime?: string;
+      size?: number;
+      visibilidade?: string;
+      planoMinimo?: string;
+    };
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json({ error: "Envio inválido" }, { status: 400 });
+    }
+
+    if (!keyValida(body.key)) {
+      return NextResponse.json({ error: "Chave inválida" }, { status: 400 });
+    }
+    const filename = (body.filename || "arquivo").trim();
+    const mime = (body.mime || "application/octet-stream").trim();
+    const tamanho = Number(body.size) || 0;
+    if (tamanho > MAX_BYTES) {
+      return NextResponse.json(
+        { error: "Arquivo muito grande (máximo 50 MB)" },
+        { status: 413 },
+      );
+    }
+    const titulo = (body.titulo || "").trim() || null;
+    const visibilidade = body.visibilidade === "publico" ? "publico" : "privado";
+    const planoMinimo =
+      visibilidade === "publico" ? "free" : normalizarPlano(body.planoMinimo ?? null);
+    const tipo = tipoDe(mime, filename);
+
+    const asset = await prisma.mediaAsset.create({
+      data: {
+        key: body.key,
+        filename,
+        titulo,
+        mime,
+        tamanho,
+        tipo,
+        visibilidade,
+        planoMinimo,
+      },
+    });
+    return NextResponse.json({ id: asset.id, url: `/api/midia/${asset.id}` });
+  }
+
+  // -------- Fluxo 2: upload pelo servidor (fallback, arquivos pequenos) --------
   let form: FormData;
   try {
     form = await req.formData();
@@ -85,15 +114,14 @@ export async function POST(req: Request) {
     (form.get("visibilidade") as string | null) === "publico"
       ? "publico"
       : "privado";
-  let planoMinimo = (form.get("planoMinimo") as string | null) || "free";
-  if (!PLANOS.includes(planoMinimo as (typeof PLANOS)[number])) {
-    planoMinimo = "free";
-  }
+  const planoMinimo =
+    visibilidade === "publico"
+      ? "free"
+      : normalizarPlano(form.get("planoMinimo") as string | null);
 
   const mime = file.type || "application/octet-stream";
   const tipo = tipoDe(mime, file.name);
-  const safe = sanitize(file.name);
-  const key = `${tipo}/${crypto.randomUUID()}-${safe}`;
+  const key = montarKey(mime, file.name);
 
   const bytes = Buffer.from(await file.arrayBuffer());
   try {

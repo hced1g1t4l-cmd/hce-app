@@ -14,7 +14,7 @@ const csp = [
   "img-src 'self' data: blob: https://www.gstatic.com https://www.google.com",
   "font-src 'self'",
   "frame-src https://www.google.com https://recaptcha.net",
-  "connect-src 'self' https://www.google.com https://*.sentry.io https://viacep.com.br",
+  "connect-src 'self' https://www.google.com https://*.sentry.io https://viacep.com.br https://*.r2.cloudflarestorage.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",

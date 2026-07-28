@@ -12,8 +12,40 @@ export function MidiaUploader() {
   const [visibilidade, setVisibilidade] = useState("privado");
   const [planoMinimo, setPlanoMinimo] = useState("free");
   const [enviando, setEnviando] = useState(false);
+  const [progresso, setProgresso] = useState(0);
   const [erro, setErro] = useState<string | null>(null);
   const [ok, setOk] = useState<string | null>(null);
+
+  // Envia o arquivo DIRETO para o R2 via URL assinada (PUT), reportando o
+  // progresso. Usar XHR (e nao fetch) para conseguir o evento de progresso.
+  function enviarParaR2(url: string, mime: string, arquivo: File): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("PUT", url);
+      xhr.setRequestHeader("Content-Type", mime);
+      xhr.upload.onprogress = (ev) => {
+        if (ev.lengthComputable) {
+          setProgresso(Math.round((ev.loaded / ev.total) * 100));
+        }
+      };
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) resolve();
+        else
+          reject(
+            new Error(
+              `O armazenamento recusou o envio (HTTP ${xhr.status}). Verifique o CORS do bucket R2.`,
+            ),
+          );
+      };
+      xhr.onerror = () =>
+        reject(
+          new Error(
+            "Falha de rede ao enviar ao armazenamento (provável bloqueio de CORS no bucket R2).",
+          ),
+        );
+      xhr.send(arquivo);
+    });
+  }
 
   async function enviar(e: React.FormEvent) {
     e.preventDefault();
@@ -24,26 +56,58 @@ export function MidiaUploader() {
       return;
     }
     setEnviando(true);
+    setProgresso(0);
+    const mime = file.type || "application/octet-stream";
     try {
-      const fd = new FormData();
-      fd.append("file", file);
-      fd.append("titulo", titulo);
-      fd.append("visibilidade", visibilidade);
-      fd.append("planoMinimo", visibilidade === "privado" ? planoMinimo : "free");
-
-      const res = await fetch("/api/adm/midia", { method: "POST", body: fd });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        setErro(data.error || "Falha no envio.");
+      // 1) Pedir a URL assinada.
+      const presignRes = await fetch("/api/adm/midia/presign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          filename: file.name,
+          mime,
+          size: file.size,
+        }),
+      });
+      const presign = await presignRes.json().catch(() => ({}));
+      if (!presignRes.ok) {
+        setErro(presign.error || "Não foi possível preparar o envio.");
         return;
       }
+
+      // 2) Enviar o arquivo direto ao R2.
+      await enviarParaR2(presign.url, mime, file);
+
+      // 3) Confirmar: gravar o metadado no banco.
+      const confirmRes = await fetch("/api/adm/midia", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          key: presign.key,
+          filename: file.name,
+          titulo,
+          mime,
+          size: file.size,
+          visibilidade,
+          planoMinimo: visibilidade === "privado" ? planoMinimo : "free",
+        }),
+      });
+      const confirm = await confirmRes.json().catch(() => ({}));
+      if (!confirmRes.ok) {
+        setErro(confirm.error || "Arquivo enviado, mas falhou ao registrar.");
+        return;
+      }
+
       setOk("Arquivo enviado com sucesso.");
       setFile(null);
       setTitulo("");
+      setProgresso(0);
       if (inputRef.current) inputRef.current.value = "";
       router.refresh();
-    } catch {
-      setErro("Erro de rede. Tente novamente.");
+    } catch (err) {
+      setErro(
+        err instanceof Error ? err.message : "Erro de rede. Tente novamente.",
+      );
     } finally {
       setEnviando(false);
     }
@@ -117,6 +181,20 @@ export function MidiaUploader() {
           </select>
         </label>
       </div>
+
+      {enviando && (
+        <div className="mt-4">
+          <div className="h-2 w-full overflow-hidden rounded-full bg-surface-soft">
+            <div
+              className="h-full rounded-full bg-brand-blue transition-all"
+              style={{ width: `${progresso}%` }}
+            />
+          </div>
+          <p className="mt-1 text-xs text-muted">
+            Enviando… {progresso}%
+          </p>
+        </div>
+      )}
 
       {erro && <p className="mt-3 text-sm font-medium text-red-600">{erro}</p>}
       {ok && (
