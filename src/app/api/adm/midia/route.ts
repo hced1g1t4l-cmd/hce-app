@@ -99,13 +99,22 @@ export async function POST(req: Request) {
   try {
     await putObject(key, bytes, mime);
   } catch (e) {
-    const detalhe =
-      e instanceof Error ? e.message : "erro desconhecido no armazenamento";
-    console.error("[midia] falha no upload R2:", detalhe);
+    // Erros do S3/R2 trazem "name" (ex.: AccessDenied, SignatureDoesNotMatch,
+    // NoSuchBucket) e, as vezes, o codigo HTTP em $metadata. Expomos isso para
+    // diagnosticar a causa real (credencial, bucket, permissao) direto na tela.
+    const err = e as {
+      name?: string;
+      message?: string;
+      Code?: string;
+      $metadata?: { httpStatusCode?: number };
+    };
+    const nome = err?.name || err?.Code || "ErroDesconhecido";
+    const msg = err?.message || "erro desconhecido no armazenamento";
+    const http = err?.$metadata?.httpStatusCode;
+    const detalhe = `${nome}${http ? ` (HTTP ${http})` : ""}: ${msg}`;
+    console.error("[midia] falha no upload R2:", detalhe, err);
     return NextResponse.json(
-      {
-        error: `Falha ao enviar para o armazenamento: ${detalhe}`,
-      },
+      { error: `Falha ao enviar para o armazenamento — ${detalhe}` },
       { status: 502 },
     );
   }
