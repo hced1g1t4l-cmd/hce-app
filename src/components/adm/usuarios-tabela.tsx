@@ -11,6 +11,7 @@ export type UsuarioAdm = {
   plano: string;
   aceitaComunicacoes: boolean;
   cadastro: string;
+  ultimoAcesso: string | null;
   image: string | null;
   bio: string | null;
   endereco: string | null;
@@ -88,6 +89,9 @@ export function UsuariosTabela({ usuarios }: { usuarios: UsuarioAdm[] }) {
                 Cadastro
               </th>
               <th className="px-4 py-3 font-semibold whitespace-nowrap">
+                Último acesso
+              </th>
+              <th className="px-4 py-3 font-semibold whitespace-nowrap">
                 Comunic.
               </th>
             </tr>
@@ -118,6 +122,9 @@ export function UsuariosTabela({ usuarios }: { usuarios: UsuarioAdm[] }) {
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap text-muted">
                   {u.cadastro}
+                </td>
+                <td className="px-4 py-3 whitespace-nowrap text-muted">
+                  {u.ultimoAcesso ?? "—"}
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
                   {u.aceitaComunicacoes ? (
@@ -190,6 +197,9 @@ export function UsuariosTabela({ usuarios }: { usuarios: UsuarioAdm[] }) {
               <Campo rotulo="Telefone">{aberto.telefone ?? "—"}</Campo>
               <Campo rotulo="Endereço">{aberto.endereco ?? "—"}</Campo>
               <Campo rotulo="Cadastro">{aberto.cadastro}</Campo>
+              <Campo rotulo="Último acesso">
+                {aberto.ultimoAcesso ?? "—"}
+              </Campo>
               <Campo rotulo="Comunicações">
                 {aberto.aceitaComunicacoes ? "Aceita" : "Não aceita"}
               </Campo>
