@@ -37,13 +37,12 @@ export default async function CriarContaPage({
               Conta gratuita
             </span>
             <h1 className="mt-3 font-display text-3xl font-bold text-balance text-brand-blue sm:text-4xl">
-              Crie sua conta grátis
+              Crie sua conta
             </h1>
             <p className="mt-4 text-lg leading-relaxed text-muted">
-              Com a conta gratuita você desbloqueia o{" "}
-              <strong className="text-brand-blue">Feed HCE</strong> — artigos e
-              conteúdos sobre gastronomia, hospitalidade e gestão. Leva menos de
-              um minuto.
+              Tenha acesso ao{" "}
+              <strong className="text-brand-blue">Feed HCE</strong>, com artigos e
+              material sobre gastronomia, hospitalidade e gestão.
             </p>
           </div>
           <CriarContaForm redirect={red} />
