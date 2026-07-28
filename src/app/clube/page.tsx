@@ -141,7 +141,7 @@ export default function ClubePage() {
           <Container className="grid items-center gap-12 lg:grid-cols-2">
             <div>
               <h2 className="font-display text-3xl font-bold text-brand-amber sm:text-4xl">
-                O +HCE ainda não abriu — mas você pode garantir seu lugar
+                O +HCE ainda não abriu, mas você pode garantir seu lugar
               </h2>
               <p className="mt-5 text-lg leading-relaxed text-white/80">
                 Deixe seu contato e avisaremos em primeira mão quando o +HCE for
