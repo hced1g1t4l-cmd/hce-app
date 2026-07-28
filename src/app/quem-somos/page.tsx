@@ -276,9 +276,8 @@ export default function QuemSomosPage() {
               Como a HCE pode contribuir com você?
             </h2>
             <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-white/80">
-              Consultoria, treinamento para equipes, desenvolvimento de projetos,
-              produção de material técnico ou o +HCE. Conheça as soluções que
-              desenvolvemos para pessoas e negócios da gastronomia.
+              Conheça as soluções que desenvolvemos para pessoas e negócios da
+              gastronomia.
             </p>
             <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button href="/fale-com-a-hce" size="lg">
