@@ -198,8 +198,9 @@ export default function QuemSomosPage() {
                 Ser referência em gastronomia, hospitalidade e gestão de A&B.
               </p>
               <p className="mt-4 leading-relaxed text-muted">
-                Elevar o padrão de quem vive da gastronomia — do amador ao
-                profissional — com método, tecnologia e conteúdo de confiança.
+                Apoiar a evolução de pessoas, profissionais e empreendedores que
+                encontram na gastronomia uma forma de criar, servir e
+                transformar.
               </p>
             </article>
           </Container>
