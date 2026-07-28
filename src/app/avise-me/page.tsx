@@ -95,7 +95,7 @@ export default function AviseMePage() {
             </h1>
             <p className="mt-4 text-lg leading-relaxed text-muted">
               Deixe seus dados e avisaremos você em primeira mão quando o +HCE
-              for lançado — com receitas, fichas técnicas, ebooks e comunidade.
+              for lançado com receitas, fichas técnicas, ebooks e comunidade.
             </p>
           </div>
 
