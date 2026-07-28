@@ -6,6 +6,7 @@ import { SairButton } from "@/components/site/sair-button";
 import { AvatarEditor } from "@/components/site/avatar-editor";
 import { PerfilForm } from "@/components/site/perfil-form";
 import { capitalizarNome } from "@/lib/nome";
+import { planoAtende } from "@/lib/planos";
 
 type PerfilInit = React.ComponentProps<typeof PerfilForm>["init"];
 
@@ -67,6 +68,39 @@ const NAV: { id: SecaoId; label: string; icon: React.ReactNode }[] = [
         <path d="M8 10V7a4 4 0 0 1 8 0v3" />
       </>
     ),
+  },
+];
+
+// Jornada de conteúdo: o que a pessoa acessa hoje e o que desbloqueia.
+const CONTEUDOS: {
+  titulo: string;
+  desc: string;
+  planoMin: string;
+  href: string;
+}[] = [
+  {
+    titulo: "Feed HCE",
+    desc: "Artigos, referências e novidades para aprender e aplicar.",
+    planoMin: "free",
+    href: "/feed",
+  },
+  {
+    titulo: "Soluções semanais para a cozinha",
+    desc: "Atualizações práticas, toda semana.",
+    planoMin: "essencial",
+    href: "/clube",
+  },
+  {
+    titulo: "Receitas e fichas técnicas",
+    desc: "Biblioteca com download em PDF.",
+    planoMin: "profissional",
+    href: "/clube",
+  },
+  {
+    titulo: "E-books, materiais e comunidade",
+    desc: "Conteúdos aprofundados e troca com especialistas.",
+    planoMin: "premium",
+    href: "/clube",
   },
 ];
 
@@ -155,16 +189,57 @@ export function ContaDashboard(props: Props) {
 
             <div className="mt-8 border-t border-line pt-6">
               <h3 className="font-display text-sm font-bold tracking-wide text-brand-blue uppercase">
-                Atalhos
+                Seu conteúdo na HCE
               </h3>
-              <div className="mt-4 flex flex-wrap gap-3">
-                <Button href="/feed" size="md">
-                  Ler o Feed HCE
-                </Button>
-                <Button href="/clube" size="md" variant="blue">
-                  Conhecer o +HCE
-                </Button>
-              </div>
+              <p className="mt-1 text-sm text-muted">
+                Onde você está na jornada — e o que dá para desbloquear.
+              </p>
+              <ul className="mt-4 grid gap-3">
+                {CONTEUDOS.map((c) => {
+                  const liberado = planoAtende(plano, c.planoMin);
+                  return (
+                    <li
+                      key={c.titulo}
+                      className="flex flex-wrap items-center gap-x-4 gap-y-3 rounded-2xl border border-line p-4 sm:flex-nowrap"
+                    >
+                      <span
+                        aria-hidden
+                        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
+                          liberado
+                            ? "bg-brand-amber/25 text-brand-amber-dark"
+                            : "bg-surface-soft text-muted"
+                        }`}
+                      >
+                        {liberado ? <Check /> : <Cadeado />}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-display font-semibold text-brand-blue">
+                          {c.titulo}
+                        </p>
+                        <p className="text-sm text-muted">{c.desc}</p>
+                      </div>
+                      {liberado ? (
+                        <Button
+                          href={c.href}
+                          size="md"
+                          className="w-full shrink-0 sm:w-auto"
+                        >
+                          Abrir
+                        </Button>
+                      ) : (
+                        <Button
+                          href="/clube"
+                          size="md"
+                          variant="ghost"
+                          className="w-full shrink-0 border border-brand-blue/25 whitespace-nowrap sm:w-auto"
+                        >
+                          Com o +HCE
+                        </Button>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
           </Painel>
         )}
@@ -363,6 +438,24 @@ function Dado({
         {valor}
       </p>
     </div>
+  );
+}
+
+function Cadeado() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-4 w-4"
+      aria-hidden="true"
+    >
+      <rect x="5" y="11" width="14" height="9" rx="2" />
+      <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+    </svg>
   );
 }
 
