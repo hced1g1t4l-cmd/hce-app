@@ -19,9 +19,9 @@ export const metadata: Metadata = {
 
 const SERVICOS = [
   {
-    titulo: "Consultoria e diagnóstico de operações",
+    titulo: "Diagnóstico operacional e consultoria em A&B",
     texto:
-      "Análise completa da operação de A&B, gestão, processos e qualidade, com um plano de ação claro e priorizado.",
+      "Gestão, processos e qualidade, com um plano de ação claro e priorizado.",
     modelos: ["Projeto", "Recorrente"],
   },
   {
