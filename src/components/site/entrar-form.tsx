@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { GoogleBotao, DivisorOu } from "@/components/site/google-botao";
 
 function destinoSeguro(redirect?: string): string {
   if (redirect && redirect.startsWith("/") && !redirect.startsWith("//")) {
@@ -11,9 +12,17 @@ function destinoSeguro(redirect?: string): string {
   return "/conta";
 }
 
-export function EntrarForm({ redirect }: { redirect?: string }) {
+export function EntrarForm({
+  redirect,
+  googleHabilitado,
+  aviso,
+}: {
+  redirect?: string;
+  googleHabilitado?: boolean;
+  aviso?: string | null;
+}) {
   const router = useRouter();
-  const [erro, setErro] = useState<string | null>(null);
+  const [erro, setErro] = useState<string | null>(aviso ?? null);
   const [enviando, setEnviando] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -65,6 +74,13 @@ export function EntrarForm({ redirect }: { redirect?: string }) {
       onSubmit={handleSubmit}
       className="mt-8 rounded-3xl border border-line bg-white p-6 shadow-sm sm:p-8"
     >
+      {googleHabilitado && (
+        <>
+          <GoogleBotao apos={destinoSeguro(redirect)} texto="Entrar com o Google" />
+          <DivisorOu />
+        </>
+      )}
+
       <div className="grid gap-5">
         <label className="block">
           <span className="font-display text-sm font-semibold text-brand-blue">
