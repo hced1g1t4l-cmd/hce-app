@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { CriarContaForm } from "@/components/site/criar-conta-form";
 import { getSessionUser } from "@/lib/auth-user";
+import { googleConfigured } from "@/lib/google-oauth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -45,7 +46,7 @@ export default async function CriarContaPage({
               material sobre gastronomia, hospitalidade e gestão.
             </p>
           </div>
-          <CriarContaForm redirect={red} />
+          <CriarContaForm redirect={red} googleHabilitado={googleConfigured()} />
         </Container>
       </main>
       <SiteFooter />

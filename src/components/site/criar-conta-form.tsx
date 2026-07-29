@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Script from "next/script";
+import { GoogleBotao, DivisorOu } from "@/components/site/google-botao";
 
 const SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
@@ -27,7 +28,13 @@ const REGRAS: { id: string; label: string; ok: (s: string) => boolean }[] = [
   },
 ];
 
-export function CriarContaForm({ redirect }: { redirect?: string }) {
+export function CriarContaForm({
+  redirect,
+  googleHabilitado,
+}: {
+  redirect?: string;
+  googleHabilitado?: boolean;
+}) {
   const router = useRouter();
   const [erro, setErro] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
@@ -124,6 +131,16 @@ export function CriarContaForm({ redirect }: { redirect?: string }) {
         aria-hidden
         className="hidden"
       />
+
+      {googleHabilitado && (
+        <>
+          <GoogleBotao
+            apos={destinoSeguro(redirect)}
+            texto="Criar conta com o Google"
+          />
+          <DivisorOu />
+        </>
+      )}
 
       <div className="grid gap-5">
         <label className="block">
