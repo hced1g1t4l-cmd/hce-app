@@ -148,7 +148,7 @@ export default function QuemSomosPage() {
                   key={f.nome}
                   className="reveal overflow-hidden rounded-3xl border border-line bg-white"
                 >
-                  <div className="relative aspect-square bg-gradient-to-b from-brand-blue to-brand-blue-deep">
+                  <div className="relative aspect-square border-b border-line bg-gradient-to-b from-brand-blue/10 to-brand-blue/5">
                     <Image
                       src={f.foto}
                       alt={`${f.nome}, ${f.papel}`}
