@@ -152,17 +152,17 @@ p {
 
 @media (hover: hover) and (pointer: fine) {
   .hce-logo:hover .hce-logo-handle {
-    animation: hce-handle-swing 1.3s ease-in-out infinite;
+    animation: hce-handle-swing 1s ease-in-out infinite;
   }
 }
 
 @keyframes hce-handle-swing {
   0%,
   100% {
-    transform: rotate(-6deg);
+    transform: rotate(-13deg);
   }
   50% {
-    transform: rotate(6deg);
+    transform: rotate(13deg);
   }
 }
 
