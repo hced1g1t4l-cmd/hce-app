@@ -139,39 +139,6 @@ p {
   A frente mostra a foto; ao passar o cursor (ou focar no teclado/toque),
   o cartao vira e revela a mini bio.
 */
-/*
-  Logo HCE: so o "cabo" da frigideirinha balanca ao passar o mouse.
-  Gira pelo ponto onde o cabo encontra a panela, de um lado para o outro,
-  bem sutil e delicado.
-*/
-.hce-logo-handle {
-  transform-origin: 23% 92%;
-  transform: rotate(0deg);
-  will-change: transform;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .hce-logo:hover .hce-logo-handle {
-    animation: hce-handle-swing 1s ease-in-out infinite;
-  }
-}
-
-@keyframes hce-handle-swing {
-  0%,
-  100% {
-    transform: rotate(-13deg);
-  }
-  50% {
-    transform: rotate(13deg);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hce-logo:hover .hce-logo-handle {
-    animation: none;
-  }
-}
-
 .flip-card {
   perspective: 1200px;
 }
