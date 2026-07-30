@@ -219,11 +219,13 @@ export default function QuemSomosPage() {
               </h2>
             </div>
 
-            <div className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {VALORES.map((v) => (
+            <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:auto-rows-fr lg:grid-cols-6">
+              {VALORES.map((v, i) => (
                 <article
                   key={v.titulo}
-                  className="reveal rounded-2xl border border-line bg-white p-7"
+                  className={`reveal h-full rounded-2xl border border-line bg-white p-7 lg:col-span-2 ${
+                    i === 3 ? "lg:col-start-2" : ""
+                  }`}
                 >
                   <h3 className="font-display text-lg font-bold text-brand-blue">
                     {v.titulo}
