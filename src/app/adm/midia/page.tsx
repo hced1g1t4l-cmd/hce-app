@@ -50,7 +50,7 @@ export default async function AdmMidiaPage() {
             Biblioteca de mídia
           </h1>
           <p className="text-sm text-muted">
-            Fichas técnicas, e-books, planilhas e imagens do +HCE — guardados no
+            Fichas técnicas, e-books, planilhas e imagens do +HCE, guardados no
             Cloudflare R2 e entregues com link seguro.
           </p>
         </div>
