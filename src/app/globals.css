@@ -140,34 +140,35 @@ p {
   o cartao vira e revela a mini bio.
 */
 /*
-  Logo HCE: balanço sutil da "frigideirinha" ao passar o mouse.
-  Rotacao delicada de um lado para o outro, como uma frigideira embalando.
+  Logo HCE: so o "cabo" da frigideirinha balanca ao passar o mouse.
+  Gira pelo ponto onde o cabo encontra a panela, de um lado para o outro,
+  bem sutil e delicado.
 */
-.hce-logo-anim {
-  transform-origin: 50% 55%;
-  transition: transform 0.3s ease;
+.hce-logo-handle {
+  transform-origin: 23% 92%;
+  transform: rotate(0deg);
+  will-change: transform;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  a:hover > .hce-logo-anim,
-  .hce-logo-anim:hover {
-    animation: hce-logo-swing 1.2s ease-in-out infinite;
+  .hce-logo:hover .hce-logo-handle {
+    animation: hce-handle-swing 1.3s ease-in-out infinite;
   }
 }
 
-@keyframes hce-logo-swing {
+@keyframes hce-handle-swing {
   0%,
   100% {
-    transform: rotate(-5deg);
+    transform: rotate(-6deg);
   }
   50% {
-    transform: rotate(5deg);
+    transform: rotate(6deg);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hce-logo-anim {
-    animation: none !important;
+  .hce-logo:hover .hce-logo-handle {
+    animation: none;
   }
 }
 

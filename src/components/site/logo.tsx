@@ -4,6 +4,10 @@ import { cn } from "@/lib/cn";
 
 // Logo da HCE. "badge" = simbolo quadrado azul (bom em fundo claro).
 // "light" = versao ambar transparente (para fundos escuros/azul).
+//
+// No badge, o "cabo" da frigideirinha e uma camada separada (logo-handle.png)
+// sobreposta ao logo sem cabo (logo-1x1-base.png). Ao passar o mouse, so o
+// cabo balanca sutilmente, girando pelo ponto onde encontra a panela.
 export function Logo({
   variant = "badge",
   className,
@@ -15,32 +19,65 @@ export function Logo({
   href?: string | null;
   size?: number;
 }) {
-  const src =
-    variant === "badge"
-      ? "/brand/logos/logo-1x1.png"
-      : "/brand/logos/logo-hce.png";
+  const wrap = (inner: React.ReactNode) =>
+    href === null ? (
+      inner
+    ) : (
+      <Link
+        href={href}
+        aria-label="HCE — página inicial"
+        className="inline-flex"
+      >
+        {inner}
+      </Link>
+    );
 
-  const img = (
+  if (variant === "badge") {
+    return wrap(
+      <span
+        className={cn(
+          "hce-logo relative inline-block overflow-hidden rounded-xl",
+          className,
+        )}
+        style={{ width: size, height: size }}
+      >
+        <Image
+          src="/brand/logos/logo-1x1-base.png"
+          alt="HCE — Hospitalidade, Consultoria e Educação em Gastronomia"
+          width={size}
+          height={size}
+          className="h-full w-full"
+          priority
+        />
+        {/* Cabo da frigideirinha (camada animada no hover) */}
+        <Image
+          src="/brand/logos/logo-handle.png"
+          alt=""
+          aria-hidden
+          width={142}
+          height={159}
+          className="hce-logo-handle pointer-events-none absolute"
+          style={{
+            left: "53.7%",
+            top: "29.63%",
+            width: "13.15%",
+            height: "14.72%",
+          }}
+          priority
+        />
+      </span>,
+    );
+  }
+
+  return wrap(
     <Image
-      src={src}
+      src="/brand/logos/logo-hce.png"
       alt="HCE — Hospitalidade, Consultoria e Educação em Gastronomia"
-      width={variant === "badge" ? size : size * 2.4}
+      width={size * 2.4}
       height={size}
-      className={cn(
-        variant === "badge" && "rounded-xl",
-        "hce-logo-anim h-auto w-auto",
-        className,
-      )}
+      className={cn("h-auto w-auto", className)}
       style={{ height: size }}
       priority
-    />
-  );
-
-  if (href === null) return img;
-
-  return (
-    <Link href={href} aria-label="HCE — página inicial" className="inline-flex">
-      {img}
-    </Link>
+    />,
   );
 }
