@@ -139,6 +139,38 @@ p {
   A frente mostra a foto; ao passar o cursor (ou focar no teclado/toque),
   o cartao vira e revela a mini bio.
 */
+/*
+  Logo HCE: balanço sutil da "frigideirinha" ao passar o mouse.
+  Rotacao delicada de um lado para o outro, como uma frigideira embalando.
+*/
+.hce-logo-anim {
+  transform-origin: 50% 55%;
+  transition: transform 0.3s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a:hover > .hce-logo-anim,
+  .hce-logo-anim:hover {
+    animation: hce-logo-swing 1.2s ease-in-out infinite;
+  }
+}
+
+@keyframes hce-logo-swing {
+  0%,
+  100% {
+    transform: rotate(-5deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hce-logo-anim {
+    animation: none !important;
+  }
+}
+
 .flip-card {
   perspective: 1200px;
 }

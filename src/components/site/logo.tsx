@@ -28,7 +28,7 @@ export function Logo({
       height={size}
       className={cn(
         variant === "badge" && "rounded-xl",
-        "h-auto w-auto",
+        "hce-logo-anim h-auto w-auto",
         className,
       )}
       style={{ height: size }}
