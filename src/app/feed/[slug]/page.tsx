@@ -105,18 +105,22 @@ export default async function ArtigoPage({
             </Container>
           )}
 
+          {/* COMPARTILHAR — no início do artigo */}
+          <Container className="max-w-3xl">
+            <div className="mt-8">
+              <CompartilharArtigo
+                caminho={`/feed/${artigo.slug}`}
+                titulo={artigo.titulo}
+              />
+            </div>
+          </Container>
+
           {/* CONTEÚDO — HTML criado no editor do /adm (autor confiável/autenticado) */}
           <Container className="max-w-3xl">
             <div
               className="materia mt-10"
               dangerouslySetInnerHTML={{ __html: artigo.conteudoHtml }}
             />
-            <div className="mt-12">
-              <CompartilharArtigo
-                caminho={`/feed/${artigo.slug}`}
-                titulo={artigo.titulo}
-              />
-            </div>
           </Container>
         </article>
 

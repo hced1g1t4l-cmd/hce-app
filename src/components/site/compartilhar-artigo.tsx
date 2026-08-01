@@ -134,7 +134,7 @@ export function CompartilharArtigo({
         Compartilhar
       </p>
       <p className="mt-1 text-sm text-muted">
-        Gostou? Leve este conteúdo para a sua rede.
+        Leve este conteúdo para a sua rede.
       </p>
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
