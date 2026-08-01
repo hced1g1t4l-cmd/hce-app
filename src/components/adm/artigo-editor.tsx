@@ -16,6 +16,7 @@ import Placeholder from "@tiptap/extension-placeholder";
 import { slugify, dataLonga } from "@/lib/feed";
 import { cn } from "@/lib/cn";
 import { Container } from "@/components/site/container";
+import { GaleriaArtigo } from "@/components/site/galeria-artigo";
 import { CapaEditor } from "./capa-editor";
 
 export type ArtigoInit = {
@@ -26,8 +27,11 @@ export type ArtigoInit = {
   capaUrl: string | null;
   autor: string;
   conteudoHtml: string;
+  galeria?: string[] | null;
   publicado: boolean;
 };
+
+const MAX_GALERIA = 5;
 
 const TAMANHOS = [
   { label: "Normal", valor: "" },
@@ -54,15 +58,19 @@ export function ArtigoEditor({ initial }: { initial?: ArtigoInit }) {
   const [resumo, setResumo] = useState(initial?.resumo ?? "");
   const [autor, setAutor] = useState(initial?.autor ?? "");
   const [capaUrl, setCapaUrl] = useState(initial?.capaUrl ?? "");
+  const [galeria, setGaleria] = useState<string[]>(initial?.galeria ?? []);
   const [publicado, setPublicado] = useState(initial?.publicado ?? false);
   const [erro, setErro] = useState<string | null>(null);
   const [salvando, setSalvando] = useState(false);
   const [enviandoCapa, setEnviandoCapa] = useState(false);
+  const [enviandoGaleria, setEnviandoGaleria] = useState(false);
   const [preview, setPreview] = useState(false);
   const [previewHtml, setPreviewHtml] = useState("");
   const [editandoCapa, setEditandoCapa] = useState(false);
+  const [editandoGaleria, setEditandoGaleria] = useState<number | null>(null);
 
   const capaInputRef = useRef<HTMLInputElement>(null);
+  const galeriaInputRef = useRef<HTMLInputElement>(null);
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -129,6 +137,56 @@ export function ArtigoEditor({ initial }: { initial?: ArtigoInit }) {
     if (url) setCapaUrl(url);
   }
 
+  async function onGaleriaSelecionada(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    e.target.value = "";
+    if (files.length === 0) return;
+    setErro(null);
+    const espaco = MAX_GALERIA - galeria.length;
+    if (espaco <= 0) {
+      setErro(`Você já atingiu o limite de ${MAX_GALERIA} fotos na galeria.`);
+      return;
+    }
+    const aEnviar = files.slice(0, espaco);
+    setEnviandoGaleria(true);
+    const novas: string[] = [];
+    for (const file of aEnviar) {
+      const url = await uploadImagem(file);
+      if (url) novas.push(url);
+    }
+    setEnviandoGaleria(false);
+    if (novas.length > 0) setGaleria((g) => [...g, ...novas].slice(0, MAX_GALERIA));
+    if (files.length > espaco) {
+      setErro(`A galeria aceita até ${MAX_GALERIA} fotos além da capa.`);
+    }
+  }
+
+  function removerDaGaleria(idx: number) {
+    setGaleria((g) => g.filter((_, i) => i !== idx));
+  }
+
+  function moverGaleria(idx: number, dir: -1 | 1) {
+    setGaleria((g) => {
+      const destino = idx + dir;
+      if (destino < 0 || destino >= g.length) return g;
+      const copia = [...g];
+      [copia[idx], copia[destino]] = [copia[destino], copia[idx]];
+      return copia;
+    });
+  }
+
+  async function aplicarGaleriaEditada(blob: Blob) {
+    const idx = editandoGaleria;
+    setEditandoGaleria(null);
+    if (idx === null) return;
+    setErro(null);
+    setEnviandoGaleria(true);
+    const file = new File([blob], "foto.jpg", { type: "image/jpeg" });
+    const url = await uploadImagem(file);
+    setEnviandoGaleria(false);
+    if (url) setGaleria((g) => g.map((u, i) => (i === idx ? url : u)));
+  }
+
   async function salvar(publicarAgora?: boolean) {
     if (!editor) return;
     setErro(null);
@@ -149,6 +207,7 @@ export function ArtigoEditor({ initial }: { initial?: ArtigoInit }) {
       capaUrl: capaUrl.trim() || null,
       autor: autor.trim(),
       conteudoHtml: editor.getHTML(),
+      galeria: galeria.slice(0, MAX_GALERIA),
       publicado: querPublicar,
     };
     setSalvando(true);
@@ -186,6 +245,7 @@ export function ArtigoEditor({ initial }: { initial?: ArtigoInit }) {
           resumo={resumo}
           autor={autor}
           capaUrl={capaUrl}
+          galeria={galeria}
           html={previewHtml}
           onFechar={() => setPreview(false)}
         />
@@ -195,6 +255,13 @@ export function ArtigoEditor({ initial }: { initial?: ArtigoInit }) {
           src={capaUrl}
           onCancelar={() => setEditandoCapa(false)}
           onAplicar={aplicarCapaEditada}
+        />
+      )}
+      {editandoGaleria !== null && galeria[editandoGaleria] && (
+        <CapaEditor
+          src={galeria[editandoGaleria]}
+          onCancelar={() => setEditandoGaleria(null)}
+          onAplicar={aplicarGaleriaEditada}
         />
       )}
       {/* COLUNA PRINCIPAL — conteúdo */}
@@ -371,6 +438,103 @@ export function ArtigoEditor({ initial }: { initial?: ArtigoInit }) {
 
         <div className="rounded-xl border border-line bg-white p-5">
           <h2 className="font-display text-sm font-bold tracking-wide text-brand-blue uppercase">
+            Galeria de fotos
+          </h2>
+          <p className="mt-2 text-xs text-muted">
+            Até {MAX_GALERIA} fotos extras além da capa. Aparecem como um
+            carrossel logo após a capa no artigo.
+          </p>
+
+          {galeria.length > 0 ? (
+            <ul className="mt-3 space-y-2">
+              {galeria.map((url, i) => (
+                <li
+                  key={`${url}-${i}`}
+                  className="flex items-center gap-2 rounded-lg border border-line p-2"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={url}
+                    alt={`Foto ${i + 1} da galeria`}
+                    className="h-12 w-16 shrink-0 rounded-md border border-line object-cover"
+                  />
+                  <span className="min-w-0 flex-1 text-xs font-semibold text-muted">
+                    Foto {i + 1}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      title="Subir"
+                      aria-label="Mover para cima"
+                      onClick={() => moverGaleria(i, -1)}
+                      disabled={i === 0}
+                      className="flex h-7 w-7 items-center justify-center rounded-md border border-line text-brand-blue transition-colors hover:bg-surface-soft disabled:opacity-40"
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      title="Descer"
+                      aria-label="Mover para baixo"
+                      onClick={() => moverGaleria(i, 1)}
+                      disabled={i === galeria.length - 1}
+                      className="flex h-7 w-7 items-center justify-center rounded-md border border-line text-brand-blue transition-colors hover:bg-surface-soft disabled:opacity-40"
+                    >
+                      ↓
+                    </button>
+                    <button
+                      type="button"
+                      title="Editar / posicionar"
+                      aria-label="Editar foto"
+                      onClick={() => setEditandoGaleria(i)}
+                      disabled={enviandoGaleria}
+                      className="flex h-7 w-7 items-center justify-center rounded-md border border-brand-blue text-brand-blue transition-colors hover:bg-brand-blue hover:text-white disabled:opacity-40"
+                    >
+                      ✎
+                    </button>
+                    <button
+                      type="button"
+                      title="Remover"
+                      aria-label="Remover foto"
+                      onClick={() => removerDaGaleria(i)}
+                      className="flex h-7 w-7 items-center justify-center rounded-md text-muted transition-colors hover:bg-red-50 hover:text-red-600"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-3 rounded-lg border border-dashed border-line bg-surface-soft px-3 py-6 text-center text-sm text-muted">
+              Nenhuma foto extra ainda.
+            </p>
+          )}
+
+          <input
+            ref={galeriaInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={onGaleriaSelecionada}
+            className="hidden"
+          />
+          <button
+            type="button"
+            onClick={() => galeriaInputRef.current?.click()}
+            disabled={enviandoGaleria || galeria.length >= MAX_GALERIA}
+            className="mt-3 rounded-full border border-line px-4 py-2 text-sm font-semibold text-brand-blue transition-colors hover:bg-surface-soft disabled:opacity-60"
+          >
+            {enviandoGaleria
+              ? "Enviando…"
+              : galeria.length >= MAX_GALERIA
+                ? "Limite atingido"
+                : `Adicionar fotos (${galeria.length}/${MAX_GALERIA})`}
+          </button>
+        </div>
+
+        <div className="rounded-xl border border-line bg-white p-5">
+          <h2 className="font-display text-sm font-bold tracking-wide text-brand-blue uppercase">
             Autoria e link
           </h2>
           <label className="mt-4 block">
@@ -414,6 +578,7 @@ function ArtigoPreview({
   resumo,
   autor,
   capaUrl,
+  galeria,
   html,
   onFechar,
 }: {
@@ -421,6 +586,7 @@ function ArtigoPreview({
   resumo: string;
   autor: string;
   capaUrl: string;
+  galeria: string[];
   html: string;
   onFechar: () => void;
 }) {
@@ -479,14 +645,9 @@ function ArtigoPreview({
           </Container>
         </header>
 
-        {capaUrl && (
+        {(capaUrl || galeria.length > 0) && (
           <Container className="max-w-3xl">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={capaUrl}
-              alt={titulo}
-              className="-mt-8 aspect-video w-full rounded-2xl border border-line object-cover shadow-lg sm:-mt-10"
-            />
+            <GaleriaArtigo capa={capaUrl} galeria={galeria} titulo={titulo} />
           </Container>
         )}
 

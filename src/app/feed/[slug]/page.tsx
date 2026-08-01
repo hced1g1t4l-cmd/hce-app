@@ -6,6 +6,7 @@ import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { Button } from "@/components/ui/button";
 import { CompartilharArtigo } from "@/components/site/compartilhar-artigo";
+import { GaleriaArtigo } from "@/components/site/galeria-artigo";
 import { prisma } from "@/lib/db";
 import { dataLonga } from "@/lib/feed";
 import { getSessionUser } from "@/lib/auth-user";
@@ -93,14 +94,13 @@ export default async function ArtigoPage({
             </Container>
           </header>
 
-          {/* CAPA */}
-          {artigo.capaUrl && (
+          {/* CAPA + GALERIA (carrossel a partir da capa) */}
+          {(artigo.capaUrl || artigo.galeria.length > 0) && (
             <Container className="max-w-3xl">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={artigo.capaUrl}
-                alt={artigo.titulo}
-                className="-mt-8 aspect-video w-full rounded-2xl border border-line object-cover shadow-lg sm:-mt-10"
+              <GaleriaArtigo
+                capa={artigo.capaUrl}
+                galeria={artigo.galeria}
+                titulo={artigo.titulo}
               />
             </Container>
           )}

@@ -16,6 +16,11 @@ const schema = z.object({
   capaUrl: z.string().trim().max(600).optional().nullable(),
   autor: z.string().trim().min(1, "Autor obrigatório").max(140),
   conteudoHtml: z.string().max(400000),
+  galeria: z
+    .array(z.string().trim().max(600))
+    .max(5, "No máximo 5 fotos na galeria")
+    .optional()
+    .default([]),
   publicado: z.boolean().default(false),
 });
 
@@ -57,6 +62,7 @@ export async function POST(req: Request) {
     capaUrl: data.capaUrl || null,
     autor: data.autor,
     conteudoHtml: data.conteudoHtml,
+    galeria: (data.galeria || []).filter(Boolean).slice(0, 5),
     publicado: data.publicado,
   };
 

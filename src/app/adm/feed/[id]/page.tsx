@@ -44,6 +44,7 @@ export default async function EditarArtigoPage({
             capaUrl: artigo.capaUrl,
             autor: artigo.autor,
             conteudoHtml: artigo.conteudoHtml,
+            galeria: artigo.galeria,
             publicado: artigo.publicado,
           }}
         />
