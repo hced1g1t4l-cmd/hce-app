@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   useEditor,
@@ -13,8 +13,9 @@ import { TextStyleKit } from "@tiptap/extension-text-style";
 import TextAlign from "@tiptap/extension-text-align";
 import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
-import { slugify } from "@/lib/feed";
+import { slugify, dataLonga } from "@/lib/feed";
 import { cn } from "@/lib/cn";
+import { Container } from "@/components/site/container";
 
 export type ArtigoInit = {
   id: string;
@@ -56,6 +57,8 @@ export function ArtigoEditor({ initial }: { initial?: ArtigoInit }) {
   const [erro, setErro] = useState<string | null>(null);
   const [salvando, setSalvando] = useState(false);
   const [enviandoCapa, setEnviandoCapa] = useState(false);
+  const [preview, setPreview] = useState(false);
+  const [previewHtml, setPreviewHtml] = useState("");
 
   const capaInputRef = useRef<HTMLInputElement>(null);
 
@@ -157,8 +160,24 @@ export function ArtigoEditor({ initial }: { initial?: ArtigoInit }) {
     }
   }
 
+  function abrirPreview() {
+    setErro(null);
+    setPreviewHtml(editor?.getHTML() ?? "");
+    setPreview(true);
+  }
+
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
+      {preview && (
+        <ArtigoPreview
+          titulo={titulo}
+          resumo={resumo}
+          autor={autor}
+          capaUrl={capaUrl}
+          html={previewHtml}
+          onFechar={() => setPreview(false)}
+        />
+      )}
       {/* COLUNA PRINCIPAL — conteúdo */}
       <div className="min-w-0">
         <label className="block">
@@ -243,6 +262,30 @@ export function ArtigoEditor({ initial }: { initial?: ArtigoInit }) {
                 Salvar e publicar
               </button>
             )}
+            <button
+              type="button"
+              onClick={abrirPreview}
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-brand-blue px-5 py-2.5 font-display text-sm font-semibold text-brand-blue transition-colors hover:bg-brand-blue hover:text-white"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              Ver preview
+            </button>
+            <p className="text-center text-xs text-muted">
+              Veja como a matéria ficará no Feed HCE antes de publicar.
+            </p>
             <button
               type="button"
               onClick={() => router.push("/adm/feed")}
@@ -331,6 +374,138 @@ export function ArtigoEditor({ initial }: { initial?: ArtigoInit }) {
           </label>
         </div>
       </aside>
+    </div>
+  );
+}
+
+// Preview fiel de como a matéria abre no Feed HCE (mesmo layout de
+// /feed/[slug]). Sobreposicao com botao para voltar ao editor.
+function ArtigoPreview({
+  titulo,
+  resumo,
+  autor,
+  capaUrl,
+  html,
+  onFechar,
+}: {
+  titulo: string;
+  resumo: string;
+  autor: string;
+  capaUrl: string;
+  html: string;
+  onFechar: () => void;
+}) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onFechar();
+    };
+    document.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [onFechar]);
+
+  return (
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-white">
+      {/* Barra do preview (fica fixa no topo) */}
+      <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-line bg-white/95 px-4 py-3 backdrop-blur sm:px-6">
+        <button
+          type="button"
+          onClick={onFechar}
+          className="inline-flex items-center gap-2 rounded-full bg-brand-blue px-4 py-2 font-display text-sm font-semibold text-white transition-colors hover:bg-brand-blue-dark"
+        >
+          <span aria-hidden>←</span> Voltar ao editor
+        </button>
+        <span className="flex items-center gap-2 text-xs font-semibold tracking-wide text-muted uppercase sm:text-sm">
+          <span className="hidden h-2 w-2 rounded-full bg-brand-amber sm:inline-block" />
+          Pré-visualização — assim ficará no Feed HCE
+        </span>
+      </div>
+
+      {/* Réplica do artigo publicado */}
+      <article className="bg-white pb-20">
+        <header className="bg-gradient-to-b from-brand-blue to-brand-blue-deep py-14 text-white sm:py-16">
+          <Container className="max-w-3xl">
+            <span className="text-sm font-semibold text-brand-amber">
+              ← Feed HCE
+            </span>
+            <h1 className="mt-4 font-display text-3xl font-extrabold text-balance sm:text-4xl">
+              {titulo.trim() || "Título da matéria"}
+            </h1>
+            {resumo.trim() && (
+              <p className="mt-4 text-lg leading-relaxed text-white/80">
+                {resumo}
+              </p>
+            )}
+            <p className="mt-6 text-sm text-white/70">
+              Redigido por{" "}
+              <span className="font-semibold text-white">
+                {autor.trim() || "Autor"}
+              </span>{" "}
+              · Última atualização em {dataLonga(new Date())}
+            </p>
+          </Container>
+        </header>
+
+        {capaUrl && (
+          <Container className="max-w-3xl">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={capaUrl}
+              alt={titulo}
+              className="-mt-8 aspect-video w-full rounded-2xl border border-line object-cover shadow-lg sm:-mt-10"
+            />
+          </Container>
+        )}
+
+        <Container className="max-w-3xl">
+          {html.replace(/<[^>]*>/g, "").trim() ? (
+            <div
+              className="materia mt-10"
+              dangerouslySetInnerHTML={{ __html: html }}
+            />
+          ) : (
+            <p className="mt-10 rounded-xl border border-dashed border-line bg-surface-soft px-4 py-10 text-center text-muted">
+              A matéria ainda está vazia. Escreva o conteúdo no editor para
+              visualizar aqui.
+            </p>
+          )}
+        </Container>
+      </article>
+
+      {/* CTA final (igual ao site) */}
+      <section className="bg-surface-soft py-16">
+        <Container className="max-w-3xl text-center">
+          <h2 className="font-display text-2xl font-bold text-brand-blue">
+            Gostou do conteúdo?
+          </h2>
+          <p className="mx-auto mt-3 max-w-xl leading-relaxed text-muted">
+            O +HCE reúne receitas, fichas técnicas, e-books e comunidade para
+            quem quer ir além.
+          </p>
+          <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <span className="inline-flex min-h-12 items-center justify-center rounded-full bg-brand-amber px-6 font-display text-base font-semibold text-brand-blue-deep">
+              Conhecer o +HCE
+            </span>
+            <span className="inline-flex min-h-12 items-center justify-center rounded-full bg-brand-blue px-6 font-display text-base font-semibold text-white">
+              Ver mais artigos
+            </span>
+          </div>
+        </Container>
+      </section>
+
+      <div className="flex justify-center border-t border-line bg-white py-8">
+        <button
+          type="button"
+          onClick={onFechar}
+          className="inline-flex items-center gap-2 rounded-full border border-brand-blue px-6 py-2.5 font-display text-sm font-semibold text-brand-blue transition-colors hover:bg-brand-blue hover:text-white"
+        >
+          <span aria-hidden>←</span> Voltar ao editor
+        </button>
+      </div>
     </div>
   );
 }
