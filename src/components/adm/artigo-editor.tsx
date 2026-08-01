@@ -16,6 +16,7 @@ import Placeholder from "@tiptap/extension-placeholder";
 import { slugify, dataLonga } from "@/lib/feed";
 import { cn } from "@/lib/cn";
 import { Container } from "@/components/site/container";
+import { CapaEditor } from "./capa-editor";
 
 export type ArtigoInit = {
   id: string;
@@ -59,6 +60,7 @@ export function ArtigoEditor({ initial }: { initial?: ArtigoInit }) {
   const [enviandoCapa, setEnviandoCapa] = useState(false);
   const [preview, setPreview] = useState(false);
   const [previewHtml, setPreviewHtml] = useState("");
+  const [editandoCapa, setEditandoCapa] = useState(false);
 
   const capaInputRef = useRef<HTMLInputElement>(null);
 
@@ -112,6 +114,16 @@ export function ArtigoEditor({ initial }: { initial?: ArtigoInit }) {
     if (!file) return;
     setErro(null);
     setEnviandoCapa(true);
+    const url = await uploadImagem(file);
+    setEnviandoCapa(false);
+    if (url) setCapaUrl(url);
+  }
+
+  async function aplicarCapaEditada(blob: Blob) {
+    setEditandoCapa(false);
+    setErro(null);
+    setEnviandoCapa(true);
+    const file = new File([blob], "capa.jpg", { type: "image/jpeg" });
     const url = await uploadImagem(file);
     setEnviandoCapa(false);
     if (url) setCapaUrl(url);
@@ -176,6 +188,13 @@ export function ArtigoEditor({ initial }: { initial?: ArtigoInit }) {
           capaUrl={capaUrl}
           html={previewHtml}
           onFechar={() => setPreview(false)}
+        />
+      )}
+      {editandoCapa && capaUrl && (
+        <CapaEditor
+          src={capaUrl}
+          onCancelar={() => setEditandoCapa(false)}
+          onAplicar={aplicarCapaEditada}
         />
       )}
       {/* COLUNA PRINCIPAL — conteúdo */}
@@ -328,6 +347,16 @@ export function ArtigoEditor({ initial }: { initial?: ArtigoInit }) {
             >
               {enviandoCapa ? "Enviando…" : capaUrl ? "Trocar capa" : "Enviar capa"}
             </button>
+            {capaUrl && (
+              <button
+                type="button"
+                onClick={() => setEditandoCapa(true)}
+                disabled={enviandoCapa}
+                className="rounded-full border border-brand-blue px-4 py-2 text-sm font-semibold text-brand-blue transition-colors hover:bg-brand-blue hover:text-white disabled:opacity-60"
+              >
+                Editar / posicionar
+              </button>
+            )}
             {capaUrl && (
               <button
                 type="button"
