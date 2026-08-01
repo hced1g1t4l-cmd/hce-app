@@ -77,7 +77,7 @@ export default async function FeedPage() {
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-white/80">
               Artigos, dicas e reflexões sobre gastronomia, hospitalidade e
-              gestão de Alimentos &amp; Bebidas — direto de quem vive o setor.
+              gestão de Alimentos &amp; Bebidas, direto de quem vive o setor.
             </p>
           </Container>
         </section>
