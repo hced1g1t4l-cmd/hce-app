@@ -139,6 +139,15 @@ p {
   A frente mostra a foto; ao passar o cursor (ou focar no teclado/toque),
   o cartao vira e revela a mini bio.
 */
+/* Carrossel do Feed (mobile): esconde a barra de rolagem horizontal. */
+.hce-sem-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hce-sem-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 .flip-card {
   perspective: 1200px;
 }

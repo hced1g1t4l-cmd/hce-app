@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Container } from "@/components/site/container";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
+import { ArtigoCard, type FeedItem } from "@/components/site/feed-artigo-card";
+import { FeedCarrossel } from "@/components/site/feed-carrossel";
 import { prisma } from "@/lib/db";
 import { dataLonga } from "@/lib/feed";
 import { getSessionUser } from "@/lib/auth-user";
@@ -47,13 +48,22 @@ export default async function FeedPage() {
     },
   });
 
+  const itens: FeedItem[] = artigos.map((a) => ({
+    id: a.id,
+    slug: a.slug,
+    titulo: a.titulo,
+    resumo: a.resumo,
+    capaUrl: a.capaUrl,
+    meta: `${a.autor} · ${dataLonga(a.publicadoEm ?? a.updatedAt)}`,
+  }));
+
   return (
     <>
       <SiteHeader />
 
       <main id="conteudo" className="flex-1">
         {/* INTRO */}
-        <section className="relative overflow-hidden bg-gradient-to-b from-brand-blue to-brand-blue-deep py-16 text-white sm:py-20">
+        <section className="relative overflow-hidden bg-gradient-to-b from-brand-blue to-brand-blue-deep py-10 text-white sm:py-14">
           <div
             aria-hidden
             className="pointer-events-none absolute -top-24 -right-24 h-96 w-96 rounded-full bg-brand-amber/15 blur-3xl"
@@ -73,9 +83,9 @@ export default async function FeedPage() {
         </section>
 
         {/* LISTAGEM */}
-        <section className="bg-surface-soft py-20 sm:py-24">
+        <section className="bg-surface-soft py-10 sm:py-14">
           <Container>
-            {artigos.length === 0 ? (
+            {itens.length === 0 ? (
               <div className="mx-auto max-w-xl rounded-3xl border border-line bg-white p-12 text-center">
                 <h2 className="font-display text-2xl font-bold text-brand-blue">
                   Em breve, os primeiros conteúdos
@@ -86,43 +96,17 @@ export default async function FeedPage() {
                 </p>
               </div>
             ) : (
-              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                {artigos.map((a) => {
-                  const data = a.publicadoEm ?? a.updatedAt;
-                  return (
-                    <article
-                      key={a.id}
-                      className="reveal group flex flex-col overflow-hidden rounded-2xl border border-line bg-white transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl motion-reduce:transform-none motion-reduce:transition-none"
-                    >
-                      <Link href={`/feed/${a.slug}`} className="flex flex-1 flex-col">
-                        <div className="relative aspect-video bg-gradient-to-br from-brand-blue to-brand-blue-deep">
-                          {a.capaUrl && (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={a.capaUrl}
-                              alt={a.titulo}
-                              className="absolute inset-0 h-full w-full object-cover"
-                            />
-                          )}
-                        </div>
-                        <div className="flex flex-1 flex-col p-6">
-                          <h2 className="font-display text-xl font-bold text-brand-blue">
-                            {a.titulo}
-                          </h2>
-                          {a.resumo && (
-                            <p className="mt-3 flex-1 leading-relaxed text-muted">
-                              {a.resumo}
-                            </p>
-                          )}
-                          <p className="mt-5 text-xs tracking-wide text-muted uppercase">
-                            {a.autor} · {dataLonga(data)}
-                          </p>
-                        </div>
-                      </Link>
-                    </article>
-                  );
-                })}
-              </div>
+              <>
+                {/* Mobile: carrossel (último artigo já em foto + texto) */}
+                <FeedCarrossel items={itens} className="md:hidden" />
+
+                {/* Desktop/tablet: grade */}
+                <div className="hidden gap-8 md:grid md:grid-cols-2 lg:grid-cols-3">
+                  {itens.map((it) => (
+                    <ArtigoCard key={it.id} item={it} className="reveal" />
+                  ))}
+                </div>
+              </>
             )}
           </Container>
         </section>
