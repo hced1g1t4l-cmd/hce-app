@@ -29,9 +29,20 @@ export default async function AdmFeedPage() {
       slug: true,
       autor: true,
       publicado: true,
+      createdAt: true,
       updatedAt: true,
     },
   });
+
+  // ID sequencial estável (ART_001, ART_002...), pela ordem de criação:
+  // o artigo mais antigo é o ART_001, independentemente da ordenação da lista.
+  const ordemCriacao = new Map(
+    [...artigos]
+      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+      .map((a, i) => [a.id, i + 1] as const),
+  );
+  const codigo = (id: string) =>
+    `ART_${String(ordemCriacao.get(id) ?? 0).padStart(3, "0")}`;
 
   return (
     <main className="min-h-screen bg-surface-soft">
@@ -67,12 +78,18 @@ export default async function AdmFeedPage() {
             <table className="w-full border-collapse text-left text-sm">
               <thead>
                 <tr className="border-b border-line bg-surface-soft text-xs tracking-wide text-muted uppercase">
+                  <th className="px-4 py-3 font-semibold whitespace-nowrap">
+                    ID
+                  </th>
                   <th className="px-4 py-3 font-semibold">Título</th>
                   <th className="px-4 py-3 font-semibold whitespace-nowrap">
                     Status
                   </th>
                   <th className="px-4 py-3 font-semibold whitespace-nowrap">
                     Autor
+                  </th>
+                  <th className="px-4 py-3 font-semibold whitespace-nowrap">
+                    Criado em
                   </th>
                   <th className="px-4 py-3 font-semibold whitespace-nowrap">
                     Atualizado
@@ -85,6 +102,9 @@ export default async function AdmFeedPage() {
               <tbody>
                 {artigos.map((a) => (
                   <tr key={a.id} className="border-b border-line/70">
+                    <td className="px-4 py-3 font-mono text-xs font-semibold whitespace-nowrap text-brand-blue">
+                      {codigo(a.id)}
+                    </td>
                     <td className="px-4 py-3">
                       <Link
                         href={`/adm/feed/${a.id}`}
@@ -106,6 +126,9 @@ export default async function AdmFeedPage() {
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-muted">
                       {a.autor}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-muted">
+                      {fmt.format(a.createdAt)}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-muted">
                       {fmt.format(a.updatedAt)}
