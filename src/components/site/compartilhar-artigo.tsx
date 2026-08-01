@@ -86,13 +86,13 @@ export function CompartilharArtigo({
       bg: "#0A66C2",
       href: `https://www.linkedin.com/sharing/share-offsite/?url=${enc(url)}`,
     },
-    {
-      id: "email",
-      nome: "E-mail",
-      bg: "#5a6473",
-      href: `mailto:?subject=${enc(titulo)}&body=${enc(`${titulo}\n\n${url}`)}`,
-    },
   ];
+
+  const email = {
+    nome: "E-mail",
+    bg: "#5a6473",
+    href: `mailto:?subject=${enc(titulo)}&body=${enc(`${titulo}\n\n${url}`)}`,
+  };
 
   async function compartilharNativo(rede: string) {
     if (!url) return;
@@ -177,6 +177,17 @@ export function CompartilharArtigo({
         >
           <Glifo d={ICON.tiktok} />
         </button>
+
+        {/* E-mail (por último, antes de copiar link) */}
+        <a
+          href={email.href}
+          aria-label={`Compartilhar por ${email.nome}`}
+          title={email.nome}
+          className={base}
+          style={{ backgroundColor: email.bg }}
+        >
+          <Glifo d={ICON.email} />
+        </a>
 
         {/* Copiar link */}
         <button
