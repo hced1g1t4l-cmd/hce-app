@@ -5,6 +5,7 @@ import { Container } from "@/components/site/container";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { Button } from "@/components/ui/button";
+import { CompartilharArtigo } from "@/components/site/compartilhar-artigo";
 import { prisma } from "@/lib/db";
 import { dataLonga } from "@/lib/feed";
 import { getSessionUser } from "@/lib/auth-user";
@@ -110,6 +111,12 @@ export default async function ArtigoPage({
               className="materia mt-10"
               dangerouslySetInnerHTML={{ __html: artigo.conteudoHtml }}
             />
+            <div className="mt-12">
+              <CompartilharArtigo
+                caminho={`/feed/${artigo.slug}`}
+                titulo={artigo.titulo}
+              />
+            </div>
           </Container>
         </article>
 
