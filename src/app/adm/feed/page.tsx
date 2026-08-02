@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { isAuthed } from "@/lib/adm";
 import { prisma } from "@/lib/db";
 import { AdmHeader } from "@/components/adm/adm-header";
-import { ArtigoAcoes } from "@/components/adm/artigo-acoes";
+import { ArtigosTabela, type ArtigoRow } from "@/components/adm/artigos-tabela";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -42,8 +42,25 @@ export default async function AdmFeedPage() {
       .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
       .map((a, i) => [a.id, i + 1] as const),
   );
-  const codigo = (id: string) =>
-    `ART_${String(ordemCriacao.get(id) ?? 0).padStart(3, "0")}`;
+
+  const linhas: ArtigoRow[] = artigos.map((a) => {
+    const num = ordemCriacao.get(a.id) ?? 0;
+    return {
+      id: a.id,
+      codigo: `ART_${String(num).padStart(3, "0")}`,
+      num,
+      titulo: a.titulo,
+      slug: a.slug,
+      autor: a.autor,
+      capaUrl: a.capaUrl,
+      publicado: a.publicado,
+      status: a.publicado ? "Publicado" : "Rascunho",
+      criadoTs: a.createdAt.getTime(),
+      criadoFmt: fmt.format(a.createdAt),
+      atualizadoTs: a.updatedAt.getTime(),
+      atualizadoFmt: fmt.format(a.updatedAt),
+    };
+  });
 
   return (
     <main className="min-h-screen bg-surface-soft">
@@ -75,110 +92,7 @@ export default async function AdmFeedPage() {
             começar.
           </p>
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-line bg-white">
-            <table className="w-full border-collapse text-left text-sm">
-              <thead>
-                <tr className="border-b border-line bg-surface-soft text-xs tracking-wide text-muted uppercase">
-                  <th className="px-4 py-3 font-semibold whitespace-nowrap">
-                    ID
-                  </th>
-                  <th className="px-4 py-3 font-semibold">Título</th>
-                  <th className="px-4 py-3 font-semibold whitespace-nowrap">
-                    Status
-                  </th>
-                  <th className="px-4 py-3 font-semibold whitespace-nowrap">
-                    Autor
-                  </th>
-                  <th className="px-4 py-3 font-semibold whitespace-nowrap">
-                    Criado em
-                  </th>
-                  <th className="px-4 py-3 font-semibold whitespace-nowrap">
-                    Atualizado
-                  </th>
-                  <th className="px-4 py-3 font-semibold whitespace-nowrap">
-                    Ações
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {artigos.map((a) => (
-                  <tr key={a.id} className="border-b border-line/70">
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <div className="flex items-center gap-3">
-                        {a.capaUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={a.capaUrl}
-                            alt={`Capa de ${a.titulo}`}
-                            className="h-10 w-14 shrink-0 rounded-md border border-line object-cover"
-                          />
-                        ) : (
-                          <span
-                            aria-hidden
-                            title="Sem capa"
-                            className="flex h-10 w-14 shrink-0 items-center justify-center rounded-md border border-dashed border-line bg-surface-soft text-muted"
-                          >
-                            <svg
-                              width="16"
-                              height="16"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <rect x="3" y="3" width="18" height="18" rx="2" />
-                              <circle cx="8.5" cy="8.5" r="1.5" />
-                              <path d="m21 15-5-5L5 21" />
-                            </svg>
-                          </span>
-                        )}
-                        <span className="font-mono text-xs font-semibold text-brand-blue">
-                          {codigo(a.id)}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <Link
-                        href={`/adm/feed/${a.id}`}
-                        className="font-medium text-brand-blue hover:underline"
-                      >
-                        {a.titulo}
-                      </Link>
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      {a.publicado ? (
-                        <span className="rounded-full bg-brand-amber/25 px-2 py-0.5 text-xs font-semibold text-brand-amber-dark">
-                          Publicado
-                        </span>
-                      ) : (
-                        <span className="rounded-full bg-brand-blue/10 px-2 py-0.5 text-xs font-semibold text-brand-blue">
-                          Rascunho
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-muted">
-                      {a.autor}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-muted">
-                      {fmt.format(a.createdAt)}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-muted">
-                      {fmt.format(a.updatedAt)}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <ArtigoAcoes
-                        id={a.id}
-                        slug={a.slug}
-                        publicado={a.publicado}
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ArtigosTabela artigos={linhas} />
         )}
       </div>
     </main>
