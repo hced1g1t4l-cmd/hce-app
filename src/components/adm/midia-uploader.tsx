@@ -159,9 +159,14 @@ export function MidiaUploader() {
             onChange={(e) => setVisibilidade(e.target.value)}
             className="mt-1 block w-full rounded-lg border border-line px-3 py-2 text-sm"
           >
-            <option value="privado">Privado (exige login/plano)</option>
-            <option value="publico">Público (qualquer visitante)</option>
+            <option value="privado">Privado</option>
+            <option value="publico">Público</option>
           </select>
+          <span className="mt-1 block text-xs text-muted">
+            {visibilidade === "publico"
+              ? "Aberto a qualquer visitante."
+              : "Exige login e plano mínimo."}
+          </span>
         </label>
 
         <label className="block">
@@ -174,11 +179,16 @@ export function MidiaUploader() {
             disabled={visibilidade === "publico"}
             className="mt-1 block w-full rounded-lg border border-line px-3 py-2 text-sm disabled:opacity-50"
           >
-            <option value="free">Gratuito (qualquer conta)</option>
+            <option value="free">Gratuito</option>
             <option value="essencial">Essencial</option>
             <option value="profissional">Profissional</option>
             <option value="premium">Premium</option>
           </select>
+          <span className="mt-1 block text-xs text-muted">
+            {visibilidade === "publico"
+              ? "Não se aplica a arquivos públicos."
+              : "Plano mínimo para acessar o arquivo."}
+          </span>
         </label>
       </div>
 
