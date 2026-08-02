@@ -29,6 +29,7 @@ export async function AdmHeader({
     | "comentarios"
     | "midia"
     | "usuarios"
+    | "backlog"
     | "admins"
     | "logs"
     | "conta";
@@ -168,6 +169,11 @@ export async function AdmHeader({
             href="/adm/usuarios"
             label="Usuários"
             active={active === "usuarios"}
+          />
+          <Tab
+            href="/adm/backlog"
+            label="Backlog"
+            active={active === "backlog"}
           />
           <Tab href="/adm/admins" label="Admins" active={active === "admins"} />
           <Tab href="/adm/logs" label="Logs" active={active === "logs"} />

@@ -293,6 +293,36 @@ model MediaAsset {
   @@index([createdAt])
 }
 
+// Item de backlog interno do time (modulo /adm/backlog).
+// Qualquer admin cria; codigo sequencial BAC_001 e derivado na listagem.
+// descricao = HTML (permite colar imagens via Ctrl+V, embutidas como /api/img/{id}).
+// prioridade = alta | media | baixa
+// status = aberto | em_andamento | concluido | cancelado
+// Guardamos quem/quando de cada transicao (nome do admin, para exibir sem join).
+model BacklogItem {
+  id         String @id @default(cuid())
+  titulo     String
+  descricao  String @db.Text
+  prioridade String @default("media")
+  status     String @default("aberto")
+
+  criadoPorLogin String
+  criadoPorNome  String
+
+  iniciadoEm      DateTime?
+  iniciadoPorNome String?
+  concluidoEm      DateTime?
+  concluidoPorNome String?
+  canceladoEm      DateTime?
+  canceladoPorNome String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, createdAt])
+  @@index([createdAt])
+}
+
 // Mensagem do formulario "Fale com a HCE" (RAF_008).
 // Coletada em /fale-com-a-hce; consultada apenas no /adm/contatos.
 model ContatoMensagem {
