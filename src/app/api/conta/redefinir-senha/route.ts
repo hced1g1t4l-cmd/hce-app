@@ -15,7 +15,18 @@ export const dynamic = "force-dynamic";
 
 const schema = z.object({
   token: z.string().min(10).max(200),
-  senha: z.string().min(8, "A senha precisa de ao menos 8 caracteres").max(200),
+  senha: z
+    .string()
+    .max(200)
+    .refine(
+      (s) =>
+        s.length >= 6 &&
+        /[A-Z]/.test(s) &&
+        /[a-z]/.test(s) &&
+        /[0-9]/.test(s) &&
+        /[^A-Za-z0-9]/.test(s),
+      "A senha precisa ter ao menos 6 caracteres, com maiúscula, minúscula, número e caractere especial.",
+    ),
 });
 
 export async function POST(req: Request) {
