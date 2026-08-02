@@ -2,6 +2,21 @@ import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/cn";
 import { getAdmin } from "@/lib/adm";
+import { prisma } from "@/lib/db";
+
+const JANELA_ONLINE_MS = 15 * 60 * 1000;
+
+function iniciaisDe(nome: string): string {
+  return (
+    nome
+      .trim()
+      .split(/\s+/)
+      .map((p) => p[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase() || "?"
+  );
+}
 
 export async function AdmHeader({
   active,
@@ -19,15 +34,17 @@ export async function AdmHeader({
     | "conta";
 }) {
   const admin = await getAdmin();
-  const iniciais = admin?.nome
-    ? admin.nome
-        .trim()
-        .split(/\s+/)
-        .map((p) => p[0])
-        .slice(0, 2)
-        .join("")
-        .toUpperCase()
-    : "";
+  const iniciais = admin?.nome ? iniciaisDe(admin.nome) : "";
+
+  // Admins online agora (último acesso nos últimos 15 min).
+  const online = await prisma.admin.findMany({
+    where: {
+      ativo: true,
+      ultimoAcesso: { gte: new Date(Date.now() - JANELA_ONLINE_MS) },
+    },
+    orderBy: { ultimoAcesso: "desc" },
+    select: { id: true, nome: true, fotoUrl: true },
+  });
 
   return (
     <header className="border-b border-brand-blue-deep bg-gradient-to-r from-brand-blue to-brand-blue-deep text-white">
@@ -56,6 +73,46 @@ export async function AdmHeader({
             </span>
           </div>
           <div className="flex items-center gap-3">
+            {online.length > 0 && (
+              <div
+                className="flex items-center gap-2"
+                aria-label={`Admins online agora: ${online
+                  .map((a) => a.nome)
+                  .join(", ")}`}
+                title={`Online agora: ${online.map((a) => a.nome).join(", ")}`}
+              >
+                <span className="hidden text-xs font-semibold text-white/70 sm:inline">
+                  Online
+                </span>
+                <div className="flex -space-x-2">
+                  {online.slice(0, 5).map((a) => (
+                    <span key={a.id} className="relative inline-flex">
+                      {a.fotoUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={a.fotoUrl}
+                          alt={a.nome}
+                          className="h-7 w-7 rounded-full object-cover ring-2 ring-brand-blue-deep"
+                        />
+                      ) : (
+                        <span
+                          title={a.nome}
+                          className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 text-[10px] font-bold text-white ring-2 ring-brand-blue-deep"
+                        >
+                          {iniciaisDe(a.nome)}
+                        </span>
+                      )}
+                      <span className="absolute right-0 bottom-0 h-2 w-2 rounded-full bg-green-400 ring-2 ring-brand-blue-deep" />
+                    </span>
+                  ))}
+                  {online.length > 5 && (
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/15 text-[10px] font-bold text-white ring-2 ring-brand-blue-deep">
+                      +{online.length - 5}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
             {admin && (
               <Link
                 href="/adm/conta"
