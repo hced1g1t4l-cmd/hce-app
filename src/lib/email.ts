@@ -55,9 +55,11 @@ export async function sendEmail({
 }
 
 // URL base do site (para montar links em e-mails).
+// Sanitiza a env: remove QUALQUER espaço (inclusive um espaço acidental no fim,
+// que quebrava o link -> "https://www.hcegastronomia.com /redefinir-senha") e
+// tira barras finais. Assim um valor mal digitado na Vercel não corrompe o link.
 export function appUrl(): string {
-  return (
-    process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ||
-    "https://www.hcegastronomia.com"
-  );
+  const raw = process.env.NEXT_PUBLIC_APP_URL || "https://www.hcegastronomia.com";
+  const limpo = raw.replace(/\s+/g, "").replace(/\/+$/, "");
+  return limpo || "https://www.hcegastronomia.com";
 }
