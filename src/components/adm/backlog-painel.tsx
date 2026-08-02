@@ -51,7 +51,16 @@ export function BacklogPainel({ itens }: { itens: BacklogRow[] }) {
 
   // --- Lista ---
   const [filtro, setFiltro] = useState("ativos");
+  const [autor, setAutor] = useState("");
   const [busca, setBusca] = useState("");
+
+  const autores = useMemo(
+    () =>
+      Array.from(new Set(itens.map((i) => i.criadoPorNome))).sort((a, b) =>
+        a.localeCompare(b, "pt-BR"),
+      ),
+    [itens],
+  );
   const [ocupado, setOcupado] = useState<string | null>(null);
   const [aberto, setAberto] = useState<string | null>(null);
 
@@ -124,6 +133,7 @@ export function BacklogPainel({ itens }: { itens: BacklogRow[] }) {
         if (filtro !== "todos") return it.status === filtro;
         return true;
       })
+      .filter((it) => !autor || it.criadoPorNome === autor)
       .filter((it) => {
         if (!q) return true;
         return (
@@ -140,7 +150,7 @@ export function BacklogPainel({ itens }: { itens: BacklogRow[] }) {
         if (pa !== 0) return pa;
         return a.criadoTs - b.criadoTs;
       });
-  }, [itens, filtro, busca]);
+  }, [itens, filtro, autor, busca]);
 
   // Exportação (CSV / Excel) do que está filtrado na tela.
   function dadosExport(): { colunas: string[]; linhas: string[][] } {
@@ -300,12 +310,27 @@ export function BacklogPainel({ itens }: { itens: BacklogRow[] }) {
             </button>
           ))}
         </div>
-        <input
-          value={busca}
-          onChange={(e) => setBusca(e.target.value)}
-          placeholder="Buscar por nome, código ou autor…"
-          className="hce-input sm:max-w-xs"
-        />
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <select
+            value={autor}
+            onChange={(e) => setAutor(e.target.value)}
+            className="hce-input sm:w-48"
+            aria-label="Filtrar por quem criou"
+          >
+            <option value="">Todos os autores</option>
+            {autores.map((a) => (
+              <option key={a} value={a}>
+                {a}
+              </option>
+            ))}
+          </select>
+          <input
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            placeholder="Buscar por nome, código ou autor…"
+            className="hce-input sm:max-w-xs"
+          />
+        </div>
       </div>
 
       {/* EXPORTAR */}
