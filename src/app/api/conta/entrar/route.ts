@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
-import { getClientIp } from "@/lib/anti-bot";
+import { getClientIp, verifyCaptcha } from "@/lib/anti-bot";
 import { rateLimit } from "@/lib/rate-limit";
 import { createSession, normalizeEmail, verifyPassword } from "@/lib/auth-user";
 
@@ -12,6 +12,7 @@ export const dynamic = "force-dynamic";
 const schema = z.object({
   email: z.string().trim().email("E-mail inválido").max(180),
   senha: z.string().min(1, "Informe a senha").max(200),
+  captchaToken: z.string().optional(),
 });
 
 export async function POST(req: Request) {
@@ -29,6 +30,13 @@ export async function POST(req: Request) {
     data = schema.parse(await req.json());
   } catch {
     return NextResponse.json({ error: "Dados inválidos" }, { status: 400 });
+  }
+
+  if (!(await verifyCaptcha(data.captchaToken))) {
+    return NextResponse.json(
+      { error: "Confirme que você não é um robô." },
+      { status: 400 },
+    );
   }
 
   const email = normalizeEmail(data.email);
