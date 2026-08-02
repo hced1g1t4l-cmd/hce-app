@@ -161,15 +161,19 @@ p {
 }
 
 /* Inputs do formulario (RAF_007). */
-.hce-input {
-  width: 100%;
-  border-radius: 0.75rem;
-  border: 1px solid var(--color-line);
-  background: #fff;
-  padding: 0.7rem 0.9rem;
-  font-size: 0.95rem;
-  color: var(--color-ink);
-  transition: border-color 0.2s, box-shadow 0.2s;
+/* Em @layer components para que utilitários de padding do Tailwind (pl-8, pl-9)
+   consigam sobrepor o padding-left quando há ícone/@ à esquerda do campo. */
+@layer components {
+  .hce-input {
+    width: 100%;
+    border-radius: 0.75rem;
+    border: 1px solid var(--color-line);
+    background: #fff;
+    padding: 0.7rem 0.9rem;
+    font-size: 0.95rem;
+    color: var(--color-ink);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
 }
 /* Placeholder mais escuro para atingir contraste AA (>=4.5:1). (RAF_012 #4) */
 .hce-input::placeholder {
