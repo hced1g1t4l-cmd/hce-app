@@ -17,6 +17,14 @@ const fmt = new Intl.DateTimeFormat("pt-BR", {
   timeZone: "America/Sao_Paulo",
 });
 
+// Data no formato yyyy-mm-dd (fuso de São Paulo) para o filtro por período.
+const fmtDia = new Intl.DateTimeFormat("en-CA", {
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  timeZone: "America/Sao_Paulo",
+});
+
 export default async function AdmLogsPage() {
   await requireAdmin();
 
@@ -28,6 +36,7 @@ export default async function AdmLogsPage() {
   const linhas: LogRow[] = logs.map((l) => ({
     id: l.id,
     quando: fmt.format(l.createdAt),
+    dia: fmtDia.format(l.createdAt),
     adminLogin: l.adminLogin,
     acao: l.acao,
     detalhe: l.detalhe,
