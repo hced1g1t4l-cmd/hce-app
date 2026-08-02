@@ -34,6 +34,7 @@ export default async function ContaPage() {
       createdAt: true,
       emailVerified: true,
       bio: true,
+      handle: true,
       telefone: true,
       cep: true,
       logradouro: true,
@@ -71,6 +72,7 @@ export default async function ContaPage() {
             membroDesde={membroDesde}
             perfil={{
               bio: perfil?.bio ?? "",
+              handle: perfil?.handle ?? "",
               telefone: perfil?.telefone ?? "",
               cep: perfil?.cep ?? "",
               logradouro: perfil?.logradouro ?? "",

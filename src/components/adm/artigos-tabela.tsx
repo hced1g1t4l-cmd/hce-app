@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ArtigoAcoes } from "./artigo-acoes";
+import { REACOES, type ContagemReacoes } from "@/lib/reacoes";
 
 export type ArtigoRow = {
   id: string;
@@ -14,6 +15,10 @@ export type ArtigoRow = {
   capaUrl: string | null;
   publicado: boolean;
   status: string;
+  reacoes: ContagemReacoes;
+  reacoesTotal: number;
+  comentariosAprovados: number;
+  comentariosPendentes: number;
   criadoTs: number;
   criadoFmt: string;
   atualizadoTs: number;
@@ -24,14 +29,22 @@ type ColKey =
   | "codigo"
   | "titulo"
   | "status"
+  | "reacoes"
+  | "comentarios"
   | "autor"
   | "criado"
   | "atualizado";
 
-const COLUNAS: { key: ColKey; label: string; tipo: "texto" | "status" }[] = [
+const COLUNAS: {
+  key: ColKey;
+  label: string;
+  tipo: "texto" | "status" | "custom";
+}[] = [
   { key: "codigo", label: "ID", tipo: "texto" },
   { key: "titulo", label: "Título", tipo: "texto" },
   { key: "status", label: "Status", tipo: "status" },
+  { key: "reacoes", label: "Reações", tipo: "custom" },
+  { key: "comentarios", label: "Comentários", tipo: "custom" },
   { key: "autor", label: "Autor", tipo: "texto" },
   { key: "criado", label: "Criado em", tipo: "texto" },
   { key: "atualizado", label: "Atualizado", tipo: "texto" },
@@ -45,6 +58,10 @@ function valorPara(a: ArtigoRow, key: ColKey): string {
       return a.titulo;
     case "status":
       return a.status;
+    case "reacoes":
+      return String(a.reacoesTotal);
+    case "comentarios":
+      return String(a.comentariosAprovados + a.comentariosPendentes);
     case "autor":
       return a.autor;
     case "criado":
@@ -58,6 +75,10 @@ function ordenavelPara(a: ArtigoRow, key: ColKey): number | string {
   switch (key) {
     case "codigo":
       return a.num;
+    case "reacoes":
+      return a.reacoesTotal;
+    case "comentarios":
+      return a.comentariosAprovados + a.comentariosPendentes;
     case "criado":
       return a.criadoTs;
     case "atualizado":
@@ -207,7 +228,7 @@ export function ArtigosTabela({ artigos }: { artigos: ArtigoRow[] }) {
             <tr className="border-b border-line bg-white">
               {COLUNAS.map((c) => (
                 <th key={c.key} className="px-2 py-2 align-top">
-                  {c.tipo === "status" ? (
+                  {c.tipo === "custom" ? null : c.tipo === "status" ? (
                     <select
                       value={filtros[c.key] ?? ""}
                       onChange={(e) => setFiltro(c.key, e.target.value)}
@@ -299,6 +320,45 @@ export function ArtigosTabela({ artigos }: { artigos: ArtigoRow[] }) {
                         Rascunho
                       </span>
                     )}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    {a.reacoesTotal === 0 ? (
+                      <span className="text-muted">—</span>
+                    ) : (
+                      <div className="flex items-center gap-2.5">
+                        {REACOES.map((r) => (
+                          <span
+                            key={r.tipo}
+                            title={`${r.label}: ${a.reacoes[r.tipo]}`}
+                            className={
+                              "inline-flex items-center gap-0.5 text-sm " +
+                              (a.reacoes[r.tipo] > 0 ? "text-ink" : "text-muted/50")
+                            }
+                          >
+                            <span aria-hidden>{r.emoji}</span>
+                            <span className="tabular-nums">
+                              {a.reacoes[r.tipo]}
+                            </span>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <div className="flex items-center gap-2">
+                      <span className="text-ink">
+                        {a.comentariosAprovados}
+                      </span>
+                      {a.comentariosPendentes > 0 && (
+                        <Link
+                          href="/adm/comentarios"
+                          title={`${a.comentariosPendentes} aguardando aprovação`}
+                          className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800 hover:bg-amber-200"
+                        >
+                          +{a.comentariosPendentes} pend.
+                        </Link>
+                      )}
+                    </div>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap text-muted">
                     {a.autor}

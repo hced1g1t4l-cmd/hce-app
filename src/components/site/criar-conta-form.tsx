@@ -6,6 +6,7 @@ import Link from "next/link";
 import Script from "next/script";
 import { GoogleBotao, DivisorOu } from "@/components/site/google-botao";
 import { mascaraTelefone } from "@/lib/telefone";
+import { normalizarHandle } from "@/lib/handle";
 
 const SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
@@ -82,6 +83,7 @@ export function CriarContaForm({
       email: String(fd.get("email") || ""),
       senha,
       telefone: String(fd.get("telefone") || ""),
+      handle: String(fd.get("handle") || ""),
       aceitaComunicacoes: fd.get("aceitaComunicacoes") === "on",
       website: String(fd.get("website") || ""),
       captchaToken,
@@ -189,6 +191,37 @@ export function CriarContaForm({
             }
             className="hce-input mt-1.5"
           />
+        </label>
+
+        <label className="block">
+          <span className="font-display text-sm font-semibold text-brand-blue">
+            Seu @{" "}
+            <span className="font-normal text-muted">(opcional)</span>
+          </span>
+          <div className="relative mt-1.5">
+            <span className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-muted">
+              @
+            </span>
+            <input
+              name="handle"
+              type="text"
+              inputMode="text"
+              autoCapitalize="none"
+              autoComplete="off"
+              spellCheck={false}
+              placeholder="seunome"
+              maxLength={30}
+              onInput={(e) =>
+                (e.currentTarget.value =
+                  normalizarHandle(e.currentTarget.value) ?? "")
+              }
+              className="hce-input pl-8"
+            />
+          </div>
+          <span className="mt-1 block text-xs text-muted">
+            Como você vai aparecer nos comentários dos artigos. Pode definir
+            depois, no seu perfil.
+          </span>
         </label>
 
         <div className="block">

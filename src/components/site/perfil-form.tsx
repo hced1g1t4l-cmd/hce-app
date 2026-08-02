@@ -4,9 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { UFS, ESTADO_NA, PAISES } from "@/lib/localidades";
 import { mascaraTelefone } from "@/lib/telefone";
+import { normalizarHandle } from "@/lib/handle";
 
 type PerfilInit = {
   bio: string;
+  handle: string;
   telefone: string;
   cep: string;
   logradouro: string;
@@ -130,23 +132,56 @@ export function PerfilForm({
           />
         </label>
 
-        <label className="block sm:max-w-xs">
-          <span className="font-display text-sm font-semibold text-brand-blue">
-            Telefone
-          </span>
-          <input
-            value={f.telefone}
-            onChange={(e) =>
-              setF((v) => ({ ...v, telefone: mascaraTelefone(e.target.value) }))
-            }
-            type="tel"
-            inputMode="tel"
-            autoComplete="tel"
-            placeholder="(21) 90000-0000"
-            maxLength={16}
-            className="hce-input mt-1.5"
-          />
-        </label>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <label className="block">
+            <span className="font-display text-sm font-semibold text-brand-blue">
+              Seu @ <span className="font-normal text-muted">(nos comentários)</span>
+            </span>
+            <div className="relative mt-1.5">
+              <span className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-muted">
+                @
+              </span>
+              <input
+                value={f.handle}
+                onChange={(e) =>
+                  setF((v) => ({
+                    ...v,
+                    handle: normalizarHandle(e.target.value) ?? "",
+                  }))
+                }
+                type="text"
+                inputMode="text"
+                autoCapitalize="none"
+                autoComplete="off"
+                spellCheck={false}
+                placeholder="seunome"
+                maxLength={30}
+                className="hce-input mt-0 pl-8"
+              />
+            </div>
+            <span className="mt-1 block text-xs text-muted">
+              Único e público. Usado quando você comenta nos artigos.
+            </span>
+          </label>
+
+          <label className="block">
+            <span className="font-display text-sm font-semibold text-brand-blue">
+              Telefone
+            </span>
+            <input
+              value={f.telefone}
+              onChange={(e) =>
+                setF((v) => ({ ...v, telefone: mascaraTelefone(e.target.value) }))
+              }
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
+              placeholder="(21) 90000-0000"
+              maxLength={16}
+              className="hce-input mt-1.5"
+            />
+          </label>
+        </div>
       </div>
 
       {/* Endereço */}

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth-user";
 import { PAIS_VALIDO, UF_VALIDOS } from "@/lib/localidades";
 import { normalizarTelefone } from "@/lib/telefone";
+import { normalizarHandle, validarHandle } from "@/lib/handle";
 
 // Atualiza o perfil editavel da pessoa (bio, telefone, endereco, redes sociais).
 export const runtime = "nodejs";
@@ -65,9 +66,31 @@ export async function POST(req: Request) {
   const cepDigitos = typeof body.cep === "string" ? body.cep.replace(/\D/g, "").slice(0, 8) : "";
   const cep = cepDigitos.length ? cepDigitos : null;
 
+  // @ publico (handle): opcional, mas se informado precisa ser valido e unico.
+  const handle = normalizarHandle(
+    typeof body.handle === "string" ? body.handle : null,
+  );
+  if (handle) {
+    const erroHandle = validarHandle(handle);
+    if (erroHandle) {
+      return NextResponse.json({ error: erroHandle }, { status: 400 });
+    }
+    const jaExiste = await prisma.user.findFirst({
+      where: { handle, id: { not: user.id } },
+      select: { id: true },
+    });
+    if (jaExiste) {
+      return NextResponse.json(
+        { error: "Esse @ já está em uso. Escolha outro." },
+        { status: 409 },
+      );
+    }
+  }
+
   await prisma.user.update({
     where: { id: user.id },
     data: {
+      handle,
       bio: texto(body.bio, 600),
       telefone: normalizarTelefone(
         typeof body.telefone === "string" ? body.telefone : null,

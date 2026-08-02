@@ -10,6 +10,7 @@ export async function AdmHeader({
     | "contatos"
     | "acessos"
     | "feed"
+    | "comentarios"
     | "midia"
     | "usuarios"
     | "admins"
@@ -80,6 +81,11 @@ export async function AdmHeader({
           />
           <Tab href="/adm/acessos" label="Acessos" active={active === "acessos"} />
           <Tab href="/adm/feed" label="Feed HCE" active={active === "feed"} />
+          <Tab
+            href="/adm/comentarios"
+            label="Comentários"
+            active={active === "comentarios"}
+          />
           <Tab href="/adm/midia" label="Mídia" active={active === "midia"} />
           <Tab
             href="/adm/usuarios"
