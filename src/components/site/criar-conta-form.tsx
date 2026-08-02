@@ -1,14 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Script from "next/script";
 import { GoogleBotao, DivisorOu } from "@/components/site/google-botao";
+import { Recaptcha, type RecaptchaHandle } from "@/components/site/recaptcha";
 import { mascaraTelefone } from "@/lib/telefone";
 import { normalizarHandle } from "@/lib/handle";
-
-const SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
 function destinoSeguro(redirect?: string): string {
   if (redirect && redirect.startsWith("/") && !redirect.startsWith("//")) {
@@ -44,6 +42,7 @@ export function CriarContaForm({
   const [confirmar, setConfirmar] = useState("");
   const [verSenha, setVerSenha] = useState(false);
   const [verConfirmar, setVerConfirmar] = useState(false);
+  const captcha = useRef<RecaptchaHandle>(null);
 
   const senhaForte = REGRAS.every((r) => r.ok(senha));
   const confere = confirmar.length > 0 && senha === confirmar;
@@ -68,10 +67,8 @@ export function CriarContaForm({
     }
 
     let captchaToken: string | undefined;
-    if (SITE_KEY) {
-      const g = (window as unknown as { grecaptcha?: { getResponse: () => string } })
-        .grecaptcha;
-      captchaToken = g?.getResponse();
+    if (captcha.current?.habilitado) {
+      captchaToken = captcha.current.getToken();
       if (!captchaToken) {
         setErro("Confirme que você não é um robô.");
         return;
@@ -97,6 +94,7 @@ export function CriarContaForm({
         body: JSON.stringify(payload),
       });
       if (!res.ok) {
+        captcha.current?.reset();
         const d = (await res.json().catch(() => ({}))) as { error?: string };
         setErro(d.error || "Não foi possível criar a conta.");
         setEnviando(false);
@@ -108,6 +106,7 @@ export function CriarContaForm({
       router.push(`/verificar-email?apos=${encodeURIComponent(dest)}`);
       router.refresh();
     } catch {
+      captcha.current?.reset();
       setErro("Falha de conexão. Tente novamente.");
       setEnviando(false);
     }
@@ -122,9 +121,6 @@ export function CriarContaForm({
       onSubmit={handleSubmit}
       className="mt-8 rounded-3xl border border-line bg-white p-6 shadow-sm sm:p-8"
     >
-      {SITE_KEY && (
-        <Script src="https://www.google.com/recaptcha/api.js" async defer />
-      )}
       {/* Honeypot */}
       <input
         type="text"
@@ -315,11 +311,7 @@ export function CriarContaForm({
         </label>
       </div>
 
-      {SITE_KEY && (
-        <div className="mt-6 flex justify-center">
-          <div className="g-recaptcha" data-sitekey={SITE_KEY} />
-        </div>
-      )}
+      <Recaptcha ref={captcha} />
 
       {erro && (
         <p className="mt-5 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">

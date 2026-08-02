@@ -1,12 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Script from "next/script";
 import { GoogleBotao, DivisorOu } from "@/components/site/google-botao";
-
-const SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+import { Recaptcha, type RecaptchaHandle } from "@/components/site/recaptcha";
 
 function destinoSeguro(redirect?: string): string {
   if (redirect && redirect.startsWith("/") && !redirect.startsWith("//")) {
@@ -27,6 +25,7 @@ export function EntrarForm({
   const router = useRouter();
   const [erro, setErro] = useState<string | null>(aviso ?? null);
   const [enviando, setEnviando] = useState(false);
+  const captcha = useRef<RecaptchaHandle>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -34,11 +33,8 @@ export function EntrarForm({
     const fd = new FormData(e.currentTarget);
 
     let captchaToken: string | undefined;
-    const g = (window as unknown as {
-      grecaptcha?: { getResponse: () => string; reset: () => void };
-    }).grecaptcha;
-    if (SITE_KEY) {
-      captchaToken = g?.getResponse();
+    if (captcha.current?.habilitado) {
+      captchaToken = captcha.current.getToken();
       if (!captchaToken) {
         setErro("Confirme que você não é um robô.");
         return;
@@ -64,7 +60,7 @@ export function EntrarForm({
       };
       if (!res.ok) {
         // Token do reCAPTCHA é de uso único: zera para a próxima tentativa.
-        g?.reset();
+        captcha.current?.reset();
         setErro(d.error || "Não foi possível entrar.");
         setEnviando(false);
         return;
@@ -79,7 +75,7 @@ export function EntrarForm({
       router.push(destinoSeguro(redirect));
       router.refresh();
     } catch {
-      g?.reset();
+      captcha.current?.reset();
       setErro("Falha de conexão. Tente novamente.");
       setEnviando(false);
     }
@@ -94,9 +90,6 @@ export function EntrarForm({
       onSubmit={handleSubmit}
       className="mt-8 rounded-3xl border border-line bg-white p-6 shadow-sm sm:p-8"
     >
-      {SITE_KEY && (
-        <Script src="https://www.google.com/recaptcha/api.js" async defer />
-      )}
       {googleHabilitado && (
         <>
           <GoogleBotao apos={destinoSeguro(redirect)} texto="Entrar com o Google" />
@@ -140,11 +133,7 @@ export function EntrarForm({
         </label>
       </div>
 
-      {SITE_KEY && (
-        <div className="mt-6 flex justify-center">
-          <div className="g-recaptcha" data-sitekey={SITE_KEY} />
-        </div>
-      )}
+      <Recaptcha ref={captcha} />
 
       {erro && (
         <p className="mt-5 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">

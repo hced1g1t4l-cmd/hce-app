@@ -1,15 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
-import Script from "next/script";
-
-const SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+import { Recaptcha, type RecaptchaHandle } from "@/components/site/recaptcha";
 
 export function EsqueciSenhaForm() {
   const [erro, setErro] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
   const [enviado, setEnviado] = useState(false);
+  const captcha = useRef<RecaptchaHandle>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -17,10 +16,8 @@ export function EsqueciSenhaForm() {
     const fd = new FormData(e.currentTarget);
 
     let captchaToken: string | undefined;
-    if (SITE_KEY) {
-      const g = (window as unknown as { grecaptcha?: { getResponse: () => string } })
-        .grecaptcha;
-      captchaToken = g?.getResponse();
+    if (captcha.current?.habilitado) {
+      captchaToken = captcha.current.getToken();
       if (!captchaToken) {
         setErro("Confirme que você não é um robô.");
         return;
@@ -41,6 +38,7 @@ export function EsqueciSenhaForm() {
         body: JSON.stringify(payload),
       });
       if (!res.ok) {
+        captcha.current?.reset();
         const d = (await res.json().catch(() => ({}))) as { error?: string };
         setErro(d.error || "Não foi possível enviar. Tente novamente.");
         setEnviando(false);
@@ -48,6 +46,7 @@ export function EsqueciSenhaForm() {
       }
       setEnviado(true);
     } catch {
+      captcha.current?.reset();
       setErro("Falha de conexão. Tente novamente.");
       setEnviando(false);
     }
@@ -78,9 +77,6 @@ export function EsqueciSenhaForm() {
       onSubmit={handleSubmit}
       className="mt-8 rounded-3xl border border-line bg-white p-6 shadow-sm sm:p-8"
     >
-      {SITE_KEY && (
-        <Script src="https://www.google.com/recaptcha/api.js" async defer />
-      )}
       {/* Honeypot */}
       <input
         type="text"
@@ -105,11 +101,7 @@ export function EsqueciSenhaForm() {
         />
       </label>
 
-      {SITE_KEY && (
-        <div className="mt-6 flex justify-center">
-          <div className="g-recaptcha" data-sitekey={SITE_KEY} />
-        </div>
-      )}
+      <Recaptcha ref={captcha} />
 
       {erro && (
         <p className="mt-5 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
