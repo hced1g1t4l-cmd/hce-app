@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth-user";
 import { PAIS_VALIDO, UF_VALIDOS } from "@/lib/localidades";
+import { normalizarTelefone } from "@/lib/telefone";
 
 // Atualiza o perfil editavel da pessoa (bio, telefone, endereco, redes sociais).
 export const runtime = "nodejs";
@@ -68,7 +69,9 @@ export async function POST(req: Request) {
     where: { id: user.id },
     data: {
       bio: texto(body.bio, 600),
-      telefone: texto(body.telefone, 40),
+      telefone: normalizarTelefone(
+        typeof body.telefone === "string" ? body.telefone : null,
+      ),
       cep,
       logradouro: texto(body.logradouro, 160),
       numero: texto(body.numero, 20),

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { verifyCaptcha, getClientIp } from "@/lib/anti-bot";
 import { rateLimit } from "@/lib/rate-limit";
+import { normalizarTelefone } from "@/lib/telefone";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -65,7 +66,7 @@ export async function POST(req: Request) {
       data: {
         nome: data.nome,
         email: data.email,
-        telefone: data.telefone,
+        telefone: normalizarTelefone(data.telefone) ?? data.telefone,
         canalEmail: data.canalEmail,
         canalSms: data.canalSms,
         canalWhatsapp: data.canalWhatsapp,

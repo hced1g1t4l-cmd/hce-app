@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { getClientIp, verifyCaptcha } from "@/lib/anti-bot";
 import { rateLimit } from "@/lib/rate-limit";
 import { createSession, hashPassword, normalizeEmail } from "@/lib/auth-user";
+import { normalizarTelefone } from "@/lib/telefone";
 
 // Cadastro de conta free (Frente A). Cria o usuario, abre sessao e serve de lead.
 export const runtime = "nodejs";
@@ -74,7 +75,7 @@ export async function POST(req: Request) {
     data: {
       name: data.nome,
       email,
-      telefone: data.telefone || null,
+      telefone: normalizarTelefone(data.telefone),
       aceitaComunicacoes: Boolean(data.aceitaComunicacoes),
       passwordHash: hashPassword(data.senha),
       role: "MEMBER",

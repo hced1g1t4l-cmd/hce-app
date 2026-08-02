@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Script from "next/script";
 import { GoogleBotao, DivisorOu } from "@/components/site/google-botao";
+import { mascaraTelefone } from "@/lib/telefone";
 
 const SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
@@ -179,8 +180,13 @@ export function CriarContaForm({
           <input
             name="telefone"
             type="tel"
+            inputMode="tel"
             autoComplete="tel"
             placeholder="(21) 90000-0000"
+            maxLength={16}
+            onInput={(e) =>
+              (e.currentTarget.value = mascaraTelefone(e.currentTarget.value))
+            }
             className="hce-input mt-1.5"
           />
         </label>
