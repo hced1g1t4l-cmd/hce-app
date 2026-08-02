@@ -4,6 +4,9 @@
 // quando a HCE tiver o numero/chip oficial). Os CTAs apontam para o
 // formulario "Fale com a HCE" (/fale-com-a-hce).
 
+export const SITE_URL = "https://www.hcegastronomia.com";
+export const SITE_NAME = "HCE Gastronomia";
+
 export const EMAIL_CONTATO = "contato@hcegastronomia.com";
 
 // Redes sociais oficiais (fonte: "REDES SOCIAIS HCE GASTRONOMIA.pdf").

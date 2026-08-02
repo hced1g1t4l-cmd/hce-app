@@ -5,6 +5,7 @@ import { Container } from "@/components/site/container";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { Button } from "@/components/ui/button";
+import { JsonLd } from "@/components/seo/json-ld";
 import { EMAIL_CONTATO } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -141,9 +142,69 @@ const GRUPOS: Grupo[] = [
   },
 ];
 
+// Versão em texto puro das perguntas/respostas para o dado estruturado
+// FAQPage (rich result do Google). Mantida separada das respostas em JSX.
+const FAQ_TEXTO: { q: string; a: string }[] = [
+  {
+    q: "O que significa HCE?",
+    a: "HCE é a sigla de Hospitalidade, Consultoria e Educação. Somos a união das trajetórias de Cris Leite e Gio Gropello, dedicada a desenvolver pessoas, fortalecer equipes e impulsionar resultados no setor de Alimentos & Bebidas.",
+  },
+  {
+    q: "Para quem a HCE trabalha?",
+    a: "Para pequenas e médias empresas de A&B e foodservice, profissionais de cozinha, gestores e empreendedores, estudantes de gastronomia e também para amadores e curiosos que querem cozinhar com mais técnica.",
+  },
+  {
+    q: "Quais serviços vocês oferecem?",
+    a: "Consultoria e diagnóstico de operações, elaboração de cardápio, padronização de processos, gestão de custos (CMV), treinamento de equipes, hospitalidade, cursos e palestras.",
+  },
+  {
+    q: "Como funciona a consultoria?",
+    a: "Começamos por um diagnóstico da operação, construímos um plano de ação priorizado e apoiamos a implementação. O trabalho pode ser um projeto pontual, um acompanhamento recorrente ou um programa in company para a sua equipe.",
+  },
+  {
+    q: "O atendimento é presencial ou on-line?",
+    a: "A HCE está sediada no Rio de Janeiro e atende presencialmente na região. Para consultorias, cursos e mentorias, também oferece atendimento on-line em todo o Brasil.",
+  },
+  {
+    q: "Como peço um orçamento?",
+    a: "É só contar o seu desafio pelo formulário Fale com a HCE. A partir disso, desenhamos a proposta ideal para o seu momento.",
+  },
+  {
+    q: "O que é o +HCE?",
+    a: "O +HCE oferece diferentes planos de assinatura com acesso a receitas, e-books, artigos, notícias, soluções para a cozinha e uma comunidade desenvolvida para amadores, profissionais, gestores e empresas que desejam evoluir na gastronomia.",
+  },
+  {
+    q: "Quando o +HCE será lançado?",
+    a: "Estamos nos últimos ajustes. Cadastre-se em Quero ser avisado para receber o lançamento em primeira mão e garantir condições especiais para os primeiros assinantes.",
+  },
+  {
+    q: "Quais são os planos e preços?",
+    a: "Serão quatro planos, do Gratuito ao Premium, com opção avulsa e anual (com desconto). Veja os detalhes na página do +HCE.",
+  },
+  {
+    q: "Como será o pagamento?",
+    a: "Com cartão de crédito (cobrança recorrente) ou PIX. Enquanto o checkout não está disponível, você pode se cadastrar para ser avisado do lançamento.",
+  },
+  {
+    q: "Como falo com a HCE?",
+    a: `Pelo formulário Fale com a HCE ou pelo e-mail ${EMAIL_CONTATO}. Você também nos encontra nas redes sociais no rodapé do site.`,
+  },
+];
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: FAQ_TEXTO.map((item) => ({
+    "@type": "Question",
+    name: item.q,
+    acceptedAnswer: { "@type": "Answer", text: item.a },
+  })),
+};
+
 export default function FaqPage() {
   return (
     <>
+      <JsonLd data={faqJsonLd} />
       <SiteHeader />
 
       <main id="conteudo" className="flex-1">

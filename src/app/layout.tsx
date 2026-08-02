@@ -3,6 +3,7 @@ import { Inter, Poppins } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
 import { Analytics } from "@/components/analytics";
+import { OrganizationJsonLd } from "@/components/seo/json-ld";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -48,6 +49,11 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
+  // Verificação do Google Search Console via meta tag (opcional): defina
+  // NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION na Vercel com o código do GSC.
+  verification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }
+    : undefined,
   robots: {
     index: true,
     follow: true,
@@ -93,6 +99,7 @@ export default function RootLayout({
         <a href="#conteudo" className="skip-link">
           Pular para o conteúdo
         </a>
+        <OrganizationJsonLd />
         {children}
         <Suspense fallback={null}>
           <Analytics />
