@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { mascaraTelefone } from "@/lib/telefone";
 import { useRouter } from "next/navigation";
 import Script from "next/script";
 import { Container } from "@/components/site/container";
@@ -133,7 +134,14 @@ export default function FaleComAHcePage() {
                   id="telefone"
                   name="telefone"
                   type="tel"
+                  inputMode="tel"
                   autoComplete="tel"
+                  maxLength={16}
+                  onInput={(e) =>
+                    (e.currentTarget.value = mascaraTelefone(
+                      e.currentTarget.value,
+                    ))
+                  }
                   className="hce-input"
                   placeholder="(21) 90000-0000"
                 />

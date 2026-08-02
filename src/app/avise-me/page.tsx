@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Script from "next/script";
+import { mascaraTelefone } from "@/lib/telefone";
 import { Container } from "@/components/site/container";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
@@ -144,7 +145,14 @@ export default function AviseMePage() {
                   name="telefone"
                   type="tel"
                   required
+                  inputMode="tel"
                   autoComplete="tel"
+                  maxLength={16}
+                  onInput={(e) =>
+                    (e.currentTarget.value = mascaraTelefone(
+                      e.currentTarget.value,
+                    ))
+                  }
                   className="hce-input"
                   placeholder="(21) 90000-0000"
                 />

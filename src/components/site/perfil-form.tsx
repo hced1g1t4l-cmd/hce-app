@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { UFS, ESTADO_NA, PAISES } from "@/lib/localidades";
+import { mascaraTelefone } from "@/lib/telefone";
 
 type PerfilInit = {
   bio: string;
@@ -135,10 +136,14 @@ export function PerfilForm({
           </span>
           <input
             value={f.telefone}
-            onChange={set("telefone")}
+            onChange={(e) =>
+              setF((v) => ({ ...v, telefone: mascaraTelefone(e.target.value) }))
+            }
             type="tel"
+            inputMode="tel"
             autoComplete="tel"
             placeholder="(21) 90000-0000"
+            maxLength={16}
             className="hce-input mt-1.5"
           />
         </label>
