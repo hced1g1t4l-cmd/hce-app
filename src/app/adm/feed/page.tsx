@@ -28,6 +28,7 @@ export default async function AdmFeedPage() {
       titulo: true,
       slug: true,
       autor: true,
+      capaUrl: true,
       publicado: true,
       createdAt: true,
       updatedAt: true,
@@ -102,8 +103,41 @@ export default async function AdmFeedPage() {
               <tbody>
                 {artigos.map((a) => (
                   <tr key={a.id} className="border-b border-line/70">
-                    <td className="px-4 py-3 font-mono text-xs font-semibold whitespace-nowrap text-brand-blue">
-                      {codigo(a.id)}
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <div className="flex items-center gap-3">
+                        {a.capaUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={a.capaUrl}
+                            alt={`Capa de ${a.titulo}`}
+                            className="h-10 w-14 shrink-0 rounded-md border border-line object-cover"
+                          />
+                        ) : (
+                          <span
+                            aria-hidden
+                            title="Sem capa"
+                            className="flex h-10 w-14 shrink-0 items-center justify-center rounded-md border border-dashed border-line bg-surface-soft text-muted"
+                          >
+                            <svg
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <rect x="3" y="3" width="18" height="18" rx="2" />
+                              <circle cx="8.5" cy="8.5" r="1.5" />
+                              <path d="m21 15-5-5L5 21" />
+                            </svg>
+                          </span>
+                        )}
+                        <span className="font-mono text-xs font-semibold text-brand-blue">
+                          {codigo(a.id)}
+                        </span>
+                      </div>
                     </td>
                     <td className="px-4 py-3">
                       <Link
