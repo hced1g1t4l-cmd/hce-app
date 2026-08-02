@@ -3,6 +3,7 @@ import { requireAdmin } from "@/lib/adm";
 import { prisma } from "@/lib/db";
 import { AdmHeader } from "@/components/adm/adm-header";
 import { ArtigosTabela, type ArtigoRow } from "@/components/adm/artigos-tabela";
+import { contagemZero, type ReacaoTipo } from "@/lib/reacoes";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -34,6 +35,38 @@ export default async function AdmFeedPage() {
     },
   });
 
+  // Contadores de reações (por tipo) e comentários (aprovados/pendentes) por artigo.
+  const [reacoesRows, comentariosRows] = await Promise.all([
+    prisma.artigoReacao.groupBy({
+      by: ["artigoId", "tipo"],
+      _count: { tipo: true },
+    }),
+    prisma.comentario.groupBy({
+      by: ["artigoId", "status"],
+      _count: { status: true },
+    }),
+  ]);
+
+  const reacoesPorArtigo = new Map<string, ReturnType<typeof contagemZero>>();
+  for (const r of reacoesRows) {
+    const c = reacoesPorArtigo.get(r.artigoId) ?? contagemZero();
+    if (r.tipo in c) c[r.tipo as ReacaoTipo] = r._count.tipo;
+    reacoesPorArtigo.set(r.artigoId, c);
+  }
+  const comentariosPorArtigo = new Map<
+    string,
+    { aprovados: number; pendentes: number }
+  >();
+  for (const c of comentariosRows) {
+    const atual = comentariosPorArtigo.get(c.artigoId) ?? {
+      aprovados: 0,
+      pendentes: 0,
+    };
+    if (c.status === "aprovado") atual.aprovados = c._count.status;
+    else if (c.status === "pendente") atual.pendentes = c._count.status;
+    comentariosPorArtigo.set(c.artigoId, atual);
+  }
+
   // ID sequencial estável (ART_001, ART_002...), pela ordem de criação:
   // o artigo mais antigo é o ART_001, independentemente da ordenação da lista.
   const ordemCriacao = new Map(
@@ -44,6 +77,13 @@ export default async function AdmFeedPage() {
 
   const linhas: ArtigoRow[] = artigos.map((a) => {
     const num = ordemCriacao.get(a.id) ?? 0;
+    const reacoes = reacoesPorArtigo.get(a.id) ?? contagemZero();
+    const reacoesTotal =
+      reacoes.gostei + reacoes.amei + reacoes.aplausos + reacoes.inspirador;
+    const coment = comentariosPorArtigo.get(a.id) ?? {
+      aprovados: 0,
+      pendentes: 0,
+    };
     return {
       id: a.id,
       codigo: `ART_${String(num).padStart(3, "0")}`,
@@ -54,6 +94,10 @@ export default async function AdmFeedPage() {
       capaUrl: a.capaUrl,
       publicado: a.publicado,
       status: a.publicado ? "Publicado" : "Rascunho",
+      reacoes,
+      reacoesTotal,
+      comentariosAprovados: coment.aprovados,
+      comentariosPendentes: coment.pendentes,
       criadoTs: a.createdAt.getTime(),
       criadoFmt: fmt.format(a.createdAt),
       atualizadoTs: a.updatedAt.getTime(),

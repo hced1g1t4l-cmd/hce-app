@@ -85,6 +85,7 @@ export type SessionUser = {
   role: "MEMBER" | "ADMIN";
   plano: string;
   emailVerificado: boolean; // e-mail confirmado (obrigatorio p/ usar a conta)
+  handle: string | null; // @ publico (comentarios)
 };
 
 // Le a sessao a partir do cookie. Pode ser usado em Server Components (so leitura).
@@ -118,6 +119,7 @@ export async function getSessionUser(): Promise<SessionUser | null> {
     role: u.role,
     plano: u.plano,
     emailVerificado: Boolean(u.emailVerified),
+    handle: u.handle ?? null,
   };
 }
 

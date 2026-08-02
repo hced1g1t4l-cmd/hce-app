@@ -5,6 +5,7 @@ import { getClientIp, verifyCaptcha } from "@/lib/anti-bot";
 import { rateLimit } from "@/lib/rate-limit";
 import { createSession, hashPassword, normalizeEmail } from "@/lib/auth-user";
 import { normalizarTelefone } from "@/lib/telefone";
+import { normalizarHandle, validarHandle } from "@/lib/handle";
 
 // Cadastro de conta free (Frente A). Cria o usuario, abre sessao e serve de lead.
 export const runtime = "nodejs";
@@ -26,6 +27,7 @@ const schema = z.object({
       "A senha precisa ter ao menos 6 caracteres, com maiúscula, minúscula, número e caractere especial.",
     ),
   telefone: z.string().trim().max(40).optional().nullable(),
+  handle: z.string().trim().max(40).optional().nullable(),
   aceitaComunicacoes: z.boolean().optional(),
   website: z.string().max(200).optional(), // honeypot: humano deixa vazio
   captchaToken: z.string().optional(),
@@ -71,10 +73,27 @@ export async function POST(req: Request) {
     );
   }
 
+  // @ publico (opcional no cadastro, mas se informado precisa ser valido/unico).
+  const handle = normalizarHandle(data.handle);
+  if (handle) {
+    const erroHandle = validarHandle(handle);
+    if (erroHandle) {
+      return NextResponse.json({ error: erroHandle }, { status: 400 });
+    }
+    const handleUsado = await prisma.user.findUnique({ where: { handle } });
+    if (handleUsado) {
+      return NextResponse.json(
+        { error: "Esse @ já está em uso. Escolha outro." },
+        { status: 409 },
+      );
+    }
+  }
+
   const user = await prisma.user.create({
     data: {
       name: data.nome,
       email,
+      handle,
       telefone: normalizarTelefone(data.telefone),
       aceitaComunicacoes: Boolean(data.aceitaComunicacoes),
       passwordHash: hashPassword(data.senha),

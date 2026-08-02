@@ -7,9 +7,19 @@ import { SiteFooter } from "@/components/site/site-footer";
 import { Button } from "@/components/ui/button";
 import { CompartilharArtigo } from "@/components/site/compartilhar-artigo";
 import { GaleriaArtigo } from "@/components/site/galeria-artigo";
+import { ReacoesArtigo } from "@/components/site/reacoes-artigo";
+import {
+  ComentariosArtigo,
+  type ComentarioPublico,
+} from "@/components/site/comentarios-artigo";
 import { prisma } from "@/lib/db";
 import { dataLonga } from "@/lib/feed";
 import { getSessionUser } from "@/lib/auth-user";
+import {
+  contagemZero,
+  type ContagemReacoes,
+  type ReacaoTipo,
+} from "@/lib/reacoes";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -62,6 +72,49 @@ export default async function ArtigoPage({
   if (!artigo) notFound();
 
   const data = artigo.publicadoEm ?? artigo.updatedAt;
+
+  // Reações: contagem por tipo + a reação do usuário atual.
+  const [gruposReacao, minhaReacaoRow, comentariosRows] = await Promise.all([
+    prisma.artigoReacao.groupBy({
+      by: ["tipo"],
+      where: { artigoId: artigo.id },
+      _count: { tipo: true },
+    }),
+    prisma.artigoReacao.findUnique({
+      where: { artigoId_userId: { artigoId: artigo.id, userId: sessao.id } },
+      select: { tipo: true },
+    }),
+    prisma.comentario.findMany({
+      where: { artigoId: artigo.id, status: "aprovado" },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        texto: true,
+        createdAt: true,
+        user: { select: { name: true, handle: true, image: true } },
+      },
+    }),
+  ]);
+
+  const contagem: ContagemReacoes = contagemZero();
+  for (const g of gruposReacao) {
+    if (g.tipo in contagem) contagem[g.tipo as ReacaoTipo] = g._count.tipo;
+  }
+  const minhaReacao = (minhaReacaoRow?.tipo ?? null) as ReacaoTipo | null;
+
+  const fmtData = new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+  const comentarios: ComentarioPublico[] = comentariosRows.map((c) => ({
+    id: c.id,
+    texto: c.texto,
+    autorNome: c.user.name ?? "Membro HCE",
+    autorHandle: c.user.handle,
+    autorFoto: c.user.image,
+    dataFmt: fmtData.format(c.createdAt),
+  }));
 
   return (
     <>
@@ -121,6 +174,24 @@ export default async function ArtigoPage({
               className="materia mt-10"
               dangerouslySetInnerHTML={{ __html: artigo.conteudoHtml }}
             />
+          </Container>
+
+          {/* REAÇÕES + COMENTÁRIOS */}
+          <Container className="max-w-3xl">
+            <div className="mt-12 border-t border-line pt-10">
+              <ReacoesArtigo
+                artigoId={artigo.id}
+                contagemInicial={contagem}
+                minhaInicial={minhaReacao}
+              />
+            </div>
+            <div className="mt-10">
+              <ComentariosArtigo
+                artigoId={artigo.id}
+                comentarios={comentarios}
+                meuHandle={sessao.handle}
+              />
+            </div>
           </Container>
         </article>
 

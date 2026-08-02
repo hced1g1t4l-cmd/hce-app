@@ -47,9 +47,12 @@ model User {
   linkedin           String? // URL do perfil
   instagram          String? // URL do perfil
   facebook           String? // URL do perfil
+  handle             String?   @unique // @ publico do usuario (comentarios)
   // image (avatar) ja existe acima; guarda /api/img/{id} da foto reduzida.
   accounts      Account[]
   sessions      Session[]
+  reacoes       ArtigoReacao[]
+  comentarios   Comentario[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -219,7 +222,45 @@ model Artigo {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
+  reacoes     ArtigoReacao[]
+  comentarios Comentario[]
+
   @@index([publicado, publicadoEm])
+}
+
+// Reacao de um usuario a um artigo (estilo LinkedIn). Uma por usuario/artigo;
+// tipo em: gostei | amei | aplausos | inspirador (ver lib/reacoes.ts).
+model ArtigoReacao {
+  artigoId  String
+  userId    String
+  tipo      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  artigo Artigo @relation(fields: [artigoId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([artigoId, userId])
+  @@index([artigoId, tipo])
+}
+
+// Comentario de usuario em um artigo. Passa por moderacao no /adm:
+// status = pendente | aprovado | reprovado. So aparece no site se aprovado.
+model Comentario {
+  id         String    @id @default(cuid())
+  artigoId   String
+  userId     String
+  texto      String    @db.Text
+  status     String    @default("pendente")
+  moderadoEm DateTime?
+  moderadoPor String? // login do admin que moderou
+  createdAt  DateTime  @default(now())
+
+  artigo Artigo @relation(fields: [artigoId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([artigoId, status])
+  @@index([status, createdAt])
 }
 
 // Imagem armazenada no proprio Postgres (capa e imagens do corpo dos artigos).
