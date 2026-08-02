@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
-import { isAuthed } from "@/lib/adm";
+import { getAdmin, logAdm, type AdminSessao } from "@/lib/adm";
 import { prisma } from "@/lib/db";
 import { deleteObject, putObject, r2Configured } from "@/lib/storage";
 import { PLANOS } from "@/lib/planos";
 import { MAX_BYTES, montarKey, tipoDe, keyValida } from "@/lib/midia";
+import { getClientIp } from "@/lib/anti-bot";
 
 // Frente B: gerencia a biblioteca de midia (fichas, e-books, planilhas, imagens).
 // Protegido pelo login do /adm. Os bytes vao para o Cloudflare R2; o metadado, no Postgres.
@@ -21,8 +22,25 @@ function normalizarPlano(v: string | null): string {
   return PLANOS.includes(plano as (typeof PLANOS)[number]) ? plano : "free";
 }
 
+async function logMidia(
+  admin: AdminSessao,
+  req: Request,
+  acao: string,
+  detalhe: string,
+) {
+  await logAdm({
+    adminId: admin.id,
+    adminLogin: admin.login,
+    acao,
+    detalhe,
+    ip: getClientIp(req),
+    userAgent: req.headers.get("user-agent"),
+  });
+}
+
 export async function POST(req: Request) {
-  if (!(await isAuthed())) {
+  const admin = await getAdmin();
+  if (!admin) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }
   if (!r2Configured()) {
@@ -84,6 +102,7 @@ export async function POST(req: Request) {
         planoMinimo,
       },
     });
+    await logMidia(admin, req, "midia.enviar", asset.titulo || asset.filename);
     return NextResponse.json({ id: asset.id, url: `/api/midia/${asset.id}` });
   }
 
@@ -160,11 +179,13 @@ export async function POST(req: Request) {
     },
   });
 
+  await logMidia(admin, req, "midia.enviar", asset.titulo || asset.filename);
   return NextResponse.json({ id: asset.id, url: `/api/midia/${asset.id}` });
 }
 
 export async function DELETE(req: Request) {
-  if (!(await isAuthed())) {
+  const admin = await getAdmin();
+  if (!admin) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }
 
@@ -186,5 +207,6 @@ export async function DELETE(req: Request) {
   await deleteObject(asset.key).catch(() => null);
   await prisma.mediaAsset.delete({ where: { id: asset.id } });
 
+  await logMidia(admin, req, "midia.excluir", asset.titulo || asset.filename);
   return NextResponse.json({ ok: true });
 }

@@ -17,9 +17,11 @@ export default async function AdmLoginPage({
       ? "Muitas tentativas. Aguarde alguns minutos e tente novamente."
       : erro === "config"
         ? "Painel indisponível: configuração de acesso pendente."
-        : erro
-          ? "Usuário ou senha inválidos."
-          : null;
+        : erro === "sessao"
+          ? "Sua sessão expirou. Entre novamente."
+          : erro
+            ? "Usuário ou senha inválidos."
+            : null;
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-brand-blue-deep p-6">
@@ -71,6 +73,15 @@ export default async function AdmLoginPage({
         >
           Entrar
         </button>
+
+        <div className="mt-4 text-center">
+          <a
+            href="/adm/esqueci-senha"
+            className="text-sm font-semibold text-brand-blue hover:underline"
+          >
+            Esqueci minha senha
+          </a>
+        </div>
       </form>
     </main>
   );

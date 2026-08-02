@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { isAuthed } from "@/lib/adm";
+import { getAdmin } from "@/lib/adm";
 import { AdmHeader } from "@/components/adm/adm-header";
 import { ArtigoEditor } from "@/components/adm/artigo-editor";
 
@@ -9,7 +9,9 @@ export const runtime = "nodejs";
 export const metadata = { robots: { index: false, follow: false } };
 
 export default async function NovoArtigoPage() {
-  if (!(await isAuthed())) redirect("/adm/login");
+  const sessaoAdm = await getAdmin();
+  if (!sessaoAdm) redirect("/adm/login");
+  if (sessaoAdm.precisaTrocarSenha) redirect("/adm/trocar-senha");
 
   return (
     <main className="min-h-screen bg-surface-soft">

@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { isAuthed } from "@/lib/adm";
+import { requireAdmin } from "@/lib/adm";
 import { prisma } from "@/lib/db";
 import { AdmHeader } from "@/components/adm/adm-header";
 import { ArtigosTabela, type ArtigoRow } from "@/components/adm/artigos-tabela";
@@ -19,7 +18,7 @@ const fmt = new Intl.DateTimeFormat("pt-BR", {
 });
 
 export default async function AdmFeedPage() {
-  if (!(await isAuthed())) redirect("/adm/login");
+  await requireAdmin();
 
   const artigos = await prisma.artigo.findMany({
     orderBy: { updatedAt: "desc" },

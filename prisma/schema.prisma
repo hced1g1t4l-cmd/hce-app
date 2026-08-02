@@ -94,6 +94,73 @@ model VerificationToken {
   @@id([identifier, token])
 }
 
+// Conta de administrador do painel /adm. Substitui o login unico por
+// variavel de ambiente: cada pessoa tem login, senha (scrypt) e perfil.
+// Qualquer admin ativo pode cadastrar outros admins.
+model Admin {
+  id                 String    @id @default(cuid())
+  login              String    @unique // ex.: cris.leite
+  nome               String
+  senhaHash          String // scrypt$salt$hash
+  fotoUrl            String? // /api/img/{id} da foto reduzida
+  emailPrincipal     String? // resgate de senha (principal)
+  emailSecundario    String? // resgate de senha (alternativo)
+  precisaTrocarSenha Boolean   @default(true) // forca troca no 1o acesso
+  ativo              Boolean   @default(true)
+  ultimoAcesso       DateTime?
+  criadoPor          String? // login de quem criou (auditoria)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  sessions AdminSession[]
+  logs     AdminLog[]
+
+  @@index([ativo])
+}
+
+// Sessao de admin guardada no banco (permite revogar em logout/reset).
+model AdminSession {
+  sessionToken String   @unique
+  adminId      String
+  expires      DateTime
+  createdAt    DateTime @default(now())
+
+  admin Admin @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([adminId])
+}
+
+// Token de uso unico para "esqueci a senha" do admin (guardamos o hash).
+model AdminResetToken {
+  id        String   @id @default(cuid())
+  adminId   String
+  tokenHash String   @unique
+  expires   DateTime
+  usado     Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([adminId])
+}
+
+// Log de auditoria do painel: quem fez o que e quando.
+// adminId pode ser null em falhas de login (nao ha sessao).
+model AdminLog {
+  id         String   @id @default(cuid())
+  adminId    String?
+  adminLogin String // denormalizado (sobrevive a exclusao/edicao)
+  acao       String // ex.: login, logout, senha.trocar, admin.criar, artigo.publicar
+  detalhe    String? // texto curto/JSON com contexto
+  ip         String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  admin Admin? @relation(fields: [adminId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([adminLogin])
+  @@index([acao])
+}
+
 // Lead de captacao para o lancamento do Clube +HCE (RAF_007).
 // Coletado no formulario publico /avise-me; consultado apenas no /adm.
 model ClubeLead {

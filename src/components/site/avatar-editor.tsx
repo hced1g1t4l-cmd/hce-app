@@ -74,10 +74,12 @@ export function AvatarEditor({
   initialImage,
   nome,
   size = 88,
+  endpoint = "/api/conta/avatar",
 }: {
   initialImage: string | null;
   nome: string | null;
   size?: number;
+  endpoint?: string;
 }) {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -124,7 +126,7 @@ export function AvatarEditor({
   async function enviarBlob(blob: Blob) {
     const fd = new FormData();
     fd.append("file", blob, "avatar.jpg");
-    const res = await fetch("/api/conta/avatar", { method: "POST", body: fd });
+    const res = await fetch(endpoint, { method: "POST", body: fd });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || "Falha ao enviar a foto.");
     setAvatar(`${data.url}?t=${Date.now()}`);
@@ -231,7 +233,7 @@ export function AvatarEditor({
     setErro(null);
     setOcupado(true);
     try {
-      const res = await fetch("/api/conta/avatar", { method: "DELETE" });
+      const res = await fetch(endpoint, { method: "DELETE" });
       if (!res.ok) {
         setErro("Falha ao remover a foto.");
         return;

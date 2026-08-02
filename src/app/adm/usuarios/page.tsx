@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { isAuthed } from "@/lib/adm";
+import { getAdmin } from "@/lib/adm";
 import { prisma } from "@/lib/db";
 import { AdmHeader } from "@/components/adm/adm-header";
 import { UsuariosTabela } from "@/components/adm/usuarios-tabela";
@@ -20,7 +20,9 @@ const fmt = new Intl.DateTimeFormat("pt-BR", {
 });
 
 export default async function AdmUsuariosPage() {
-  if (!(await isAuthed())) redirect("/adm/login");
+  const sessaoAdm = await getAdmin();
+  if (!sessaoAdm) redirect("/adm/login");
+  if (sessaoAdm.precisaTrocarSenha) redirect("/adm/trocar-senha");
 
   const rows = await prisma.user.findMany({
     orderBy: { createdAt: "desc" },
