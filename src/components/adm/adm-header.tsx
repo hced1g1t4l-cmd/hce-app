@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { cn } from "@/lib/cn";
 import { getAdmin } from "@/lib/adm";
 
@@ -32,9 +33,28 @@ export async function AdmHeader({
     <header className="border-b border-brand-blue-deep bg-gradient-to-r from-brand-blue to-brand-blue-deep text-white">
       <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 sm:py-4">
         <div className="flex items-center justify-between gap-3">
-          <span className="font-display text-lg font-bold whitespace-nowrap text-brand-amber">
-            Painel ADM
-          </span>
+          <div className="flex items-center gap-3">
+            <a
+              href="https://www.hcegastronomia.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Abrir o site da HCE em nova aba"
+              aria-label="Abrir o site da HCE em nova aba"
+              className="inline-flex shrink-0 rounded-xl ring-1 ring-white/15 transition-transform hover:scale-105"
+            >
+              <Image
+                src="/brand/logos/logo-1x1.png"
+                alt="HCE"
+                width={40}
+                height={40}
+                className="h-10 w-10 rounded-xl"
+                priority
+              />
+            </a>
+            <span className="font-display text-lg font-bold whitespace-nowrap text-brand-amber">
+              Painel ADM
+            </span>
+          </div>
           <div className="flex items-center gap-3">
             {admin && (
               <Link
