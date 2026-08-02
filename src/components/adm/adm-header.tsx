@@ -1,11 +1,32 @@
 import Link from "next/link";
 import { cn } from "@/lib/cn";
+import { getAdmin } from "@/lib/adm";
 
-export function AdmHeader({
+export async function AdmHeader({
   active,
 }: {
-  active: "leads" | "contatos" | "acessos" | "feed" | "midia" | "usuarios";
+  active:
+    | "leads"
+    | "contatos"
+    | "acessos"
+    | "feed"
+    | "midia"
+    | "usuarios"
+    | "admins"
+    | "logs"
+    | "conta";
 }) {
+  const admin = await getAdmin();
+  const iniciais = admin?.nome
+    ? admin.nome
+        .trim()
+        .split(/\s+/)
+        .map((p) => p[0])
+        .slice(0, 2)
+        .join("")
+        .toUpperCase()
+    : "";
+
   return (
     <header className="border-b border-line bg-white">
       <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 sm:py-4">
@@ -13,14 +34,39 @@ export function AdmHeader({
           <span className="font-display text-lg font-bold whitespace-nowrap text-brand-blue">
             Painel HCE
           </span>
-          <form action="/api/adm/logout" method="post">
-            <button
-              type="submit"
-              className="rounded-full border border-line px-4 py-2 text-sm font-semibold text-brand-blue transition-colors hover:bg-surface-soft"
-            >
-              Sair
-            </button>
-          </form>
+          <div className="flex items-center gap-3">
+            {admin && (
+              <Link
+                href="/adm/conta"
+                className="flex items-center gap-2 rounded-full border border-line py-1 pr-3 pl-1 transition-colors hover:bg-surface-soft"
+                title="Minha conta"
+              >
+                {admin.fotoUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={admin.fotoUrl}
+                    alt=""
+                    className="h-7 w-7 rounded-full object-cover"
+                  />
+                ) : (
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-blue/10 text-xs font-bold text-brand-blue">
+                    {iniciais}
+                  </span>
+                )}
+                <span className="hidden text-sm font-semibold text-brand-blue sm:inline">
+                  {admin.nome}
+                </span>
+              </Link>
+            )}
+            <form action="/api/adm/logout" method="post">
+              <button
+                type="submit"
+                className="rounded-full border border-line px-4 py-2 text-sm font-semibold text-brand-blue transition-colors hover:bg-surface-soft"
+              >
+                Sair
+              </button>
+            </form>
+          </div>
         </div>
         <nav
           aria-label="Seções do painel"
@@ -32,11 +78,7 @@ export function AdmHeader({
             label="Mensagens"
             active={active === "contatos"}
           />
-          <Tab
-            href="/adm/acessos"
-            label="Acessos"
-            active={active === "acessos"}
-          />
+          <Tab href="/adm/acessos" label="Acessos" active={active === "acessos"} />
           <Tab href="/adm/feed" label="Feed HCE" active={active === "feed"} />
           <Tab href="/adm/midia" label="Mídia" active={active === "midia"} />
           <Tab
@@ -44,6 +86,8 @@ export function AdmHeader({
             label="Usuários"
             active={active === "usuarios"}
           />
+          <Tab href="/adm/admins" label="Admins" active={active === "admins"} />
+          <Tab href="/adm/logs" label="Logs" active={active === "logs"} />
         </nav>
       </div>
     </header>

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { isAuthed } from "@/lib/adm";
+import { getAdmin } from "@/lib/adm";
 import { prisma } from "@/lib/db";
 import { AdmHeader } from "@/components/adm/adm-header";
 import { ArtigoEditor } from "@/components/adm/artigo-editor";
@@ -14,7 +14,9 @@ export default async function EditarArtigoPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  if (!(await isAuthed())) redirect("/adm/login");
+  const sessaoAdm = await getAdmin();
+  if (!sessaoAdm) redirect("/adm/login");
+  if (sessaoAdm.precisaTrocarSenha) redirect("/adm/trocar-senha");
 
   const { id } = await params;
   const artigo = await prisma.artigo.findUnique({ where: { id } });

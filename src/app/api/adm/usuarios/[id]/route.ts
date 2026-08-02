@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { isAuthed } from "@/lib/adm";
+import { getAdmin, logAdm } from "@/lib/adm";
 import { prisma } from "@/lib/db";
+import { getClientIp } from "@/lib/anti-bot";
 
 // Exclusao de uma conta de usuario pelo painel /adm.
 // Sessions e Accounts saem por cascade (onDelete: Cascade no schema).
@@ -10,10 +11,11 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function DELETE(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  if (!(await isAuthed())) {
+  const admin = await getAdmin();
+  if (!admin) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }
 
@@ -35,6 +37,15 @@ export async function DELETE(
   });
 
   await prisma.user.delete({ where: { id } });
+
+  await logAdm({
+    adminId: admin.id,
+    adminLogin: admin.login,
+    acao: "usuario.excluir",
+    detalhe: alvo.email ?? id,
+    ip: getClientIp(req),
+    userAgent: req.headers.get("user-agent"),
+  });
 
   return NextResponse.json({ ok: true });
 }

@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { isAuthed } from "@/lib/adm";
+import { getAdmin } from "@/lib/adm";
 import { prisma } from "@/lib/db";
 import { r2Configured } from "@/lib/storage";
 import { PLANO_LABEL, type Plano } from "@/lib/planos";
@@ -33,7 +33,9 @@ function tamanho(bytes: number): string {
 }
 
 export default async function AdmMidiaPage() {
-  if (!(await isAuthed())) redirect("/adm/login");
+  const sessaoAdm = await getAdmin();
+  if (!sessaoAdm) redirect("/adm/login");
+  if (sessaoAdm.precisaTrocarSenha) redirect("/adm/trocar-senha");
 
   const configurado = r2Configured();
   const itens = configurado

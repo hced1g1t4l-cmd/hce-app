@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { isAuthed } from "@/lib/adm";
+import { getAdmin } from "@/lib/adm";
 import { AdmHeader } from "@/components/adm/adm-header";
 import { AcessosChart } from "@/components/adm/acessos-chart";
 import { AcessosMapa } from "@/components/adm/acessos-mapa";
@@ -24,7 +24,9 @@ export default async function AdmAcessosPage({
 }: {
   searchParams: Promise<{ periodo?: string }>;
 }) {
-  if (!(await isAuthed())) redirect("/adm/login");
+  const sessaoAdm = await getAdmin();
+  if (!sessaoAdm) redirect("/adm/login");
+  if (sessaoAdm.precisaTrocarSenha) redirect("/adm/trocar-senha");
 
   const { periodo: periodoRaw } = await searchParams;
   const periodo = parsePeriodo(periodoRaw);

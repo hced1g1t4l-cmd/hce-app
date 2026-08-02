@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { isAuthed } from "@/lib/adm";
+import { getAdmin, logAdm } from "@/lib/adm";
 import { prisma } from "@/lib/db";
 import { slugify } from "@/lib/feed";
+import { getClientIp } from "@/lib/anti-bot";
 
 // CRUD dos artigos do Feed HCE (F1-5). Protegido pelo login do /adm.
 export const runtime = "nodejs";
@@ -38,9 +39,14 @@ async function slugUnico(base: string, ignoreId?: string): Promise<string> {
 }
 
 export async function POST(req: Request) {
-  if (!(await isAuthed())) {
+  const admin = await getAdmin();
+  if (!admin) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }
+  const ctx = {
+    ip: getClientIp(req),
+    userAgent: req.headers.get("user-agent"),
+  };
 
   let data: z.infer<typeof schema>;
   try {
@@ -81,23 +87,49 @@ export async function POST(req: Request) {
       where: { id: data.id },
       data: { ...base, publicadoEm },
     });
+    const publicouAgora = data.publicado && !atual.publicado;
+    await logAdm({
+      adminId: admin.id,
+      adminLogin: admin.login,
+      acao: publicouAgora ? "artigo.publicar" : "artigo.editar",
+      detalhe: `${artigo.titulo} (/feed/${artigo.slug})`,
+      ...ctx,
+    });
     return NextResponse.json({ id: artigo.id, slug: artigo.slug });
   }
 
   const artigo = await prisma.artigo.create({
     data: { ...base, publicadoEm: data.publicado ? new Date() : null },
   });
+  await logAdm({
+    adminId: admin.id,
+    adminLogin: admin.login,
+    acao: data.publicado ? "artigo.publicar" : "artigo.criar",
+    detalhe: `${artigo.titulo} (/feed/${artigo.slug})`,
+    ...ctx,
+  });
   return NextResponse.json({ id: artigo.id, slug: artigo.slug });
 }
 
 export async function DELETE(req: Request) {
-  if (!(await isAuthed())) {
+  const admin = await getAdmin();
+  if (!admin) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }
   const { id } = (await req.json().catch(() => ({}))) as { id?: string };
   if (!id) {
     return NextResponse.json({ error: "ID ausente" }, { status: 400 });
   }
-  await prisma.artigo.delete({ where: { id } }).catch(() => null);
+  const artigo = await prisma.artigo
+    .delete({ where: { id } })
+    .catch(() => null);
+  await logAdm({
+    adminId: admin.id,
+    adminLogin: admin.login,
+    acao: "artigo.excluir",
+    detalhe: artigo ? `${artigo.titulo} (/feed/${artigo.slug})` : id,
+    ip: getClientIp(req),
+    userAgent: req.headers.get("user-agent"),
+  });
   return NextResponse.json({ ok: true });
 }
