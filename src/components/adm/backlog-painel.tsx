@@ -11,6 +11,7 @@ import {
   type BacklogAcao,
 } from "@/lib/backlog";
 import { BacklogDescricao } from "@/components/adm/backlog-descricao";
+import { baixarCSV, baixarXLS } from "@/lib/export-cliente";
 
 export type BacklogRow = {
   id: string;
@@ -141,6 +142,60 @@ export function BacklogPainel({ itens }: { itens: BacklogRow[] }) {
       });
   }, [itens, filtro, busca]);
 
+  // Exportação (CSV / Excel) do que está filtrado na tela.
+  function dadosExport(): { colunas: string[]; linhas: string[][] } {
+    const colunas = [
+      "Código",
+      "BAC",
+      "Título",
+      "Prioridade",
+      "Status",
+      "Criado por",
+      "Criado em",
+      "Início",
+      "Conclusão",
+      "Cancelamento",
+    ];
+    const dados = filtrados.map((it) => {
+      const idx = it.titulo.indexOf(" · ");
+      const codigo = idx > 0 ? it.titulo.slice(0, idx) : "";
+      const titulo = idx > 0 ? it.titulo.slice(idx + 3) : it.titulo;
+      return [
+        codigo,
+        it.codigo,
+        titulo,
+        prioridadeInfo(it.prioridade).label,
+        statusInfo(it.status).label,
+        it.criadoPorNome,
+        it.criadoFmt,
+        it.iniciadoFmt ?? "",
+        it.concluidoFmt ?? "",
+        it.canceladoFmt ?? "",
+      ];
+    });
+    return { colunas, linhas: dados };
+  }
+
+  function nomeArquivo(ext: string): string {
+    const hoje = new Date().toISOString().slice(0, 10);
+    return `hce-backlog-${hoje}.${ext}`;
+  }
+
+  function exportarCSV() {
+    const { colunas, linhas: dados } = dadosExport();
+    baixarCSV(nomeArquivo("csv"), colunas, dados);
+  }
+
+  function exportarXLS() {
+    const { colunas, linhas: dados } = dadosExport();
+    const geradoEm = new Intl.DateTimeFormat("pt-BR", {
+      dateStyle: "short",
+      timeStyle: "short",
+      timeZone: "America/Sao_Paulo",
+    }).format(new Date());
+    baixarXLS(nomeArquivo("xls"), "Backlog do time", colunas, dados, geradoEm);
+  }
+
   const itemEdit = itens.find((i) => i.id === editId) ?? null;
 
   return (
@@ -251,6 +306,31 @@ export function BacklogPainel({ itens }: { itens: BacklogRow[] }) {
           placeholder="Buscar por nome, código ou autor…"
           className="hce-input sm:max-w-xs"
         />
+      </div>
+
+      {/* EXPORTAR */}
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+        <span className="text-xs text-muted">
+          {filtrados.length} item(ns) no filtro atual
+        </span>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={exportarCSV}
+            disabled={filtrados.length === 0}
+            className="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-4 py-2 text-sm font-semibold text-ink transition-colors hover:bg-surface-soft disabled:opacity-50"
+          >
+            Exportar CSV
+          </button>
+          <button
+            type="button"
+            onClick={exportarXLS}
+            disabled={filtrados.length === 0}
+            className="inline-flex items-center gap-1.5 rounded-full bg-brand-blue px-4 py-2 text-sm font-semibold text-brand-amber transition-colors hover:bg-brand-blue-deep disabled:opacity-50"
+          >
+            Exportar Excel
+          </button>
+        </div>
       </div>
 
       {/* LISTA */}
