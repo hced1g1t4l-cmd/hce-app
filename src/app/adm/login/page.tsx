@@ -1,8 +1,11 @@
+import Script from "next/script";
 import { redirect } from "next/navigation";
 import { isAuthed } from "@/lib/adm";
 
 export const dynamic = "force-dynamic";
 export const metadata = { robots: { index: false, follow: false } };
+
+const SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
 export default async function AdmLoginPage({
   searchParams,
@@ -19,9 +22,11 @@ export default async function AdmLoginPage({
         ? "Painel indisponível: configuração de acesso pendente."
         : erro === "sessao"
           ? "Sua sessão expirou. Entre novamente."
-          : erro
-            ? "Usuário ou senha inválidos."
-            : null;
+          : erro === "captcha"
+            ? "Confirme que você não é um robô e tente novamente."
+            : erro
+              ? "Usuário ou senha inválidos."
+              : null;
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-brand-blue-deep p-6">
@@ -66,6 +71,15 @@ export default async function AdmLoginPage({
             className="hce-input mt-1.5"
           />
         </label>
+
+        {SITE_KEY && (
+          <>
+            <Script src="https://www.google.com/recaptcha/api.js" async defer />
+            <div className="mt-6 flex justify-center">
+              <div className="g-recaptcha" data-sitekey={SITE_KEY} />
+            </div>
+          </>
+        )}
 
         <button
           type="submit"

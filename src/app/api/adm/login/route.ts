@@ -6,7 +6,7 @@ import {
 } from "@/lib/adm";
 import { prisma } from "@/lib/db";
 import { rateLimit } from "@/lib/rate-limit";
-import { getClientIp } from "@/lib/anti-bot";
+import { getClientIp, verifyCaptcha } from "@/lib/anti-bot";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -28,6 +28,20 @@ export async function POST(req: Request) {
   const form = await req.formData();
   const usuario = String(form.get("usuario") || "").trim().toLowerCase();
   const senha = String(form.get("senha") || "");
+  const captchaToken = String(form.get("g-recaptcha-response") || "");
+
+  if (!(await verifyCaptcha(captchaToken || undefined))) {
+    await logAdm({
+      adminLogin: usuario || "(vazio)",
+      acao: "login.falha",
+      detalhe: "reCAPTCHA inválido",
+      ip,
+      userAgent,
+    });
+    return NextResponse.redirect(new URL("/adm/login?erro=captcha", req.url), {
+      status: 303,
+    });
+  }
 
   const admin = await authenticateAdmin(usuario, senha);
   if (!admin) {
