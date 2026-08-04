@@ -4,6 +4,7 @@ import { getAdmin, logAdm } from "@/lib/adm";
 import { prisma } from "@/lib/db";
 import { slugify } from "@/lib/feed";
 import { getClientIp } from "@/lib/anti-bot";
+import { sanitizarHtml } from "@/lib/sanitize";
 
 // CRUD dos artigos do Feed HCE (F1-5). Protegido pelo login do /adm.
 export const runtime = "nodejs";
@@ -43,6 +44,12 @@ export async function POST(req: Request) {
   if (!admin) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }
+  if (admin.precisaTrocarSenha) {
+    return NextResponse.json(
+      { error: "Troque a sua senha antes de continuar." },
+      { status: 403 },
+    );
+  }
   const ctx = {
     ip: getClientIp(req),
     userAgent: req.headers.get("user-agent"),
@@ -67,7 +74,7 @@ export async function POST(req: Request) {
     resumo: data.resumo || null,
     capaUrl: data.capaUrl || null,
     autor: data.autor,
-    conteudoHtml: data.conteudoHtml,
+    conteudoHtml: sanitizarHtml(data.conteudoHtml),
     galeria: (data.galeria || []).filter(Boolean).slice(0, 5),
     publicado: data.publicado,
   };

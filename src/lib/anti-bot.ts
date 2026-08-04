@@ -2,8 +2,20 @@
 
 export async function verifyCaptcha(token: string | undefined): Promise<boolean> {
   const secret = process.env.RECAPTCHA_SECRET_KEY;
-  // Sem chave configurada: pula verificacao (usa apenas honeypot).
-  if (!secret) return true;
+  const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+  if (!secret) {
+    // Fail-closed: em producao, se o widget esta configurado (site key
+    // presente) mas falta o segredo no servidor, tratamos como ma
+    // configuracao e NAO deixamos passar (evita burlar o captcha).
+    if (process.env.NODE_ENV === "production" && siteKey) {
+      console.error(
+        "[anti-bot] RECAPTCHA_SECRET_KEY ausente em producao com site key configurada — bloqueando envio.",
+      );
+      return false;
+    }
+    // Dev ou captcha totalmente desativado: usa apenas honeypot.
+    return true;
+  }
   if (!token) return false;
   try {
     const res = await fetch("https://www.google.com/recaptcha/api/siteverify", {

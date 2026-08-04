@@ -18,6 +18,12 @@ export async function DELETE(
   if (!admin) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }
+  if (admin.precisaTrocarSenha) {
+    return NextResponse.json(
+      { error: "Troque a sua senha antes de continuar." },
+      { status: 403 },
+    );
+  }
 
   const { id } = await params;
 

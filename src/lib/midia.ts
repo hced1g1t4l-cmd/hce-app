@@ -27,6 +27,48 @@ export function tipoDe(mime: string, name: string): string {
   return "outro";
 }
 
+// Allowlist de tipos aceitos na biblioteca. Bloqueia explicitamente formatos
+// que podem carregar script (SVG, HTML, XML, JS) e so aceita imagens/documentos
+// conhecidos — mesmo quando o navegador manda um mime generico.
+const MIME_PERIGOSO =
+  /(svg|html|xhtml|xml|javascript|ecmascript|x-httpd|x-msdownload|x-sh)/i;
+const EXT_PERIGOSA =
+  /\.(svgz?|html?|xhtml|xml|js|mjs|cjs|sh|bat|cmd|exe|com|scr|php|phtml|htaccess)$/i;
+const EXT_PERMITIDA =
+  /\.(pdf|epub|csv|xlsx?|ods|docx?|odt|pptx?|txt|jpe?g|png|webp|gif|avif|heic|bmp|tiff?)$/i;
+const MIME_PERMITIDO = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+  "image/avif",
+  "image/heic",
+  "image/bmp",
+  "image/tiff",
+  "application/pdf",
+  "application/epub+zip",
+  "text/csv",
+  "text/plain",
+  "application/vnd.ms-excel",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "application/vnd.oasis.opendocument.spreadsheet",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.oasis.opendocument.text",
+  "application/vnd.ms-powerpoint",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+]);
+
+// true quando o arquivo pode ser aceito na midia. Nunca aceita SVG/HTML/JS.
+export function tipoPermitido(mime: string, name: string): boolean {
+  const m = (mime || "").toLowerCase();
+  const n = (name || "").toLowerCase();
+  if (MIME_PERIGOSO.test(m) || EXT_PERIGOSA.test(n)) return false;
+  if (MIME_PERMITIDO.has(m)) return true;
+  // Mime generico (ex.: application/octet-stream): decide pela extensao segura.
+  return EXT_PERMITIDA.test(n);
+}
+
 export function sanitize(name: string): string {
   return (
     name

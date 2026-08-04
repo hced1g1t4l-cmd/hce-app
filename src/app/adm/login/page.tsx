@@ -18,6 +18,8 @@ export default async function AdmLoginPage({
   const mensagemErro =
     erro === "rate"
       ? "Muitas tentativas. Aguarde alguns minutos e tente novamente."
+      : erro === "bloqueado"
+      ? "Conta temporariamente bloqueada por tentativas de acesso. Aguarde alguns minutos ou redefina a sua senha."
       : erro === "config"
         ? "Painel indisponível: configuração de acesso pendente."
         : erro === "sessao"

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { isAuthed } from "@/lib/adm";
+import { getAdmin } from "@/lib/adm";
 import { prisma } from "@/lib/db";
 
 // Upload de imagem para o Feed HCE (F1-5). Protegido pelo login do /adm.
@@ -17,8 +17,15 @@ const ALLOWED = [
 ];
 
 export async function POST(req: Request) {
-  if (!(await isAuthed())) {
+  const admin = await getAdmin();
+  if (!admin) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+  }
+  if (admin.precisaTrocarSenha) {
+    return NextResponse.json(
+      { error: "Troque a sua senha antes de continuar." },
+      { status: 403 },
+    );
   }
 
   let form: FormData;

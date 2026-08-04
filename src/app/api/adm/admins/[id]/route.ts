@@ -7,14 +7,10 @@ import {
   logAdm,
 } from "@/lib/adm";
 import { getClientIp } from "@/lib/anti-bot";
+import { gerarSenhaProvisoria } from "@/lib/senha";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-function gerarSenhaProvisoria(): string {
-  const n = Math.floor(1000 + Math.random() * 9000);
-  return `Hce@${n}`;
-}
 
 // Acoes de gestao de um admin: ativar, desativar, resetar senha.
 export async function PATCH(
@@ -24,6 +20,12 @@ export async function PATCH(
   const admin = await getAdmin();
   if (!admin) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+  }
+  if (admin.precisaTrocarSenha) {
+    return NextResponse.json(
+      { error: "Troque a sua senha antes de gerenciar admins." },
+      { status: 403 },
+    );
   }
   const { id } = await params;
   const body = (await req.json().catch(() => ({}))) as { acao?: string };
@@ -81,7 +83,12 @@ export async function PATCH(
     const senha = gerarSenhaProvisoria();
     await prisma.admin.update({
       where: { id },
-      data: { senhaHash: hashPassword(senha), precisaTrocarSenha: true },
+      data: {
+        senhaHash: hashPassword(senha),
+        precisaTrocarSenha: true,
+        tentativasFalhas: 0,
+        bloqueadoAte: null,
+      },
     });
     await destroyAllAdminSessions(id);
     await logAdm({

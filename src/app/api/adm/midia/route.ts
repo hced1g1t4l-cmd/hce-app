@@ -3,7 +3,7 @@ import { getAdmin, logAdm, type AdminSessao } from "@/lib/adm";
 import { prisma } from "@/lib/db";
 import { deleteObject, putObject, r2Configured } from "@/lib/storage";
 import { PLANOS } from "@/lib/planos";
-import { MAX_BYTES, montarKey, tipoDe, keyValida } from "@/lib/midia";
+import { MAX_BYTES, montarKey, tipoDe, keyValida, tipoPermitido } from "@/lib/midia";
 import { getClientIp } from "@/lib/anti-bot";
 
 // Frente B: gerencia a biblioteca de midia (fichas, e-books, planilhas, imagens).
@@ -43,6 +43,12 @@ export async function POST(req: Request) {
   if (!admin) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }
+  if (admin.precisaTrocarSenha) {
+    return NextResponse.json(
+      { error: "Troque a sua senha antes de continuar." },
+      { status: 403 },
+    );
+  }
   if (!r2Configured()) {
     return NextResponse.json(
       {
@@ -77,6 +83,12 @@ export async function POST(req: Request) {
     }
     const filename = (body.filename || "arquivo").trim();
     const mime = (body.mime || "application/octet-stream").trim();
+    if (!tipoPermitido(mime, filename)) {
+      return NextResponse.json(
+        { error: "Tipo de arquivo não permitido (SVG/HTML/JS bloqueados)." },
+        { status: 415 },
+      );
+    }
     const tamanho = Number(body.size) || 0;
     if (tamanho > MAX_BYTES) {
       return NextResponse.json(
@@ -139,6 +151,12 @@ export async function POST(req: Request) {
       : normalizarPlano(form.get("planoMinimo") as string | null);
 
   const mime = file.type || "application/octet-stream";
+  if (!tipoPermitido(mime, file.name)) {
+    return NextResponse.json(
+      { error: "Tipo de arquivo não permitido (SVG/HTML/JS bloqueados)." },
+      { status: 415 },
+    );
+  }
   const tipo = tipoDe(mime, file.name);
   const key = montarKey(mime, file.name);
 
@@ -146,9 +164,8 @@ export async function POST(req: Request) {
   try {
     await putObject(key, bytes, mime);
   } catch (e) {
-    // Erros do S3/R2 trazem "name" (ex.: AccessDenied, SignatureDoesNotMatch,
-    // NoSuchBucket) e, as vezes, o codigo HTTP em $metadata. Expomos isso para
-    // diagnosticar a causa real (credencial, bucket, permissao) direto na tela.
+    // Detalhes tecnicos do S3/R2 (nome do bucket, credencial, codigo interno)
+    // ficam apenas no log do servidor. O cliente recebe mensagem generica.
     const err = e as {
       name?: string;
       message?: string;
@@ -156,12 +173,13 @@ export async function POST(req: Request) {
       $metadata?: { httpStatusCode?: number };
     };
     const nome = err?.name || err?.Code || "ErroDesconhecido";
-    const msg = err?.message || "erro desconhecido no armazenamento";
     const http = err?.$metadata?.httpStatusCode;
-    const detalhe = `${nome}${http ? ` (HTTP ${http})` : ""}: ${msg}`;
-    console.error("[midia] falha no upload R2:", detalhe, err);
+    console.error(
+      "[midia] falha no upload R2:",
+      `${nome}${http ? ` (HTTP ${http})` : ""}: ${err?.message || "sem mensagem"}`,
+    );
     return NextResponse.json(
-      { error: `Falha ao enviar para o armazenamento — ${detalhe}` },
+      { error: "Falha ao enviar o arquivo. Tente novamente em instantes." },
       { status: 502 },
     );
   }
