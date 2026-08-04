@@ -4,6 +4,7 @@ import { getAdmin, logAdm } from "@/lib/adm";
 import { prisma } from "@/lib/db";
 import { getClientIp } from "@/lib/anti-bot";
 import { prioridadeValida } from "@/lib/backlog";
+import { sanitizarHtml } from "@/lib/sanitize";
 
 // Criacao de item de backlog interno. Protegido pelo login do /adm.
 export const runtime = "nodejs";
@@ -21,6 +22,12 @@ export async function POST(req: Request) {
   if (!admin) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }
+  if (admin.precisaTrocarSenha) {
+    return NextResponse.json(
+      { error: "Troque a sua senha antes de continuar." },
+      { status: 403 },
+    );
+  }
 
   const body = await req.json().catch(() => null);
   const parsed = schema.safeParse(body);
@@ -33,7 +40,7 @@ export async function POST(req: Request) {
   const item = await prisma.backlogItem.create({
     data: {
       titulo,
-      descricao,
+      descricao: sanitizarHtml(descricao),
       prioridade,
       status: "aberto",
       criadoPorLogin: admin.login,

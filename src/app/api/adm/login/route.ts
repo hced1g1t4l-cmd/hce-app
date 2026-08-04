@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import {
-  authenticateAdmin,
+  autenticarAdminComBloqueio,
   createAdminSession,
   logAdm,
 } from "@/lib/adm";
@@ -43,8 +43,23 @@ export async function POST(req: Request) {
     });
   }
 
-  const admin = await authenticateAdmin(usuario, senha);
-  if (!admin) {
+  const resultado = await autenticarAdminComBloqueio(usuario, senha);
+
+  if (resultado.status === "bloqueado") {
+    await logAdm({
+      adminLogin: usuario || "(vazio)",
+      acao: "login.bloqueado",
+      detalhe: "Conta temporariamente bloqueada por tentativas",
+      ip,
+      userAgent,
+    });
+    return NextResponse.redirect(
+      new URL("/adm/login?erro=bloqueado", req.url),
+      { status: 303 },
+    );
+  }
+
+  if (resultado.status !== "ok" || !resultado.admin) {
     await logAdm({
       adminLogin: usuario || "(vazio)",
       acao: "login.falha",
@@ -56,6 +71,8 @@ export async function POST(req: Request) {
       status: 303,
     });
   }
+
+  const admin = resultado.admin;
 
   await createAdminSession(admin.id);
   await prisma.admin

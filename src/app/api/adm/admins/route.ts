@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { getAdmin, hashPassword, logAdm } from "@/lib/adm";
 import { getClientIp } from "@/lib/anti-bot";
+import { gerarSenhaProvisoria } from "@/lib/senha";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -28,15 +29,16 @@ const schema = z.object({
   senhaProvisoria: z.string().min(6).max(72).optional().or(z.literal("")),
 });
 
-function gerarSenhaProvisoria(): string {
-  const n = Math.floor(1000 + Math.random() * 9000);
-  return `Hce@${n}`;
-}
-
 export async function POST(req: Request) {
   const admin = await getAdmin();
   if (!admin) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+  }
+  if (admin.precisaTrocarSenha) {
+    return NextResponse.json(
+      { error: "Troque a sua senha antes de gerenciar admins." },
+      { status: 403 },
+    );
   }
 
   let data: z.infer<typeof schema>;

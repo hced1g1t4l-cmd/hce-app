@@ -142,6 +142,61 @@ export async function authenticateAdmin(login: string, senha: string) {
   return a;
 }
 
+// Bloqueio de conta por forca-bruta (persistente no banco, resistente a
+// reinicios de instancia serverless — ao contrario do rate-limit em memoria).
+export const LOGIN_MAX_FALHAS = 8;
+export const LOGIN_BLOQUEIO_MIN = 15;
+
+export type ResultadoLogin =
+  | { status: "ok"; admin: Awaited<ReturnType<typeof authenticateAdmin>> }
+  | { status: "invalido" }
+  | { status: "bloqueado"; ate: Date };
+
+// Autentica considerando o bloqueio por tentativas. Nunca revela se o login
+// existe: credenciais erradas e login inexistente retornam "invalido".
+export async function autenticarAdminComBloqueio(
+  login: string,
+  senha: string,
+): Promise<ResultadoLogin> {
+  const l = login.trim().toLowerCase();
+  if (!l || !senha) return { status: "invalido" };
+
+  const a = await prisma.admin.findUnique({ where: { login: l } });
+  if (!a || !a.ativo) return { status: "invalido" };
+
+  if (a.bloqueadoAte && a.bloqueadoAte > new Date()) {
+    return { status: "bloqueado", ate: a.bloqueadoAte };
+  }
+
+  if (!verifyPassword(senha, a.senhaHash)) {
+    const falhas = a.tentativasFalhas + 1;
+    const bloquear = falhas >= LOGIN_MAX_FALHAS;
+    await prisma.admin
+      .update({
+        where: { id: a.id },
+        data: {
+          tentativasFalhas: bloquear ? 0 : falhas,
+          bloqueadoAte: bloquear
+            ? new Date(Date.now() + LOGIN_BLOQUEIO_MIN * 60 * 1000)
+            : a.bloqueadoAte,
+        },
+      })
+      .catch(() => null);
+    return { status: "invalido" };
+  }
+
+  // Sucesso: zera o contador e libera bloqueio residual.
+  if (a.tentativasFalhas !== 0 || a.bloqueadoAte) {
+    await prisma.admin
+      .update({
+        where: { id: a.id },
+        data: { tentativasFalhas: 0, bloqueadoAte: null },
+      })
+      .catch(() => null);
+  }
+  return { status: "ok", admin: a };
+}
+
 // ————— Auditoria —————
 
 type LogArgs = {

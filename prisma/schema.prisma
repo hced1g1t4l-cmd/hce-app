@@ -110,6 +110,8 @@ model Admin {
   emailSecundario    String? // resgate de senha (alternativo)
   precisaTrocarSenha Boolean   @default(true) // forca troca no 1o acesso
   ativo              Boolean   @default(true)
+  tentativasFalhas   Int       @default(0) // logins invalidos consecutivos
+  bloqueadoAte       DateTime? // conta bloqueada por brute-force ate esta data
   ultimoAcesso       DateTime?
   criadoPor          String? // login de quem criou (auditoria)
   createdAt          DateTime  @default(now())

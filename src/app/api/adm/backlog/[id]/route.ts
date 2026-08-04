@@ -5,6 +5,7 @@ import { getAdmin, logAdm } from "@/lib/adm";
 import { prisma } from "@/lib/db";
 import { getClientIp } from "@/lib/anti-bot";
 import { prioridadeValida, type BacklogAcao } from "@/lib/backlog";
+import { sanitizarHtml } from "@/lib/sanitize";
 
 // Transicoes de status e edicao de um item de backlog.
 export const runtime = "nodejs";
@@ -28,6 +29,12 @@ export async function PATCH(
   const admin = await getAdmin();
   if (!admin) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+  }
+  if (admin.precisaTrocarSenha) {
+    return NextResponse.json(
+      { error: "Troque a sua senha antes de continuar." },
+      { status: 403 },
+    );
   }
   const { id } = await params;
   const item = await prisma.backlogItem.findUnique({ where: { id } });
@@ -93,7 +100,7 @@ export async function PATCH(
     where: { id },
     data: {
       ...(titulo !== undefined ? { titulo } : {}),
-      ...(descricao !== undefined ? { descricao } : {}),
+      ...(descricao !== undefined ? { descricao: sanitizarHtml(descricao) } : {}),
       ...(prioridade !== undefined ? { prioridade } : {}),
     },
   });
