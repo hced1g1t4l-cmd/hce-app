@@ -23,7 +23,7 @@ const FUNDADORAS = [
     nome: "Cris Leite",
     papel: "Chef, educadora e consultora",
     foto: "/brand/fotos/chef-cris.png",
-    fotoPos: "center 6%",
+    fotoPos: "center",
     bio: "Mestre em Novas Tecnologias Digitais na Educação, especialista em Gestão de Recursos Humanos e graduada em Gastronomia. Professora, pesquisadora e consultora com ampla experiência em gastronomia, hospitalidade e educação.",
   },
   {
