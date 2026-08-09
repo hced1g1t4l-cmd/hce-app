@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Container } from "@/components/site/container";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
+import { TexturaAzul } from "@/components/site/textura-azul";
 
 export type LegalSecao = {
   id: string;
@@ -43,6 +44,10 @@ export function LegalLayout({
           <div
             aria-hidden
             className="hce-hero-pattern pointer-events-none absolute inset-0"
+          />
+          <TexturaAzul
+            src="/brand/texturas/textura-cozinha-3.jpg"
+            opacidade={0.08}
           />
           <Container className="relative max-w-3xl">
             <div className="flex items-center gap-3">

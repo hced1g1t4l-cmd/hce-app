@@ -5,6 +5,8 @@ import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { ArtigoCard, type FeedItem } from "@/components/site/feed-artigo-card";
 import { FeedCarrossel } from "@/components/site/feed-carrossel";
+import { FeedTracker } from "@/components/site/feed-tracker";
+import { TexturaAzul } from "@/components/site/textura-azul";
 import { prisma } from "@/lib/db";
 import { dataLonga } from "@/lib/feed";
 import { getSessionUser } from "@/lib/auth-user";
@@ -33,6 +35,12 @@ export default async function FeedPage() {
   // E-mail obrigatoriamente confirmado.
   if (!sessao.emailVerificado) redirect("/verificar-email?apos=/feed");
 
+  // Métrica de acesso ao índice do Feed (BAC_109). artigoId null = índice.
+  const acesso = await prisma.feedAcesso.create({
+    data: { userId: sessao.id, artigoId: null },
+    select: { id: true },
+  });
+
   const artigos = await prisma.artigo.findMany({
     where: { publicado: true },
     orderBy: [{ publicadoEm: "desc" }, { updatedAt: "desc" }],
@@ -60,6 +68,7 @@ export default async function FeedPage() {
   return (
     <>
       <SiteHeader />
+      <FeedTracker viewId={acesso.id} />
 
       <main id="conteudo" className="flex-1">
         {/* INTRO */}
@@ -67,6 +76,10 @@ export default async function FeedPage() {
           <div
             aria-hidden
             className="pointer-events-none absolute -top-24 -right-24 h-96 w-96 rounded-full bg-brand-amber/15 blur-3xl"
+          />
+          <TexturaAzul
+            src="/brand/texturas/textura-cozinha-5.jpg"
+            opacidade={0.1}
           />
           <Container className="relative text-center">
             <span className="font-display text-sm font-semibold tracking-[0.28em] text-brand-amber uppercase">

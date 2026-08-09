@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { CompartilharArtigo } from "@/components/site/compartilhar-artigo";
 import { GaleriaArtigo } from "@/components/site/galeria-artigo";
 import { ReacoesArtigo } from "@/components/site/reacoes-artigo";
+import { FeedTracker } from "@/components/site/feed-tracker";
+import { TexturaAzul } from "@/components/site/textura-azul";
 import {
   ComentariosArtigo,
   type ComentarioPublico,
@@ -70,6 +72,13 @@ export default async function ArtigoPage({
 
   const artigo = await getArtigo(slug);
   if (!artigo) notFound();
+
+  // Métrica de acesso ao artigo (BAC_109). O tempo de permanência chega depois
+  // pelo beacon do <FeedTracker/>.
+  const acesso = await prisma.feedAcesso.create({
+    data: { userId: sessao.id, artigoId: artigo.id },
+    select: { id: true },
+  });
 
   const data = artigo.publicadoEm ?? artigo.updatedAt;
 
@@ -139,12 +148,17 @@ export default async function ArtigoPage({
   return (
     <>
       <SiteHeader />
+      <FeedTracker viewId={acesso.id} />
 
       <main id="conteudo" className="flex-1">
         <article className="bg-white pb-20">
           {/* CABEÇALHO DA MATÉRIA */}
-          <header className="bg-gradient-to-b from-brand-blue to-brand-blue-deep py-14 text-white sm:py-16">
-            <Container className="max-w-3xl">
+          <header className="relative overflow-hidden bg-gradient-to-b from-brand-blue to-brand-blue-deep py-14 text-white sm:py-16">
+            <TexturaAzul
+              src="/brand/texturas/textura-cozinha-3.jpg"
+              opacidade={0.09}
+            />
+            <Container className="relative max-w-3xl">
               <Link
                 href="/feed"
                 className="text-sm font-semibold text-brand-amber transition-colors hover:text-brand-amber-dark"

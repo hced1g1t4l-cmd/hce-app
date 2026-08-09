@@ -4,6 +4,8 @@ import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { Button } from "@/components/ui/button";
 import { FounderFlipCard } from "@/components/site/founder-flip-card";
+import { DepoimentosHome } from "@/components/site/depoimentos-home";
+import { TexturaAzul } from "@/components/site/textura-azul";
 import { ArrowRight, Check } from "@/components/ui/icons";
 import { EMAIL_CONTATO } from "@/lib/site";
 
@@ -67,6 +69,10 @@ export default function Home() {
           <div
             aria-hidden
             className="hce-hero-pattern pointer-events-none absolute inset-0"
+          />
+          <TexturaAzul
+            src="/brand/texturas/textura-cozinha-1.jpg"
+            opacidade={0.09}
           />
           <Container className="relative flex flex-col items-center gap-4 pt-8 pb-14 text-center sm:gap-5 sm:pt-10 sm:pb-20">
             <Image
@@ -189,9 +195,39 @@ export default function Home() {
           </Container>
         </section>
 
+        {/* DEPOIMENTOS */}
+        <section id="depoimentos" className="bg-white py-24">
+          <Container>
+            <div className="reveal mx-auto max-w-2xl text-center">
+              <span className="font-display text-sm font-semibold tracking-widest text-brand-amber-dark uppercase">
+                Depoimentos
+              </span>
+              <div className="mt-4 flex justify-center">
+                <span aria-hidden className="hce-rule" />
+              </div>
+              <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-brand-blue sm:text-4xl">
+                Quem já estudou e trabalhou com a gente
+              </h2>
+              <p className="mt-5 text-lg leading-relaxed text-muted">
+                Histórias de alunos, chefs e parceiros que viveram de perto o
+                jeito HCE de ensinar e transformar operações.
+              </p>
+            </div>
+
+            <DepoimentosHome />
+          </Container>
+        </section>
+
         {/* CLUBE +HCE */}
-        <section id="clube" className="bg-brand-blue py-24 text-white">
-          <Container className="grid items-center gap-12 lg:grid-cols-2">
+        <section
+          id="clube"
+          className="relative overflow-hidden bg-brand-blue py-24 text-white"
+        >
+          <TexturaAzul
+            src="/brand/texturas/textura-cozinha-2.jpg"
+            opacidade={0.1}
+          />
+          <Container className="relative grid items-center gap-12 lg:grid-cols-2">
             <div className="reveal">
               <div className="flex items-center gap-3">
                 <span className="font-display text-sm font-semibold tracking-widest text-brand-amber uppercase">
@@ -271,6 +307,10 @@ export default function Home() {
               <div
                 aria-hidden
                 className="hce-hero-pattern pointer-events-none absolute inset-0"
+              />
+              <TexturaAzul
+                src="/brand/texturas/textura-cozinha-4.jpg"
+                opacidade={0.1}
               />
               <h2 className="relative font-display text-3xl font-bold tracking-tight text-balance text-brand-amber sm:text-4xl">
                 Vamos transformar o seu negócio?

@@ -147,6 +147,13 @@ const SECOES: LegalSecao[] = [
             <strong>Feed:</strong> o texto dos seus comentários e as suas
             reações a artigos.
           </li>
+          <li>
+            <strong>Métricas de leitura do Feed:</strong> quando você, já
+            autenticado, acessa o Feed ou um artigo, registramos o acesso
+            vinculado à sua conta, o artigo lido e o tempo aproximado de
+            permanência na página, para fins de audiência e melhoria do
+            conteúdo.
+          </li>
         </ul>
         <p>
           <strong>b) Dados coletados automaticamente</strong>
@@ -229,6 +236,12 @@ const SECOES: LegalSecao[] = [
             <strong>Medir audiência e melhorar o site</strong> com métricas
             agregadas de navegação. <em>Base legal:</em> legítimo interesse (art.
             7º, IX).
+          </li>
+          <li>
+            <strong>Medir a leitura do Feed</strong> (artigos acessados e tempo
+            de permanência, vinculados à conta) para entender o interesse do
+            público e aprimorar o conteúdo. <em>Base legal:</em> legítimo
+            interesse (art. 7º, IX).
           </li>
           <li>
             <strong>Cumprir obrigações legais</strong> e exercer direitos em

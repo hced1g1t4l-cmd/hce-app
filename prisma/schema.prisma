@@ -53,6 +53,7 @@ model User {
   sessions      Session[]
   reacoes       ArtigoReacao[]
   comentarios   Comentario[]
+  feedAcessos   FeedAcesso[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -227,8 +228,28 @@ model Artigo {
 
   reacoes     ArtigoReacao[]
   comentarios Comentario[]
+  acessos     FeedAcesso[]
 
   @@index([publicado, publicadoEm])
+}
+
+// Metricas de leitura do Feed HCE (BAC_109). Um registro por acesso de um
+// usuario logado ao indice do Feed (artigoId null) ou a um artigo especifico.
+// durationMs e preenchido por um beacon no cliente (tempo de permanencia).
+// Vinculado a conta (userId) para responder "quais perfis acessaram".
+model FeedAcesso {
+  id         String   @id @default(cuid())
+  userId     String
+  artigoId   String? // null = indice /feed; preenchido = artigo especifico
+  durationMs Int? // tempo de permanencia em ms (beacon)
+  createdAt  DateTime @default(now())
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  artigo Artigo? @relation(fields: [artigoId], references: [id], onDelete: Cascade)
+
+  @@index([artigoId, createdAt])
+  @@index([userId, createdAt])
+  @@index([createdAt])
 }
 
 // Reacao de um usuario a um artigo (estilo LinkedIn). Uma por usuario/artigo;

@@ -2,14 +2,19 @@ import Link from "next/link";
 import { Container } from "@/components/site/container";
 import { Logo } from "@/components/site/logo";
 import { SocialLinks } from "@/components/site/social-links";
+import { TexturaAzul } from "@/components/site/textura-azul";
 import { EMAIL_CONTATO } from "@/lib/site";
 
 const YEAR = new Date().getFullYear();
 
 export function SiteFooter() {
   return (
-    <footer className="bg-brand-blue-deep text-white/80">
-      <Container className="grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
+    <footer className="relative overflow-hidden bg-brand-blue-deep text-white/80">
+      <TexturaAzul
+        src="/brand/texturas/textura-cozinha-1.jpg"
+        opacidade={0.07}
+      />
+      <Container className="relative grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
         <div className="sm:col-span-2 lg:col-span-2">
           <Logo
             variant="light"
@@ -90,7 +95,7 @@ export function SiteFooter() {
         </div>
       </Container>
 
-      <div className="border-t border-white/10">
+      <div className="relative border-t border-white/10">
         <Container className="flex flex-col items-center gap-4 py-6 text-xs text-white/50 sm:flex-row sm:justify-between">
           {/* RAF_010: "Desenvolvido por rqtte" como continuacao do copyright. */}
           <span className="order-2 text-center sm:order-1 sm:text-left">

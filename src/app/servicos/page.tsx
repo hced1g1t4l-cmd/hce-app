@@ -304,11 +304,11 @@ export default function ServicosPage() {
               </p>
             </div>
 
-            <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-14 flex flex-wrap justify-center gap-5">
               {MODELOS.map((m) => (
                 <article
                   key={m.nome}
-                  className="reveal rounded-2xl border border-line bg-white p-7 shadow-brand"
+                  className="reveal w-full rounded-2xl border border-line bg-white p-7 shadow-brand sm:w-[calc(50%-0.625rem)] lg:w-[calc(33.333%-0.834rem)]"
                 >
                   <h3 className="font-display text-lg font-bold text-brand-blue">
                     {m.nome}
