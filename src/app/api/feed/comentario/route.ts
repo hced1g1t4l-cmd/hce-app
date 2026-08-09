@@ -25,7 +25,12 @@ export async function POST(req: Request) {
     );
   }
 
-  let body: { artigoId?: unknown; texto?: unknown; handle?: unknown };
+  let body: {
+    artigoId?: unknown;
+    texto?: unknown;
+    handle?: unknown;
+    parentId?: unknown;
+  };
   try {
     body = await req.json();
   } catch {
@@ -33,11 +38,13 @@ export async function POST(req: Request) {
   }
 
   const artigoId = typeof body.artigoId === "string" ? body.artigoId : "";
+  const parentId =
+    typeof body.parentId === "string" && body.parentId ? body.parentId : null;
   const texto =
     typeof body.texto === "string" ? body.texto.trim().slice(0, 2000) : "";
   if (!artigoId || texto.length < 2) {
     return NextResponse.json(
-      { error: "Escreva um comentário." },
+      { error: parentId ? "Escreva uma resposta." : "Escreva um comentário." },
       { status: 400 },
     );
   }
@@ -48,6 +55,26 @@ export async function POST(req: Request) {
   });
   if (!artigo) {
     return NextResponse.json({ error: "Artigo não encontrado" }, { status: 404 });
+  }
+
+  // Resposta: o comentario-pai deve existir, ser do mesmo artigo, estar
+  // aprovado e ser de 1o nivel (nao respondemos respostas — 1 nivel so).
+  if (parentId) {
+    const pai = await prisma.comentario.findUnique({
+      where: { id: parentId },
+      select: { id: true, artigoId: true, status: true, parentId: true },
+    });
+    if (
+      !pai ||
+      pai.artigoId !== artigoId ||
+      pai.status !== "aprovado" ||
+      pai.parentId !== null
+    ) {
+      return NextResponse.json(
+        { error: "Não é possível responder a este comentário." },
+        { status: 400 },
+      );
+    }
   }
 
   // Garante um @ para o usuario. Se ainda nao tem, aceita o que veio no corpo.
@@ -87,12 +114,14 @@ export async function POST(req: Request) {
   }
 
   await prisma.comentario.create({
-    data: { artigoId, userId: user.id, texto, status: "pendente" },
+    data: { artigoId, userId: user.id, texto, status: "pendente", parentId },
   });
 
   return NextResponse.json({
     ok: true,
     handle,
-    message: "Comentário enviado. Aparecerá após a aprovação da equipe.",
+    message: parentId
+      ? "Resposta enviada. Aparecerá após a aprovação da equipe."
+      : "Comentário enviado. Aparecerá após a aprovação da equipe.",
   });
 }

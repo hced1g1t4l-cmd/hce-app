@@ -28,9 +28,11 @@ export default async function AdmComentariosPage() {
       id: true,
       texto: true,
       status: true,
+      parentId: true,
       createdAt: true,
       artigo: { select: { titulo: true, slug: true } },
       user: { select: { name: true, handle: true, image: true } },
+      admin: { select: { nome: true, fotoUrl: true } },
     },
   });
 
@@ -38,9 +40,13 @@ export default async function AdmComentariosPage() {
     id: c.id,
     texto: c.texto,
     status: (c.status as ComentarioAdm["status"]) ?? "pendente",
-    autorNome: c.user.name ?? "Membro HCE",
-    autorHandle: c.user.handle,
-    autorFoto: c.user.image,
+    ehHce: c.admin != null,
+    ehResposta: c.parentId != null,
+    podeResponder: c.parentId == null,
+    autorNome:
+      c.admin?.nome ?? c.user?.name ?? (c.admin != null ? "HCE" : "Membro HCE"),
+    autorHandle: c.admin != null ? null : (c.user?.handle ?? null),
+    autorFoto: c.admin?.fotoUrl ?? c.user?.image ?? null,
     artigoTitulo: c.artigo.titulo,
     artigoSlug: c.artigo.slug,
     criadoFmt: fmt.format(c.createdAt),

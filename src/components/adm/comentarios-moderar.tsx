@@ -7,6 +7,9 @@ export type ComentarioAdm = {
   id: string;
   texto: string;
   status: "pendente" | "aprovado" | "reprovado";
+  ehHce: boolean; // resposta oficial da HCE (autor = admin)
+  ehResposta: boolean; // é resposta a outro comentário
+  podeResponder: boolean; // 1º nível → aceita resposta da HCE
   autorNome: string;
   autorHandle: string | null;
   autorFoto: string | null;
@@ -45,6 +48,9 @@ export function ComentariosModerar({
   );
   const [busca, setBusca] = useState("");
   const [ocupado, setOcupado] = useState<string | null>(null);
+  const [respAlvo, setRespAlvo] = useState<string | null>(null);
+  const [respTexto, setRespTexto] = useState("");
+  const [respErro, setRespErro] = useState<string | null>(null);
 
   const contagem = useMemo(() => {
     const c = { pendente: 0, aprovado: 0, reprovado: 0 };
@@ -75,6 +81,33 @@ export function ComentariosModerar({
         body: JSON.stringify({ acao }),
       });
       if (res.ok) router.refresh();
+    } finally {
+      setOcupado(null);
+    }
+  }
+
+  async function responderHce(e: React.FormEvent, parentId: string) {
+    e.preventDefault();
+    setRespErro(null);
+    if (respTexto.trim().length < 2) {
+      setRespErro("Escreva uma resposta.");
+      return;
+    }
+    setOcupado(parentId);
+    try {
+      const res = await fetch("/api/adm/comentarios", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ parentId, texto: respTexto }),
+      });
+      if (res.ok) {
+        setRespAlvo(null);
+        setRespTexto("");
+        router.refresh();
+      } else {
+        const d = (await res.json().catch(() => ({}))) as { error?: string };
+        setRespErro(d.error || "Não foi possível enviar.");
+      }
     } finally {
       setOcupado(null);
     }
@@ -158,6 +191,16 @@ export function ComentariosModerar({
                       </span>
                     )}
                     <span className="text-xs text-muted">· {c.criadoFmt}</span>
+                    {c.ehHce && (
+                      <span className="rounded-full bg-brand-amber px-2 py-0.5 text-xs font-bold text-brand-blue-deep">
+                        HCE
+                      </span>
+                    )}
+                    {c.ehResposta && !c.ehHce && (
+                      <span className="rounded-full bg-brand-blue/10 px-2 py-0.5 text-xs font-semibold text-brand-blue">
+                        resposta
+                      </span>
+                    )}
                     <span
                       className={`rounded-full px-2 py-0.5 text-xs font-semibold ${BADGE[c.status]}`}
                     >
@@ -181,7 +224,20 @@ export function ComentariosModerar({
                 </div>
               </div>
 
-              <div className="mt-3 flex flex-wrap justify-end gap-2">
+              <div className="mt-3 flex flex-wrap items-center justify-end gap-2">
+                {c.podeResponder && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setRespAlvo((a) => (a === c.id ? null : c.id));
+                      setRespTexto("");
+                      setRespErro(null);
+                    }}
+                    className="mr-auto rounded-full bg-brand-amber px-4 py-2 text-sm font-semibold text-brand-blue-deep transition-colors hover:bg-brand-amber-dark disabled:opacity-60"
+                  >
+                    Responder como HCE
+                  </button>
+                )}
                 {c.status !== "aprovado" && (
                   <button
                     type="button"
@@ -211,6 +267,46 @@ export function ComentariosModerar({
                   Excluir
                 </button>
               </div>
+
+              {respAlvo === c.id && (
+                <form
+                  onSubmit={(e) => responderHce(e, c.id)}
+                  className="mt-3 rounded-xl border border-brand-amber/40 bg-brand-amber-soft/30 p-3"
+                >
+                  <p className="mb-2 text-xs font-semibold text-brand-blue-deep">
+                    Resposta oficial da HCE (aparece aprovada, com selo{" "}
+                    <span className="font-bold">Equipe HCE</span>)
+                  </p>
+                  <textarea
+                    value={respTexto}
+                    onChange={(e) => setRespTexto(e.target.value)}
+                    rows={2}
+                    maxLength={2000}
+                    autoFocus
+                    placeholder={`Responder a ${c.autorNome}…`}
+                    className="hce-input resize-y"
+                  />
+                  {respErro && (
+                    <p className="mt-2 text-sm text-red-700">{respErro}</p>
+                  )}
+                  <div className="mt-2 flex items-center gap-2">
+                    <button
+                      type="submit"
+                      disabled={ocupado === c.id}
+                      className="rounded-full bg-brand-blue px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-blue-deep disabled:opacity-60"
+                    >
+                      {ocupado === c.id ? "Enviando…" : "Enviar resposta"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setRespAlvo(null)}
+                      className="rounded-full px-3 py-2 text-sm font-semibold text-muted transition-colors hover:text-ink"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </form>
+              )}
             </li>
           ))}
         </ul>

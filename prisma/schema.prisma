@@ -117,8 +117,9 @@ model Admin {
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
 
-  sessions AdminSession[]
-  logs     AdminLog[]
+  sessions    AdminSession[]
+  logs        AdminLog[]
+  comentarios Comentario[] // respostas oficiais da HCE no Feed
 
   @@index([ativo])
 }
@@ -248,10 +249,16 @@ model ArtigoReacao {
 
 // Comentario de usuario em um artigo. Passa por moderacao no /adm:
 // status = pendente | aprovado | reprovado. So aparece no site se aprovado.
+//
+// Respostas (BAC_108): parentId aponta para o comentario respondido (1 nivel).
+// Autor pode ser um membro (userId) OU um administrador da HCE (adminId). As
+// respostas da HCE ja nascem "aprovado"; as de membros passam por moderacao.
 model Comentario {
   id         String    @id @default(cuid())
   artigoId   String
-  userId     String
+  userId     String? // autor membro (null quando a resposta e da HCE)
+  adminId    String? // autor administrador (resposta oficial da HCE)
+  parentId   String? // se preenchido, e uma resposta a outro comentario
   texto      String    @db.Text
   status     String    @default("pendente")
   moderadoEm DateTime?
@@ -259,10 +266,14 @@ model Comentario {
   createdAt  DateTime  @default(now())
 
   artigo Artigo @relation(fields: [artigoId], references: [id], onDelete: Cascade)
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  admin  Admin? @relation(fields: [adminId], references: [id], onDelete: SetNull)
+  parent    Comentario?  @relation("Respostas", fields: [parentId], references: [id], onDelete: Cascade)
+  respostas Comentario[] @relation("Respostas")
 
   @@index([artigoId, status])
   @@index([status, createdAt])
+  @@index([parentId])
 }
 
 // Imagem armazenada no proprio Postgres (capa e imagens do corpo dos artigos).
