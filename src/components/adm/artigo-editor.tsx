@@ -9,6 +9,7 @@ import {
   type Editor,
 } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import { mergeAttributes } from "@tiptap/core";
 import { TextStyleKit } from "@tiptap/extension-text-style";
 import TextAlign from "@tiptap/extension-text-align";
 import Image from "@tiptap/extension-image";
@@ -50,6 +51,64 @@ const CORES = [
   { nome: "Verde", cor: "#1f7a4d" },
 ];
 
+// Imagem do corpo da matéria com legenda de autor (crédito) opcional.
+// Quando há crédito, a imagem é envolvida em <figure> com <figcaption> em
+// itálico pequeno; sem crédito, sai apenas o <img> (comportamento antigo).
+const ImagemComCredito = Image.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      credito: {
+        default: null,
+        // O crédito não vira atributo do <img>; ele é renderizado como
+        // <figcaption>. Na leitura, aceitamos também data-credito legado.
+        renderHTML: () => ({}),
+        parseHTML: (element: HTMLElement) =>
+          element.getAttribute("data-credito") || null,
+      },
+    };
+  },
+
+  parseHTML() {
+    return [
+      {
+        // Figura com legenda: reconstrói src + crédito a partir do figcaption.
+        tag: "figure.materia-figure",
+        getAttrs: (node: HTMLElement | string) => {
+          if (typeof node === "string") return false;
+          const img = node.querySelector("img");
+          if (!img) return false;
+          const cap = node.querySelector("figcaption");
+          const credito = (cap?.textContent || "").trim();
+          return {
+            src: img.getAttribute("src"),
+            alt: img.getAttribute("alt"),
+            title: img.getAttribute("title"),
+            credito: credito || null,
+          };
+        },
+      },
+      { tag: "img[src]" },
+    ];
+  },
+
+  renderHTML({ HTMLAttributes, node }) {
+    const bruto = node.attrs.credito;
+    const credito = typeof bruto === "string" ? bruto.trim() : "";
+    const img = [
+      "img",
+      mergeAttributes(this.options.HTMLAttributes, HTMLAttributes),
+    ];
+    if (!credito) return img as never;
+    return [
+      "figure",
+      { class: "materia-figure" },
+      img,
+      ["figcaption", { class: "materia-credito" }, ["em", {}, credito]],
+    ] as never;
+  },
+});
+
 export function ArtigoEditor({ initial }: { initial?: ArtigoInit }) {
   const router = useRouter();
   const [titulo, setTitulo] = useState(initial?.titulo ?? "");
@@ -87,7 +146,7 @@ export function ArtigoEditor({ initial }: { initial?: ArtigoInit }) {
       }),
       TextStyleKit,
       TextAlign.configure({ types: ["heading", "paragraph"] }),
-      Image.configure({ HTMLAttributes: { class: "materia-img" } }),
+      ImagemComCredito.configure({ HTMLAttributes: { class: "materia-img" } }),
       Placeholder.configure({ placeholder: "Escreva a matéria aqui…" }),
     ],
     content: initial?.conteudoHtml ?? "",
@@ -729,6 +788,10 @@ function EditorToolbar({
       alignRight: ctx.editor.isActive({ textAlign: "right" }),
       alignJustify: ctx.editor.isActive({ textAlign: "justify" }),
       fontSize: (ctx.editor.getAttributes("textStyle").fontSize as string) || "",
+      imagem: ctx.editor.isActive("image"),
+      temCredito: Boolean(
+        (ctx.editor.getAttributes("image").credito as string) || "",
+      ),
     }),
   });
 
@@ -756,6 +819,28 @@ function EditorToolbar({
     const url = await onUpload(file);
     if (url) editor.chain().focus().setImage({ src: url }).run();
   }
+
+  // Legenda de autor (crédito) da foto selecionada. Opcional: vazio remove.
+  const setCredito = useCallback(() => {
+    if (!editor.isActive("image")) {
+      onErro(
+        "Clique primeiro na foto que vai receber o crédito e depois use “Crédito da foto”.",
+      );
+      return;
+    }
+    const atual = (editor.getAttributes("image").credito as string) || "";
+    const v = window.prompt(
+      "Crédito/autor da foto (ex.: Foto: João Silva). Deixe vazio para remover:",
+      atual,
+    );
+    if (v === null) return;
+    onErro(null);
+    editor
+      .chain()
+      .focus()
+      .updateAttributes("image", { credito: v.trim() || null })
+      .run();
+  }, [editor, onErro]);
 
   return (
     <div className="flex flex-wrap items-center gap-1 border-b border-line bg-surface-soft p-2">
@@ -864,6 +949,13 @@ function EditorToolbar({
         Link
       </TBtn>
       <TBtn onClick={() => imgInputRef.current?.click()}>Imagem</TBtn>
+      <TBtn
+        active={s.temCredito}
+        onClick={setCredito}
+        title="Legenda de autor da foto (crédito, itálico pequeno). Selecione a foto primeiro."
+      >
+        Crédito da foto
+      </TBtn>
       <input
         ref={imgInputRef}
         type="file"
@@ -884,15 +976,18 @@ function TBtn({
   children,
   onClick,
   active,
+  title,
 }: {
   children: React.ReactNode;
   onClick: () => void;
   active?: boolean;
+  title?: string;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      title={title}
       className={cn(
         "flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-sm font-semibold transition-colors",
         active

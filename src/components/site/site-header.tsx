@@ -21,6 +21,8 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   // undefined = carregando; null = deslogado; objeto = logado.
   const [conta, setConta] = useState<ContaEstado>(undefined);
+  // Header "consciente do scroll": encolhe e ganha sombra ao rolar.
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     let vivo = true;
@@ -37,12 +39,37 @@ export function SiteHeader() {
     };
   }, []);
 
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
-    <header className="sticky top-0 z-50 border-b border-brand-amber-dark/25 bg-brand-amber/95 backdrop-blur-md">
-      <Container className="flex h-20 items-center justify-between py-3">
+    <header
+      className={cn(
+        "sticky top-0 z-50 bg-brand-amber/90 backdrop-blur-md transition-shadow duration-300",
+        scrolled
+          ? "border-b border-brand-amber-dark/20 shadow-brand"
+          : "border-b border-transparent",
+      )}
+    >
+      <Container
+        className={cn(
+          "flex items-center justify-between transition-[height] duration-300",
+          scrolled ? "h-14" : "h-20",
+        )}
+      >
         {/* FAB_011: logo do topo SEM borda branca e SEM relevo (sombra).
             O proprio quadrado azul da marca ja contrasta com a barra amarela. */}
-        <Logo size={44} className="rounded-xl" />
+        <Logo
+          size={44}
+          className={cn(
+            "rounded-xl transition-transform duration-300",
+            scrolled && "scale-90",
+          )}
+        />
 
         <nav aria-label="Navegação principal" className="hidden items-center gap-8 md:flex">
           {NAV.map((item) => (

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Poppins } from "next/font/google";
+import { Inter, Poppins, Fraunces } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
 import { Analytics } from "@/components/analytics";
@@ -16,6 +16,15 @@ const poppins = Poppins({
   subsets: ["latin"],
   weight: ["500", "600", "700", "800"],
   display: "swap",
+});
+
+// Serif editorial (variável) usada só como acento — nomes das chefs e
+// eyebrows — para um ar mais gastronômico/premium sem trocar o conceito.
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin"],
+  display: "swap",
+  style: ["normal", "italic"],
 });
 
 const OG_IMAGE = {
@@ -93,7 +102,7 @@ export default function RootLayout({
   return (
     <html
       lang="pt-BR"
-      className={`${inter.variable} ${poppins.variable} h-full antialiased`}
+      className={`${inter.variable} ${poppins.variable} ${fraunces.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-white text-ink">
         <a href="#conteudo" className="skip-link">

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/cn";
+import { Rotate } from "@/components/ui/icons";
 
 // Card das fundadoras com flip.
 //  - Desktop: vira ao passar o mouse (via JS, para nao conflitar com o clique).
@@ -61,7 +62,7 @@ export function FounderFlipCard({
   const toggle = () => virar(!flipped);
 
   return (
-    <figure className="overflow-hidden rounded-2xl border border-line bg-surface-soft">
+    <figure className="reveal overflow-hidden rounded-2xl border border-line bg-surface-soft shadow-brand transition-shadow duration-300 hover:shadow-brand-lg">
       <div
         className="flip-card relative aspect-square w-full cursor-pointer outline-none"
         tabIndex={0}
@@ -79,18 +80,18 @@ export function FounderFlipCard({
         }}
       >
         <div className={cn("flip-card-inner", flipped && "is-flipped")}>
-          {/* Frente: foto */}
-          <div className="flip-card-face overflow-hidden">
+          {/* Frente: foto (fundo levemente tingido de âmbar para integrar à marca) */}
+          <div className="flip-card-face overflow-hidden bg-gradient-to-b from-brand-amber-soft/40 to-surface-soft">
             <Image
               src={foto}
               alt={`${nome}, ${papel} da HCE`}
               fill
-              sizes="(max-width: 768px) 45vw, 300px"
+              sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 300px"
               className="object-cover"
               style={{ objectPosition: fotoPos }}
             />
-            <span className="absolute right-3 bottom-3 flex items-center gap-1 rounded-full bg-brand-blue/85 px-2.5 py-1 text-[0.7rem] font-semibold text-white backdrop-blur-sm">
-              <span aria-hidden>↻</span> bio
+            <span className="absolute right-3 bottom-3 flex items-center gap-1.5 rounded-full bg-brand-blue/90 px-3 py-1.5 text-[0.72rem] font-semibold text-white shadow-brand ring-1 ring-white/15 backdrop-blur-sm">
+              <Rotate className="h-3.5 w-3.5 text-brand-amber" /> bio
             </span>
           </div>
           {/* Verso: mini bio (rola e comeca do topo) */}
@@ -100,7 +101,7 @@ export function FounderFlipCard({
               onScroll={atualizarSeta}
               className="flex h-full flex-col items-start justify-start gap-2 overflow-y-auto p-5"
             >
-              <p className="font-display text-base font-semibold text-brand-amber">
+              <p className="font-serif text-lg font-semibold text-brand-amber">
                 {nome}
               </p>
               <p className="text-[0.82rem] leading-relaxed text-white/90">
@@ -131,7 +132,9 @@ export function FounderFlipCard({
         </div>
       </div>
       <figcaption className="p-4">
-        <p className="font-display font-semibold text-brand-blue">{nome}</p>
+        <p className="font-serif text-lg font-semibold text-brand-blue">
+          {nome}
+        </p>
         <p className="text-sm text-muted">{papel}</p>
       </figcaption>
     </figure>

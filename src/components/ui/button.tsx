@@ -18,17 +18,17 @@ const base =
 const variants: Record<Variant, string> = {
   // Fundo amarelo, letra azul. Hover: escurece o amarelo (mantem letra azul).
   primary:
-    "bg-brand-amber text-brand-blue-deep hover:bg-brand-amber-dark hover:-translate-y-0.5 shadow-sm hover:shadow-md focus-visible:outline-brand-amber",
+    "bg-brand-amber text-brand-blue-deep hover:bg-brand-amber-dark hover:-translate-y-0.5 shadow-brand hover:shadow-brand-lg focus-visible:outline-brand-amber",
   // Contorno em superficie escura: letra amarela; hover vira fundo amarelo com letra azul.
   secondary:
-    "border border-current text-brand-amber hover:border-brand-amber hover:bg-brand-amber hover:text-brand-blue-deep focus-visible:outline-brand-amber",
+    "border border-current text-brand-amber hover:-translate-y-0.5 hover:border-brand-amber hover:bg-brand-amber hover:text-brand-blue-deep hover:shadow-brand focus-visible:outline-brand-amber",
   ghost:
     "text-brand-blue hover:bg-brand-amber hover:text-brand-blue-deep focus-visible:outline-brand-amber",
   // Fundo azul, letra amarela. Hover: vira amarelo com letra azul.
-  blue: "bg-brand-blue text-brand-amber hover:bg-brand-amber hover:text-brand-blue-deep hover:-translate-y-0.5 shadow-sm hover:shadow-md focus-visible:outline-brand-amber",
+  blue: "bg-brand-blue text-brand-amber hover:bg-brand-amber hover:text-brand-blue-deep hover:-translate-y-0.5 shadow-brand hover:shadow-brand-lg focus-visible:outline-brand-amber",
   // CTA sobre a barra amarela: fundo azul, letra amarela. Hover escurece o azul
   // (nao vira amarelo, senao sumiria no header amarelo).
-  nav: "bg-brand-blue text-brand-amber hover:bg-brand-blue-dark hover:-translate-y-0.5 shadow-sm hover:shadow-md focus-visible:outline-brand-amber",
+  nav: "bg-brand-blue text-brand-amber hover:bg-brand-blue-dark hover:-translate-y-0.5 shadow-brand hover:shadow-brand-lg focus-visible:outline-brand-amber",
 };
 
 // RAF_002: tamanhos responsivos — menores no mobile, cheios no desktop.

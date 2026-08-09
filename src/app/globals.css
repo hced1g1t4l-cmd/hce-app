@@ -27,8 +27,15 @@
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-poppins), var(--font-inter), sans-serif;
+  --font-serif: var(--font-fraunces), Georgia, "Times New Roman", serif;
 
   --radius-brand: 0.9rem;
+
+  /* Escala de elevação sutil e consistente (sombras "de marca", tom azul). */
+  --shadow-brand:
+    0 1px 2px rgba(0, 27, 79, 0.05), 0 14px 32px -16px rgba(0, 27, 79, 0.2);
+  --shadow-brand-lg:
+    0 2px 6px rgba(0, 27, 79, 0.06), 0 28px 56px -22px rgba(0, 27, 79, 0.3);
 }
 
 :root {
@@ -132,6 +139,34 @@ p {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
+}
+
+/* Textura sutil do hero: grade de pontos que some nas bordas (profundidade). */
+.hce-hero-pattern {
+  background-image: radial-gradient(
+    rgba(255, 255, 255, 0.07) 1px,
+    transparent 1px
+  );
+  background-size: 24px 24px;
+  -webkit-mask-image: radial-gradient(
+    ellipse 85% 65% at 50% 0%,
+    #000 45%,
+    transparent 82%
+  );
+  mask-image: radial-gradient(
+    ellipse 85% 65% at 50% 0%,
+    #000 45%,
+    transparent 82%
+  );
+}
+
+/* Régua âmbar recorrente — acento de seção (item 6 do audit de design). */
+.hce-rule {
+  display: inline-block;
+  height: 0.2rem;
+  width: 2.25rem;
+  border-radius: 999px;
+  background: var(--color-brand-amber);
 }
 
 /*
@@ -332,6 +367,24 @@ p {
   border-radius: 0.9rem;
   margin-top: 1.4em;
   margin-bottom: 1.4em;
+}
+/* Foto com legenda de autor (crédito). A figura assume as margens; a imagem
+   interna zera as suas para não dobrar o respiro. Crédito em itálico pequeno. */
+.materia figure {
+  margin-top: 1.4em;
+  margin-bottom: 1.4em;
+}
+.materia figure img {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+.materia figcaption {
+  margin-top: 0.55em;
+  font-size: 0.8rem;
+  font-style: italic;
+  line-height: 1.4;
+  color: var(--color-muted);
+  text-align: center;
 }
 .materia strong {
   font-weight: 700;

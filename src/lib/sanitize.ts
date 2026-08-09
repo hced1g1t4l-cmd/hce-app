@@ -18,13 +18,22 @@ const OPCOES: sanitizeHtml.IOptions = {
     "h1", "h2", "h3", "h4", "h5", "h6",
     "ul", "ol", "li",
     "blockquote", "pre", "code",
-    "a", "img",
+    "a", "img", "figure", "figcaption",
     "table", "thead", "tbody", "tr", "th", "td",
   ],
   allowedAttributes: {
     a: ["href", "target", "rel", "title"],
-    img: ["src", "alt", "title", "width", "height"],
+    img: ["src", "alt", "title", "width", "height", "class"],
+    // Figura com legenda de autor (crédito) da foto no corpo da matéria.
+    figure: ["class"],
+    figcaption: ["class"],
     "*": ["style"],
+  },
+  // Restringe a classe a valores conhecidos do editor (evita CSS arbitrário).
+  allowedClasses: {
+    img: ["materia-img"],
+    figure: ["materia-figure"],
+    figcaption: ["materia-credito"],
   },
   allowedStyles: {
     "*": {

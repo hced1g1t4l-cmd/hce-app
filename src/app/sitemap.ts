@@ -58,6 +58,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.7,
     },
+    {
+      url: `${BASE_URL}/termos-de-uso`,
+      lastModified: now,
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
+    {
+      url: `${BASE_URL}/privacidade`,
+      lastModified: now,
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
   ];
 
   let artigos: MetadataRoute.Sitemap = [];

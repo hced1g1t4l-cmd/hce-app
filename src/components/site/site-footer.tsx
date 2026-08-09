@@ -91,9 +91,9 @@ export function SiteFooter() {
       </Container>
 
       <div className="border-t border-white/10">
-        <Container className="py-6 text-center text-xs text-white/50">
+        <Container className="flex flex-col items-center gap-4 py-6 text-xs text-white/50 sm:flex-row sm:justify-between">
           {/* RAF_010: "Desenvolvido por rqtte" como continuacao do copyright. */}
-          <span>
+          <span className="order-2 text-center sm:order-1 sm:text-left">
             © {YEAR} HCE Gastronomia. Todos os direitos reservados. Desenvolvido
             por{" "}
             <a
@@ -105,6 +105,26 @@ export function SiteFooter() {
               rqtte
             </a>
           </span>
+          <nav
+            aria-label="Documentos legais"
+            className="order-1 flex items-center gap-4 sm:order-2"
+          >
+            <Link
+              href="/termos-de-uso"
+              className="transition-colors hover:text-brand-amber"
+            >
+              Termos de Uso
+            </Link>
+            <span aria-hidden className="text-white/25">
+              ·
+            </span>
+            <Link
+              href="/privacidade"
+              className="transition-colors hover:text-brand-amber"
+            >
+              Aviso de Privacidade
+            </Link>
+          </nav>
         </Container>
       </div>
     </footer>

@@ -4,6 +4,7 @@ import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { Button } from "@/components/ui/button";
 import { FounderFlipCard } from "@/components/site/founder-flip-card";
+import { ArrowRight, Check } from "@/components/ui/icons";
 import { EMAIL_CONTATO } from "@/lib/site";
 
 const PILARES = [
@@ -61,7 +62,13 @@ export default function Home() {
             aria-hidden
             className="pointer-events-none absolute -bottom-32 -left-20 h-80 w-80 rounded-full bg-brand-blue-light/40 blur-3xl"
           />
-          <Container className="relative flex flex-col items-center gap-4 pt-6 pb-12 text-center sm:gap-5 sm:pt-8 sm:pb-14">
+          {/* Textura sutil (grade de pontos) que some nas bordas: dá profundidade
+              ao hero sem competir com o texto. */}
+          <div
+            aria-hidden
+            className="hce-hero-pattern pointer-events-none absolute inset-0"
+          />
+          <Container className="relative flex flex-col items-center gap-4 pt-8 pb-14 text-center sm:gap-5 sm:pt-10 sm:pb-20">
             <Image
               src="/brand/logos/logo-hce-tight.png"
               alt="HCE"
@@ -71,10 +78,13 @@ export default function Home() {
               sizes="(max-width: 640px) 60vw, 460px"
               className="h-24 w-auto max-w-full sm:h-28 lg:h-32"
             />
-            <p className="font-display text-sm font-semibold tracking-[0.28em] text-brand-amber uppercase">
-              Hospitalidade · Consultoria · Educação
-            </p>
-            <h1 className="max-w-4xl font-display text-3xl leading-tight font-extrabold text-balance text-white sm:text-5xl">
+            <div className="flex flex-col items-center gap-3">
+              <p className="font-display text-sm font-semibold tracking-[0.28em] text-brand-amber uppercase">
+                Hospitalidade · Consultoria · Educação
+              </p>
+              <span aria-hidden className="hce-rule" />
+            </div>
+            <h1 className="max-w-4xl font-display text-3xl leading-[1.1] font-extrabold tracking-tight text-balance text-white sm:text-5xl lg:text-6xl">
               Transformamos conhecimento em hospitalidade, pessoas em
               profissionais e experiências em resultados.
             </h1>
@@ -84,8 +94,9 @@ export default function Home() {
               gastronomia, pela educação e pelo desenvolvimento de pessoas.
             </p>
             <div className="mt-2 flex flex-col gap-3 sm:flex-row">
-              <Button href="/clube" size="lg">
+              <Button href="/clube" size="lg" className="group">
                 Conheça o +HCE
+                <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
               </Button>
               <Button
                 href="/servicos"
@@ -103,10 +114,13 @@ export default function Home() {
         <section id="sobre" className="bg-white py-24">
           <Container className="grid items-center gap-14 lg:grid-cols-2">
             <div className="reveal">
-              <span className="font-display text-sm font-semibold tracking-widest text-brand-amber-dark uppercase">
-                Quem somos
-              </span>
-              <h2 className="mt-3 font-display text-3xl font-bold text-brand-blue sm:text-4xl">
+              <div className="flex items-center gap-3">
+                <span className="font-display text-sm font-semibold tracking-widest text-brand-amber-dark uppercase">
+                  Quem somos
+                </span>
+                <span aria-hidden className="hce-rule" />
+              </div>
+              <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-brand-blue sm:text-4xl">
                 Duas trajetórias, uma paixão pela gastronomia
               </h2>
               <p className="mt-6 text-lg leading-relaxed text-muted">
@@ -125,7 +139,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               {FUNDADORAS.map((f) => (
                 <FounderFlipCard key={f.nome} {...f} />
               ))}
@@ -140,7 +154,10 @@ export default function Home() {
               <span className="font-display text-sm font-semibold tracking-widest text-brand-amber-dark uppercase">
                 O que fazemos
               </span>
-              <h2 className="mt-3 font-display text-3xl font-bold text-brand-blue sm:text-4xl">
+              <div className="mt-4 flex justify-center">
+                <span aria-hidden className="hce-rule" />
+              </div>
+              <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-brand-blue sm:text-4xl">
                 Consultoria, educação e hospitalidade para A&amp;B
               </h2>
               <p className="mt-5 text-lg leading-relaxed text-muted">
@@ -154,7 +171,7 @@ export default function Home() {
               {PILARES.map((p) => (
                 <article
                   key={p.titulo}
-                  className="reveal group flex flex-col rounded-2xl border border-line bg-white p-8 transition-all duration-300 ease-out hover:-translate-y-1 hover:border-brand-amber hover:shadow-xl motion-reduce:transform-none motion-reduce:transition-none"
+                  className="reveal group flex flex-col rounded-2xl border border-line bg-white p-8 shadow-brand transition-all duration-300 ease-out hover:-translate-y-1 hover:border-brand-amber hover:shadow-brand-lg motion-reduce:transform-none motion-reduce:transition-none"
                 >
                   <span
                     aria-hidden
@@ -176,10 +193,13 @@ export default function Home() {
         <section id="clube" className="bg-brand-blue py-24 text-white">
           <Container className="grid items-center gap-12 lg:grid-cols-2">
             <div className="reveal">
-              <span className="font-display text-sm font-semibold tracking-widest text-brand-amber uppercase">
-                Em breve
-              </span>
-              <h2 className="mt-3 font-display text-3xl font-bold text-brand-amber sm:text-4xl">
+              <div className="flex items-center gap-3">
+                <span className="font-display text-sm font-semibold tracking-widest text-brand-amber uppercase">
+                  Em breve
+                </span>
+                <span aria-hidden className="hce-rule" />
+              </div>
+              <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-brand-amber sm:text-4xl">
                 +HCE: conteúdo que vira resultado
               </h2>
               <p className="mt-6 text-lg leading-relaxed text-white/80">
@@ -196,17 +216,18 @@ export default function Home() {
                   <li key={item} className="flex items-start gap-3">
                     <span
                       aria-hidden
-                      className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-amber text-sm font-bold text-brand-blue-deep"
+                      className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-amber text-brand-blue-deep"
                     >
-                      ✓
+                      <Check className="h-3.5 w-3.5" strokeWidth={2.5} />
                     </span>
                     {item}
                   </li>
                 ))}
               </ul>
               <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row lg:justify-start">
-                <Button href="/clube" size="lg">
+                <Button href="/clube" size="lg" className="group">
                   Ver planos do +HCE
+                  <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
                 </Button>
                 <Button
                   href="/avise-me"
@@ -220,7 +241,12 @@ export default function Home() {
             </div>
 
             <div className="reveal relative mx-auto w-full max-w-md">
-              <div className="overflow-hidden rounded-3xl border border-white/10 shadow-2xl">
+              {/* Brilho âmbar sutil atrás da prévia: destaca a imagem sobre o azul. */}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute -inset-4 rounded-[2.25rem] bg-brand-amber/10 blur-2xl"
+              />
+              <div className="relative overflow-hidden rounded-3xl border border-white/10 shadow-brand-lg ring-1 ring-white/5">
                 <Image
                   src="/brand/posts/o-que-oferece.jpeg"
                   alt="Prévia dos conteúdos do +HCE: receitas, fichas técnicas e ebooks"
@@ -237,12 +263,16 @@ export default function Home() {
         {/* CONTATO */}
         <section id="contato" className="bg-white py-24">
           <Container>
-            <div className="reveal relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-blue to-brand-blue-deep px-8 py-16 text-center text-white sm:px-16">
+            <div className="reveal relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-blue to-brand-blue-deep px-8 py-16 text-center text-white shadow-brand-lg sm:px-16">
               <div
                 aria-hidden
                 className="pointer-events-none absolute -top-16 -right-10 h-64 w-64 rounded-full bg-brand-amber/15 blur-3xl"
               />
-              <h2 className="relative font-display text-3xl font-bold text-balance text-brand-amber sm:text-4xl">
+              <div
+                aria-hidden
+                className="hce-hero-pattern pointer-events-none absolute inset-0"
+              />
+              <h2 className="relative font-display text-3xl font-bold tracking-tight text-balance text-brand-amber sm:text-4xl">
                 Vamos transformar o seu negócio?
               </h2>
               <p className="relative mx-auto mt-5 max-w-xl text-lg text-white/80">
@@ -251,8 +281,9 @@ export default function Home() {
                 ajudar.
               </p>
               <div className="relative mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                <Button href="/fale-com-a-hce" size="lg">
+                <Button href="/fale-com-a-hce" size="lg" className="group">
                   Falar com a HCE
+                  <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
                 </Button>
                 <Button
                   href={`mailto:${EMAIL_CONTATO}`}
