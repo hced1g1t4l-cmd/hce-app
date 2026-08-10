@@ -29,7 +29,7 @@ const FUNDADORAS = [
   {
     nome: "Gio Gropello",
     papel: "Chef, educador e consultor",
-    foto: "/brand/fotos/chef-gio-3.png",
+    foto: "/brand/fotos/chef-gio-4.png",
     fotoPos: "center 94%",
     bio: "Especialista em Ciência e Tecnologia de Alimentos, MBA em Artes Culinárias e diplomado em Marketing de Alimentos. Professor, chef de cozinha, pesquisador, consultor e produtor de conteúdo, com ampla experiência em gastronomia, educação, hospitalidade e gestão de A&B.",
   },
