@@ -3,6 +3,7 @@ import { Inter, Poppins, Fraunces } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
 import { Analytics } from "@/components/analytics";
+import { CookieConsent } from "@/components/site/cookie-consent";
 import { OrganizationJsonLd } from "@/components/seo/json-ld";
 
 const inter = Inter({
@@ -113,6 +114,7 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <Analytics />
         </Suspense>
+        <CookieConsent />
       </body>
     </html>
   );

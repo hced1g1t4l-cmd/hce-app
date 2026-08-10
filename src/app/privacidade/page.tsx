@@ -262,35 +262,59 @@ const SECOES: LegalSecao[] = [
     conteudo: (
       <>
         <p>
-          Utilizamos cookies estritamente necessários e de desempenho. Os
-          principais cookies próprios são:
+          Dividimos os cookies em <strong>necessários</strong> (indispensáveis
+          ao funcionamento) e de <strong>estatística</strong> (opcionais, só
+          usados mediante o seu consentimento). Na primeira visita mostramos um
+          aviso onde você pode <strong>aceitar</strong>, <strong>rejeitar</strong>{" "}
+          ou <strong>configurar</strong> por categoria. Você pode mudar ou
+          retirar a sua escolha a qualquer momento pelo ícone de cookies no
+          canto inferior da tela.
+        </p>
+        <p>
+          <strong>a) Necessários</strong> (sempre ativos):
         </p>
         <ul>
           <li>
             <strong>hce_sess</strong> — mantém a sua sessão de usuário logado.
-            Essencial. Duração: até 30 dias.
+            Duração: até 30 dias.
           </li>
           <li>
             <strong>hce_adm</strong> — sessão do painel administrativo (restrito
-            à equipe). Essencial. Duração: até 8 horas.
+            à equipe). Duração: até 8 horas.
           </li>
           <li>
             <strong>hce_goauth</strong> — segurança do login com Google (proteção
-            contra CSRF). Temporário. Duração: cerca de 10 minutos.
+            contra CSRF). Duração: cerca de 10 minutos.
           </li>
           <li>
-            <strong>hce_vid</strong> — identificador anônimo de visitante para
-            métricas de audiência. Duração: até 1 ano.
+            <strong>hce_consent</strong> — guarda a sua preferência de cookies.
+            Duração: cerca de 6 meses.
+          </li>
+          <li>
+            <strong>reCAPTCHA</strong> (Google) — proteção antifraude nos
+            formulários; carregado apenas nas páginas com formulário.
           </li>
         </ul>
         <p>
-          Não utilizamos cookies de publicidade comportamental de terceiros. As
-          nossas métricas de audiência são de primeira parte e não armazenam o
-          seu IP. Ao utilizar recursos como o reCAPTCHA e as fontes do Google
-          (Google Fonts), o seu navegador se comunica com a Google, que pode
-          tratar dados conforme as suas próprias políticas. Você pode bloquear ou
-          apagar cookies nas configurações do navegador, ciente de que recursos
-          essenciais (como o login) podem deixar de funcionar.
+          <strong>b) Estatística</strong> (opcionais — só com consentimento):
+        </p>
+        <ul>
+          <li>
+            <strong>hce_vid</strong> — identificador anônimo de visitante para
+            métricas de audiência de primeira parte (contagem de visitas e
+            cidades). Duração: até 1 ano. <em>Só é criado se você autorizar a
+            categoria “Estatísticas”.</em>
+          </li>
+        </ul>
+        <p>
+          Não utilizamos cookies de publicidade comportamental nem rastreadores
+          de terceiros. As nossas métricas de audiência são de primeira parte e
+          não armazenam o seu IP. Ao utilizar recursos como o reCAPTCHA e as
+          fontes do Google (Google Fonts), o seu navegador se comunica com a
+          Google, que pode tratar dados conforme as suas próprias políticas.
+          Você também pode bloquear ou apagar cookies nas configurações do
+          navegador, ciente de que recursos essenciais (como o login) podem
+          deixar de funcionar.
         </p>
       </>
     ),
