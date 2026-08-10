@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Container } from "@/components/site/container";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
+import { TexturaAzul } from "@/components/site/textura-azul";
 import { Button } from "@/components/ui/button";
 import { ClubePlanos } from "@/components/site/clube-planos";
 
@@ -45,6 +46,7 @@ export default function ClubePage() {
       <main id="conteudo" className="flex-1">
         {/* INTRO */}
         <section className="relative overflow-hidden bg-gradient-to-b from-brand-blue to-brand-blue-deep py-16 text-white sm:py-20">
+          <TexturaAzul src="/brand/texturas/textura-cozinha-3.jpg" opacidade={0.1} />
           <div
             aria-hidden
             className="pointer-events-none absolute -top-24 -right-24 h-96 w-96 rounded-full bg-brand-amber/15 blur-3xl"

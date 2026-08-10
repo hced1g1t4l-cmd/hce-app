@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Container } from "@/components/site/container";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
+import { TexturaAzul } from "@/components/site/textura-azul";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
@@ -167,6 +168,7 @@ export default function ServicosPage() {
       <main id="conteudo" className="flex-1">
         {/* INTRO */}
         <section className="relative overflow-hidden bg-gradient-to-b from-brand-blue to-brand-blue-deep py-16 text-white sm:py-20">
+          <TexturaAzul src="/brand/texturas/textura-cozinha-2.jpg" opacidade={0.05} />
           <div
             aria-hidden
             className="pointer-events-none absolute -top-24 -right-24 h-96 w-96 rounded-full bg-brand-amber/15 blur-3xl"
