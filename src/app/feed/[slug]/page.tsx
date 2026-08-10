@@ -156,7 +156,8 @@ export default async function ArtigoPage({
           <header className="relative overflow-hidden bg-gradient-to-b from-brand-blue to-brand-blue-deep py-14 text-white sm:py-16">
             <TexturaAzul
               src="/brand/texturas/textura-cozinha-3.jpg"
-              opacidade={0.09}
+              opacidade={0.16}
+              veu={0}
             />
             <Container className="relative max-w-3xl">
               <Link

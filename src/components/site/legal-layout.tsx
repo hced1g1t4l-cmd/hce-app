@@ -47,7 +47,8 @@ export function LegalLayout({
           />
           <TexturaAzul
             src="/brand/texturas/textura-cozinha-3.jpg"
-            opacidade={0.08}
+            opacidade={0.16}
+            veu={0}
           />
           <Container className="relative max-w-3xl">
             <div className="flex items-center gap-3">

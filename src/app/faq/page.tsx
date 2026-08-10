@@ -211,7 +211,7 @@ export default function FaqPage() {
       <main id="conteudo" className="flex-1">
         {/* INTRO */}
         <section className="relative overflow-hidden bg-gradient-to-b from-brand-blue to-brand-blue-deep py-16 text-white sm:py-20">
-          <TexturaAzul src="/brand/texturas/textura-cozinha-4.jpg" opacidade={0.1} />
+          <TexturaAzul src="/brand/texturas/textura-cozinha-4.jpg" opacidade={0.16} veu={0} />
           <div
             aria-hidden
             className="pointer-events-none absolute -top-24 -right-24 h-96 w-96 rounded-full bg-brand-amber/15 blur-3xl"

@@ -79,7 +79,8 @@ export default async function FeedPage() {
           />
           <TexturaAzul
             src="/brand/texturas/textura-cozinha-5.jpg"
-            opacidade={0.1}
+            opacidade={0.16}
+            veu={0}
           />
           <Container className="relative text-center">
             <span className="font-display text-sm font-semibold tracking-[0.28em] text-brand-amber uppercase">
