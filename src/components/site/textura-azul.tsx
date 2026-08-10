@@ -1,8 +1,12 @@
 import { cn } from "@/lib/cn";
 
+// Fator de realce aplicado a TODAS as texturas: deixa a foto um pouco mais
+// nítida/visível mantendo o caráter transparente e sutil (BAC_111).
+const REALCE = 1.7;
+
 // Textura fotográfica sutil por trás dos blocos azuis (BAC_111). A foto entra
-// dessaturada, com blend suave e opacidade baixa, só para dar profundidade ao
-// azul — sem competir com o conteúdo. O bloco pai precisa ser
+// dessaturada, com um leve contraste e opacidade baixa, só para dar profundidade
+// ao azul — sem competir com o conteúdo. O bloco pai precisa ser
 // `relative overflow-hidden` e o conteúdo deve ficar acima (Container relative).
 export function TexturaAzul({
   src,
@@ -15,6 +19,7 @@ export function TexturaAzul({
   posicao?: string;
   className?: string;
 }) {
+  const op = Math.min(1, opacidade * REALCE);
   return (
     <div
       aria-hidden
@@ -24,11 +29,12 @@ export function TexturaAzul({
       <img
         src={src}
         alt=""
-        className="h-full w-full object-cover grayscale mix-blend-soft-light"
-        style={{ opacity: opacidade, objectPosition: posicao }}
+        className="h-full w-full object-cover grayscale contrast-125 mix-blend-soft-light"
+        style={{ opacity: op, objectPosition: posicao }}
       />
-      {/* Véu azul por cima para reforçar a identidade e manter tudo coeso. */}
-      <div className="absolute inset-0 bg-brand-blue/20 mix-blend-multiply" />
+      {/* Véu azul por cima para reforçar a identidade e manter tudo coeso
+          (mais leve que antes para a textura aparecer um pouco mais). */}
+      <div className="absolute inset-0 bg-brand-blue/12 mix-blend-multiply" />
     </div>
   );
 }
