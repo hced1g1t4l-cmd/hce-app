@@ -12,11 +12,14 @@ export function TexturaAzul({
   src,
   opacidade = 0.1,
   posicao = "center",
+  veu = 0.08,
   className,
 }: {
   src: string;
   opacidade?: number;
   posicao?: string;
+  /** Opacidade do véu azul por cima da foto (0 = sem véu, mais imagem/menos azul). */
+  veu?: number;
   className?: string;
 }) {
   const op = Math.min(1, opacidade * REALCE);
@@ -32,9 +35,15 @@ export function TexturaAzul({
         className="h-full w-full object-cover grayscale contrast-150 mix-blend-soft-light"
         style={{ opacity: op, objectPosition: posicao }}
       />
-      {/* Véu azul por cima para reforçar a identidade e manter tudo coeso
-          (mais leve que antes para a textura aparecer um pouco mais). */}
-      <div className="absolute inset-0 bg-brand-blue/8 mix-blend-multiply" />
+      {/* Véu azul por cima para reforçar a identidade e manter tudo coeso.
+          A intensidade é ajustável por instância (veu) — em blocos que já são
+          muito azuis, baixar o véu deixa a foto respirar. */}
+      {veu > 0 && (
+        <div
+          className="absolute inset-0 bg-brand-blue mix-blend-multiply"
+          style={{ opacity: veu }}
+        />
+      )}
     </div>
   );
 }

@@ -72,7 +72,8 @@ export default function Home() {
           />
           <TexturaAzul
             src="/brand/texturas/textura-cozinha-1.jpg"
-            opacidade={0.05}
+            opacidade={0.16}
+            veu={0}
           />
           <Container className="relative flex flex-col items-center gap-4 pt-8 pb-14 text-center sm:gap-5 sm:pt-10 sm:pb-20">
             <Image
