@@ -22,6 +22,7 @@ export async function AdmHeader({
   active,
 }: {
   active:
+    | "home"
     | "leads"
     | "contatos"
     | "acessos"
@@ -152,6 +153,7 @@ export async function AdmHeader({
           aria-label="Seções do painel"
           className="hce-scroll-x -mx-1 mt-3 flex gap-1 overflow-x-auto px-1 pb-0.5"
         >
+          <Tab href="/adm/home" label="Início" active={active === "home"} />
           <Tab href="/adm" label="Leads (+HCE)" active={active === "leads"} />
           <Tab
             href="/adm/contatos"

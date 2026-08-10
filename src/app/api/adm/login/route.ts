@@ -87,6 +87,6 @@ export async function POST(req: Request) {
   });
 
   // Primeiro acesso (ou reset): forca a troca de senha antes de usar o painel.
-  const destino = admin.precisaTrocarSenha ? "/adm/trocar-senha" : "/adm";
+  const destino = admin.precisaTrocarSenha ? "/adm/trocar-senha" : "/adm/home";
   return NextResponse.redirect(new URL(destino, req.url), { status: 303 });
 }
