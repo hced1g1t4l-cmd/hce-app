@@ -72,7 +72,7 @@ export default function Home() {
           />
           <TexturaAzul
             src="/brand/texturas/textura-cozinha-1.jpg"
-            opacidade={0.09}
+            opacidade={0.05}
           />
           <Container className="relative flex flex-col items-center gap-4 pt-8 pb-14 text-center sm:gap-5 sm:pt-10 sm:pb-20">
             <Image
@@ -310,7 +310,7 @@ export default function Home() {
               />
               <TexturaAzul
                 src="/brand/texturas/textura-cozinha-4.jpg"
-                opacidade={0.1}
+                opacidade={0.05}
               />
               <h2 className="relative font-display text-3xl font-bold tracking-tight text-balance text-brand-amber sm:text-4xl">
                 Vamos transformar o seu negócio?
