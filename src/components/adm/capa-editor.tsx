@@ -42,8 +42,10 @@ export function CapaEditor({
   const [brilho, setBrilho] = useState(100); // %
   const [contraste, setContraste] = useState(100); // %
 
-  // Marca d'água
-  const [marcaOn, setMarcaOn] = useState(true);
+  // Marca d'água — desligada por padrão: as fotos da HCE já vêm com o logo
+  // "de fábrica", então ligar por padrão gerava um segundo logo empilhado.
+  // Fica como opção para o caso de uma foto sem marca.
+  const [marcaOn, setMarcaOn] = useState(false);
   const [marcaTam, setMarcaTam] = useState(0.18); // fração da largura
   const [marcaOpac, setMarcaOpac] = useState(0.7);
   const [marca, setMarca] = useState({ x: 0, y: 0 }); // centro em px de export

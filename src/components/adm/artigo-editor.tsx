@@ -26,9 +26,11 @@ export type ArtigoInit = {
   slug: string;
   resumo: string | null;
   capaUrl: string | null;
+  capaCredito?: string | null;
   autor: string;
   conteudoHtml: string;
   galeria?: string[] | null;
+  galeriaCreditos?: string[] | null;
   publicado: boolean;
 };
 
@@ -117,7 +119,14 @@ export function ArtigoEditor({ initial }: { initial?: ArtigoInit }) {
   const [resumo, setResumo] = useState(initial?.resumo ?? "");
   const [autor, setAutor] = useState(initial?.autor ?? "");
   const [capaUrl, setCapaUrl] = useState(initial?.capaUrl ?? "");
+  const [capaCredito, setCapaCredito] = useState(initial?.capaCredito ?? "");
   const [galeria, setGaleria] = useState<string[]>(initial?.galeria ?? []);
+  // Créditos alinhados por índice à galeria (mesmo tamanho da lista de fotos).
+  const [galeriaCreditos, setGaleriaCreditos] = useState<string[]>(() => {
+    const g = initial?.galeria ?? [];
+    const c = initial?.galeriaCreditos ?? [];
+    return g.map((_, i) => c[i] ?? "");
+  });
   const [publicado, setPublicado] = useState(initial?.publicado ?? false);
   const [erro, setErro] = useState<string | null>(null);
   const [salvando, setSalvando] = useState(false);
@@ -214,7 +223,12 @@ export function ArtigoEditor({ initial }: { initial?: ArtigoInit }) {
       if (url) novas.push(url);
     }
     setEnviandoGaleria(false);
-    if (novas.length > 0) setGaleria((g) => [...g, ...novas].slice(0, MAX_GALERIA));
+    if (novas.length > 0) {
+      setGaleria((g) => [...g, ...novas].slice(0, MAX_GALERIA));
+      setGaleriaCreditos((c) =>
+        [...c, ...novas.map(() => "")].slice(0, MAX_GALERIA),
+      );
+    }
     if (files.length > espaco) {
       setErro(`A galeria aceita até ${MAX_GALERIA} fotos além da capa.`);
     }
@@ -222,16 +236,27 @@ export function ArtigoEditor({ initial }: { initial?: ArtigoInit }) {
 
   function removerDaGaleria(idx: number) {
     setGaleria((g) => g.filter((_, i) => i !== idx));
+    setGaleriaCreditos((c) => c.filter((_, i) => i !== idx));
   }
 
   function moverGaleria(idx: number, dir: -1 | 1) {
+    const destino = idx + dir;
     setGaleria((g) => {
-      const destino = idx + dir;
       if (destino < 0 || destino >= g.length) return g;
       const copia = [...g];
       [copia[idx], copia[destino]] = [copia[destino], copia[idx]];
       return copia;
     });
+    setGaleriaCreditos((c) => {
+      if (destino < 0 || destino >= c.length) return c;
+      const copia = [...c];
+      [copia[idx], copia[destino]] = [copia[destino], copia[idx]];
+      return copia;
+    });
+  }
+
+  function setCreditoGaleria(idx: number, valor: string) {
+    setGaleriaCreditos((c) => c.map((v, i) => (i === idx ? valor : v)));
   }
 
   async function aplicarGaleriaEditada(blob: Blob) {
@@ -264,9 +289,11 @@ export function ArtigoEditor({ initial }: { initial?: ArtigoInit }) {
       slug: slug.trim() || undefined,
       resumo: resumo.trim() || null,
       capaUrl: capaUrl.trim() || null,
+      capaCredito: capaCredito.trim() || null,
       autor: autor.trim(),
       conteudoHtml: editor.getHTML(),
       galeria: galeria.slice(0, MAX_GALERIA),
+      galeriaCreditos: galeriaCreditos.slice(0, MAX_GALERIA),
       publicado: querPublicar,
     };
     setSalvando(true);
@@ -304,7 +331,9 @@ export function ArtigoEditor({ initial }: { initial?: ArtigoInit }) {
           resumo={resumo}
           autor={autor}
           capaUrl={capaUrl}
+          capaCredito={capaCredito}
           galeria={galeria}
+          galeriaCreditos={galeriaCreditos}
           html={previewHtml}
           onFechar={() => setPreview(false)}
         />
@@ -486,13 +515,35 @@ export function ArtigoEditor({ initial }: { initial?: ArtigoInit }) {
             {capaUrl && (
               <button
                 type="button"
-                onClick={() => setCapaUrl("")}
+                onClick={() => {
+                  setCapaUrl("");
+                  setCapaCredito("");
+                }}
                 className="rounded-full px-4 py-2 text-sm font-semibold text-muted transition-colors hover:bg-surface-soft"
               >
                 Remover
               </button>
             )}
           </div>
+          {capaUrl && (
+            <label className="mt-3 block">
+              <span className="text-xs font-semibold text-ink">
+                Fonte / crédito da capa
+              </span>
+              <input
+                type="text"
+                value={capaCredito}
+                onChange={(e) => setCapaCredito(e.target.value)}
+                maxLength={200}
+                placeholder="Ex.: Foto: Divulgação HCE"
+                className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm text-ink outline-none focus:border-brand-blue"
+              />
+              <span className="mt-1 block text-xs text-muted">
+                Aparece como legenda pequena em itálico abaixo da foto. Deixe
+                vazio para não exibir.
+              </span>
+            </label>
+          )}
         </div>
 
         <div className="rounded-xl border border-line bg-white p-5">
@@ -517,9 +568,19 @@ export function ArtigoEditor({ initial }: { initial?: ArtigoInit }) {
                     alt={`Foto ${i + 1} da galeria`}
                     className="h-12 w-16 shrink-0 rounded-md border border-line object-cover"
                   />
-                  <span className="min-w-0 flex-1 text-xs font-semibold text-muted">
-                    Foto {i + 1}
-                  </span>
+                  <div className="min-w-0 flex-1">
+                    <span className="text-xs font-semibold text-muted">
+                      Foto {i + 1}
+                    </span>
+                    <input
+                      type="text"
+                      value={galeriaCreditos[i] ?? ""}
+                      onChange={(e) => setCreditoGaleria(i, e.target.value)}
+                      maxLength={200}
+                      placeholder="Fonte / crédito (opcional)"
+                      className="mt-1 w-full rounded-md border border-line px-2 py-1 text-xs text-ink outline-none focus:border-brand-blue"
+                    />
+                  </div>
                   <div className="flex items-center gap-1">
                     <button
                       type="button"
@@ -637,7 +698,9 @@ function ArtigoPreview({
   resumo,
   autor,
   capaUrl,
+  capaCredito,
   galeria,
+  galeriaCreditos,
   html,
   onFechar,
 }: {
@@ -645,7 +708,9 @@ function ArtigoPreview({
   resumo: string;
   autor: string;
   capaUrl: string;
+  capaCredito?: string;
   galeria: string[];
+  galeriaCreditos?: string[];
   html: string;
   onFechar: () => void;
 }) {
@@ -706,7 +771,12 @@ function ArtigoPreview({
 
         {(capaUrl || galeria.length > 0) && (
           <Container className="max-w-3xl">
-            <GaleriaArtigo capa={capaUrl} galeria={galeria} titulo={titulo} />
+            <GaleriaArtigo
+              capa={capaUrl}
+              galeria={galeria}
+              creditos={[capaCredito ?? "", ...(galeriaCreditos ?? [])]}
+              titulo={titulo}
+            />
           </Container>
         )}
 

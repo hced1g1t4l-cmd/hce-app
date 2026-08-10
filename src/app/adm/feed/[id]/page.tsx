@@ -44,9 +44,11 @@ export default async function EditarArtigoPage({
             slug: artigo.slug,
             resumo: artigo.resumo,
             capaUrl: artigo.capaUrl,
+            capaCredito: artigo.capaCredito,
             autor: artigo.autor,
             conteudoHtml: artigo.conteudoHtml,
             galeria: artigo.galeria,
+            galeriaCreditos: artigo.galeriaCreditos,
             publicado: artigo.publicado,
           }}
         />

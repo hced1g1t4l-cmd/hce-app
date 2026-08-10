@@ -218,9 +218,11 @@ model Artigo {
   titulo       String
   resumo       String? // "olho"/subtitulo da materia
   capaUrl      String? // URL da imagem de capa (/api/img/{id} ou externa)
+  capaCredito  String? // fonte/crédito da imagem de capa (ex.: "Foto: Divulgação HCE")
   autor        String // "Redigido por ..."
   conteudoHtml String    @db.Text
   galeria      String[]  @default([]) // fotos extras (carrossel a partir da capa), até 5
+  galeriaCreditos String[] @default([]) // fonte de cada foto da galeria, alinhado por índice
   publicado    Boolean   @default(false)
   publicadoEm  DateTime?
   createdAt    DateTime  @default(now())

@@ -16,11 +16,17 @@ const schema = z.object({
   slug: z.string().trim().max(180).optional().nullable(),
   resumo: z.string().trim().max(600).optional().nullable(),
   capaUrl: z.string().trim().max(600).optional().nullable(),
+  capaCredito: z.string().trim().max(200).optional().nullable(),
   autor: z.string().trim().min(1, "Autor obrigatório").max(140),
   conteudoHtml: z.string().max(400000),
   galeria: z
     .array(z.string().trim().max(600))
     .max(5, "No máximo 5 fotos na galeria")
+    .optional()
+    .default([]),
+  galeriaCreditos: z
+    .array(z.string().trim().max(200))
+    .max(5)
     .optional()
     .default([]),
   publicado: z.boolean().default(false),
@@ -68,14 +74,26 @@ export async function POST(req: Request) {
 
   const slug = await slugUnico(data.slug || data.titulo, data.id);
 
+  // Mantém galeria e créditos alinhados por índice: pareia antes de filtrar
+  // as URLs vazias, para um crédito não "escorregar" para outra foto.
+  const pares = (data.galeria || [])
+    .map((url, i) => ({
+      url: (url || "").trim(),
+      credito: (data.galeriaCreditos?.[i] || "").trim(),
+    }))
+    .filter((p) => p.url)
+    .slice(0, 5);
+
   const base = {
     titulo: data.titulo,
     slug,
     resumo: data.resumo || null,
     capaUrl: data.capaUrl || null,
+    capaCredito: data.capaCredito?.trim() || null,
     autor: data.autor,
     conteudoHtml: sanitizarHtml(data.conteudoHtml),
-    galeria: (data.galeria || []).filter(Boolean).slice(0, 5),
+    galeria: pares.map((p) => p.url),
+    galeriaCreditos: pares.map((p) => p.credito),
     publicado: data.publicado,
   };
 

@@ -187,6 +187,7 @@ export default async function ArtigoPage({
               <GaleriaArtigo
                 capa={artigo.capaUrl}
                 galeria={artigo.galeria}
+                creditos={[artigo.capaCredito, ...artigo.galeriaCreditos]}
                 titulo={artigo.titulo}
               />
             </Container>

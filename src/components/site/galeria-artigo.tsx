@@ -8,15 +8,23 @@ import { useCallback, useEffect, useRef, useState } from "react";
 export function GaleriaArtigo({
   capa,
   galeria,
+  creditos,
   titulo,
 }: {
   capa?: string | null;
   galeria?: string[] | null;
+  // Fonte/crédito alinhado por índice a [capa, ...galeria].
+  creditos?: (string | null)[] | null;
   titulo: string;
 }) {
-  const fotos = [capa, ...(galeria ?? [])].filter(
-    (u): u is string => Boolean(u && u.trim()),
-  );
+  // Pareia URL + crédito e filtra as vazias mantendo o alinhamento.
+  const itens = [capa, ...(galeria ?? [])]
+    .map((u, i) => ({
+      url: (u ?? "").trim(),
+      credito: (creditos?.[i] ?? "").trim(),
+    }))
+    .filter((it) => it.url);
+  const fotos = itens.map((it) => it.url);
   const trilhoRef = useRef<HTMLDivElement>(null);
   const [ativo, setAtivo] = useState(0);
 
@@ -43,17 +51,25 @@ export function GaleriaArtigo({
   // Uma única foto: mantém o comportamento original (imagem estática).
   if (fotos.length === 1) {
     return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={fotos[0]}
-        alt={titulo}
-        className="-mt-8 aspect-video w-full rounded-2xl border border-line object-cover shadow-lg sm:-mt-10"
-      />
+      <figure className="-mt-8 sm:-mt-10">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={fotos[0]}
+          alt={titulo}
+          className="aspect-video w-full rounded-2xl border border-line object-cover shadow-lg"
+        />
+        {itens[0].credito && (
+          <figcaption className="mt-2 text-xs text-muted italic">
+            {itens[0].credito}
+          </figcaption>
+        )}
+      </figure>
     );
   }
 
   return (
-    <div className="relative -mt-8 sm:-mt-10">
+    <>
+      <div className="relative -mt-8 sm:-mt-10">
       <div
         ref={trilhoRef}
         className="hce-sem-scrollbar flex snap-x snap-mandatory overflow-x-auto rounded-2xl border border-line shadow-lg"
@@ -107,6 +123,10 @@ export function GaleriaArtigo({
           />
         ))}
       </div>
-    </div>
+      </div>
+      {itens[ativo]?.credito && (
+        <p className="mt-2 text-xs text-muted italic">{itens[ativo].credito}</p>
+      )}
+    </>
   );
 }
