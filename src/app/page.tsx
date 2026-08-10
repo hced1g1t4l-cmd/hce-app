@@ -311,7 +311,8 @@ export default function Home() {
               />
               <TexturaAzul
                 src="/brand/texturas/textura-cozinha-4.jpg"
-                opacidade={0.05}
+                opacidade={0.16}
+                veu={0}
               />
               <h2 className="relative font-display text-3xl font-bold tracking-tight text-balance text-brand-amber sm:text-4xl">
                 Vamos transformar o seu negócio?
