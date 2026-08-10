@@ -2,7 +2,7 @@ import { cn } from "@/lib/cn";
 
 // Fator de realce aplicado a TODAS as texturas: deixa a foto um pouco mais
 // nítida/visível mantendo o caráter transparente e sutil (BAC_111).
-const REALCE = 1.7;
+const REALCE = 2.3;
 
 // Textura fotográfica sutil por trás dos blocos azuis (BAC_111). A foto entra
 // dessaturada, com um leve contraste e opacidade baixa, só para dar profundidade
@@ -29,12 +29,12 @@ export function TexturaAzul({
       <img
         src={src}
         alt=""
-        className="h-full w-full object-cover grayscale contrast-125 mix-blend-soft-light"
+        className="h-full w-full object-cover grayscale contrast-150 mix-blend-soft-light"
         style={{ opacity: op, objectPosition: posicao }}
       />
       {/* Véu azul por cima para reforçar a identidade e manter tudo coeso
           (mais leve que antes para a textura aparecer um pouco mais). */}
-      <div className="absolute inset-0 bg-brand-blue/12 mix-blend-multiply" />
+      <div className="absolute inset-0 bg-brand-blue/8 mix-blend-multiply" />
     </div>
   );
 }
