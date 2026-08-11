@@ -136,7 +136,7 @@ const MODELOS = [
   {
     nome: "Projeto pontual",
     texto:
-      "Indicado para empresas que precisam desenvolver ou implementar uma solução específica, sem acompanhamento permanente. Atende a demandas já identificadas — desenvolvimento de projetos, implantação de processos, criação de materiais técnicos e outras iniciativas voltadas ao aperfeiçoamento da operação e da gestão.",
+      "Indicado para empresas que precisam desenvolver ou implementar uma solução específica, sem acompanhamento permanente. Atende a demandas já identificadas: desenvolvimento de projetos, implantação de processos, criação de materiais técnicos e outras iniciativas voltadas ao aperfeiçoamento da operação e da gestão.",
   },
   {
     nome: "Consultoria recorrente",
