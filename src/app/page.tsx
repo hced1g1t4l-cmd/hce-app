@@ -168,9 +168,10 @@ export default function Home() {
                 Consultoria, educação e hospitalidade para A&amp;B
               </h2>
               <p className="mt-5 text-lg leading-relaxed text-muted">
-                Contribuímos para a formação de profissionais mais preparados,
-                empresas mais qualificadas e experiências mais memoráveis, do
-                diagnóstico da operação ao desenvolvimento das pessoas.
+                Contribuímos para a formação de profissionais mais bem
+                preparados, o fortalecimento das empresas e a criação de
+                experiências memoráveis, do diagnóstico da operação ao
+                desenvolvimento das equipes.
               </p>
             </div>
 
