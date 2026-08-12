@@ -188,27 +188,17 @@ export default function ServicosPage() {
               Contribuímos para a formação de profissionais mais bem
               preparados, o fortalecimento das empresas e a criação de
               experiências memoráveis, do diagnóstico da operação ao
-              desenvolvimento das equipes.
+              desenvolvimento das equipes. Veja a seguir como podemos ajudar
+              o seu negócio.
             </p>
           </Container>
         </section>
 
-        {/* ÁREAS DE ATUAÇÃO (visão geral) */}
+        {/* ÁREAS DE ATUAÇÃO (visão geral) — sem intertítulo próprio para não
+            competir com o "O que fazemos"; a chamada foi para o subtítulo. */}
         <section className="bg-surface-soft py-20 sm:py-24">
           <Container>
-            <div className="mx-auto max-w-2xl text-center">
-              <span className="font-display text-sm font-semibold tracking-widest text-brand-amber-dark uppercase">
-                Áreas de atuação
-              </span>
-              <div className="mt-4 flex justify-center">
-                <span aria-hidden className="hce-rule" />
-              </div>
-              <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-brand-blue sm:text-4xl">
-                Como podemos ajudar o seu negócio
-              </h2>
-            </div>
-
-            <div className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {SERVICOS.map((s, i) => (
                 <article
                   key={s.titulo}
