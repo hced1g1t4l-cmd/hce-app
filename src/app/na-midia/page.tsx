@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { SVGProps } from "react";
+import Image from "next/image";
 import { Container } from "@/components/site/container";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
@@ -32,10 +33,20 @@ type ItemMidia = {
   descricao: string;
   url: string;
   linksExtras?: LinkExtra[];
+  // Thumbnail real do conteúdo (imagem local em /public/brand/midia). Opcional:
+  // sem ela, o card cai no cabeçalho de gradiente + ícone da marca (fallback).
+  thumb?: string;
+  // Posição do object-cover da thumb (ex.: "center 22%" para focar o rosto).
+  thumbPos?: string;
+  // Avatar redondo do autor (foto local em /public/brand/fotos) — dá o ar de
+  // "post de rede social" e é 100% confiável (não depende de fonte externa).
+  avatar?: string;
 };
 
 // Catálogo editável. Para incluir um novo conteúdo, basta adicionar um objeto
-// aqui — a página cresce sozinha. Itens mais recentes primeiro.
+// aqui — a página cresce sozinha (o grid se auto-organiza). Itens mais recentes
+// primeiro. Para uma thumbnail real, salve a imagem em /public/brand/midia e
+// aponte em `thumb`; sem isso, o card usa o cabeçalho de marca como fallback.
 const ITENS: ItemMidia[] = [
   {
     tipo: "Coluna",
@@ -45,6 +56,9 @@ const ITENS: ItemMidia[] = [
     descricao:
       "A coluna da chef Cris Leite no Extra, com bastidores, receitas e reflexões sobre cozinha e gestão.",
     url: "https://extra.globo.com/blogs/chef-cris-leite/post/2026/08/abrimos-uma-cozinha-no-extra.ghtml",
+    thumb: "/brand/midia/coluna-cris.jpg",
+    thumbPos: "center 22%",
+    avatar: "/brand/fotos/chef-cris-4.png",
   },
   {
     tipo: "Podcast",
@@ -58,6 +72,10 @@ const ITENS: ItemMidia[] = [
       { label: "Linktree", url: "https://linktr.ee/cadamesaumahistoria" },
       { label: "Site", url: "https://cadamesaumahistoria.my.canva.site/" },
     ],
+    // Sem thumb: as fontes de imagem do podcast (Instagram, Linktree, Canva)
+    // ou bloqueiam o acesso ou não expõem uma capa boa, então este card usa o
+    // cabeçalho de gradiente + ícone de microfone como thumbnail (fallback).
+    avatar: "/brand/fotos/chef-gio-5.png",
   },
 ];
 
@@ -199,10 +217,13 @@ export default function NaMidiaPage() {
           </Container>
         </section>
 
-        {/* GRID DE CONTEÚDOS */}
+        {/* GRID DE CONTEÚDOS — cards no estilo "post de rede social".
+            O grid usa auto-fit: com 2 itens ele centraliza (sem card órfão) e,
+            à medida que novos conteúdos entram no array ITENS, ganha colunas
+            sozinho (até 3 por linha), mantendo tudo alinhado ao centro. */}
         <section className="bg-surface-soft py-20 sm:py-24">
           <Container>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="mx-auto grid max-w-5xl justify-center gap-8 [grid-template-columns:repeat(auto-fit,minmax(300px,360px))]">
               {ITENS.map((item) => {
                 const { Icone, gradiente } = TIPO_ICONE[item.tipo];
                 return (
@@ -210,31 +231,87 @@ export default function NaMidiaPage() {
                     key={item.url}
                     className="reveal group relative flex flex-col overflow-hidden rounded-2xl border border-line bg-white shadow-brand transition-all duration-300 ease-out hover:-translate-y-1 hover:border-brand-amber hover:shadow-brand-lg motion-reduce:transform-none motion-reduce:transition-none"
                   >
-                    {/* Cabeçalho visual: bloco de marca + ícone do tipo + veículo.
-                        Sem thumbnails externas (evita CORS/hotlink quebrado). */}
-                    <div
-                      className={`relative flex items-center gap-4 bg-gradient-to-br ${gradiente} p-6 text-white`}
-                    >
+                    {/* TOPO: thumbnail real do conteúdo (proporção fixa 16/9).
+                        Sem thumbnail, cai no cabeçalho de marca (gradiente +
+                        ícone do tipo) para nunca quebrar o layout. */}
+                    <div className="relative aspect-video w-full overflow-hidden bg-brand-blue">
+                      {item.thumb ? (
+                        <Image
+                          src={item.thumb}
+                          alt={item.titulo}
+                          fill
+                          sizes="(max-width: 640px) 90vw, 360px"
+                          className="object-cover transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:transform-none"
+                          style={{ objectPosition: item.thumbPos ?? "center" }}
+                        />
+                      ) : (
+                        <div
+                          className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${gradiente}`}
+                        >
+                          <div
+                            aria-hidden
+                            className="hce-hero-pattern pointer-events-none absolute inset-0 opacity-40"
+                          />
+                          <span
+                            aria-hidden
+                            className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 text-brand-amber ring-1 ring-white/15 transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:transform-none"
+                          >
+                            <Icone className="h-8 w-8" />
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Gradiente escuro na base: profundidade e contraste. */}
                       <div
                         aria-hidden
-                        className="hce-hero-pattern pointer-events-none absolute inset-0 opacity-40"
+                        className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent"
                       />
-                      <span
-                        aria-hidden
-                        className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white/10 text-brand-amber ring-1 ring-white/15 transition-transform duration-300 ease-out group-hover:scale-105 motion-reduce:transform-none"
-                      >
-                        <Icone className="h-7 w-7" />
+
+                      {/* Badge do tipo (pílula âmbar) no canto superior. */}
+                      <span className="absolute top-4 left-4 z-10 rounded-full bg-brand-amber px-3 py-1 font-display text-xs font-semibold text-brand-blue-deep shadow-brand">
+                        {item.tipo}
                       </span>
-                      <span className="relative font-display text-sm font-semibold tracking-wide text-white/90">
+
+                      {/* Rótulo do veículo sobre a base da imagem. */}
+                      <span className="absolute bottom-3 left-4 z-10 font-display text-xs font-semibold tracking-wide text-white/95 drop-shadow">
                         {item.veiculo}
                       </span>
                     </div>
 
-                    <div className="flex flex-1 flex-col p-8">
-                      <span className="w-fit rounded-full bg-brand-amber-soft px-3 py-1 font-display text-xs font-semibold text-brand-amber-dark">
-                        {item.tipo}
-                      </span>
-                      <h2 className="mt-4 font-display text-xl font-bold text-brand-blue">
+                    {/* CORPO */}
+                    <div className="flex flex-1 flex-col p-6">
+                      {/* Linha do autor: avatar redondo + nome + veículo. */}
+                      <div className="flex items-center gap-3">
+                        {item.avatar ? (
+                          <Image
+                            src={item.avatar}
+                            alt={item.autor}
+                            width={40}
+                            height={40}
+                            className="h-10 w-10 shrink-0 rounded-full object-cover ring-2 ring-white shadow-brand"
+                          />
+                        ) : (
+                          <span
+                            aria-hidden
+                            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-blue font-display text-sm font-bold text-brand-amber ring-2 ring-white shadow-brand"
+                          >
+                            {item.autor
+                              .split(" ")
+                              .map((p) => p[0])
+                              .join("")}
+                          </span>
+                        )}
+                        <div className="min-w-0">
+                          <p className="font-display text-sm font-semibold text-brand-blue">
+                            {item.autor}
+                          </p>
+                          <p className="truncate text-xs text-muted">
+                            {item.veiculo}
+                          </p>
+                        </div>
+                      </div>
+
+                      <h2 className="mt-4 font-display text-lg font-bold text-brand-blue">
                         <a
                           href={item.url}
                           target="_blank"
@@ -245,35 +322,33 @@ export default function NaMidiaPage() {
                           {item.titulo}
                         </a>
                       </h2>
-                      <p className="mt-3 flex-1 leading-relaxed text-muted">
+                      <p className="mt-2 flex-1 leading-relaxed text-muted">
                         {item.descricao}
                       </p>
 
-                      {item.linksExtras && item.linksExtras.length > 0 && (
-                        <div className="relative z-10 mt-5 flex flex-wrap gap-2">
-                          {item.linksExtras.map((lk) => (
-                            <a
-                              key={lk.url}
-                              href={lk.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              aria-label={`${lk.label} de ${item.titulo} (abre em nova aba)`}
-                              className="rounded-full border border-line px-3 py-1 font-display text-xs font-semibold text-brand-blue transition-colors hover:border-brand-amber hover:text-brand-amber-dark"
-                            >
-                              {lk.label}
-                            </a>
-                          ))}
-                        </div>
-                      )}
-
-                      <div className="mt-6 flex items-center justify-between border-t border-line pt-4">
-                        <span className="font-display text-sm font-semibold text-brand-blue">
-                          {item.autor}
-                        </span>
+                      {/* RODAPÉ: CTA + chips dos links extras (acima do overlay). */}
+                      <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
                         <span className="inline-flex items-center gap-1.5 font-display text-sm font-semibold text-brand-amber-dark transition-transform duration-300 ease-out group-hover:translate-x-0.5 motion-reduce:transform-none">
                           Ver conteúdo
                           <LinkExterno className="h-4 w-4" />
                         </span>
+
+                        {item.linksExtras && item.linksExtras.length > 0 && (
+                          <div className="relative z-10 flex flex-wrap gap-2">
+                            {item.linksExtras.map((lk) => (
+                              <a
+                                key={lk.url}
+                                href={lk.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label={`${lk.label} de ${item.titulo} (abre em nova aba)`}
+                                className="rounded-full border border-line px-3 py-1 font-display text-xs font-semibold text-brand-blue transition-colors hover:border-brand-amber hover:text-brand-amber-dark"
+                              >
+                                {lk.label}
+                              </a>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </article>
