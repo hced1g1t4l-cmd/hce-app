@@ -9,6 +9,7 @@ import {
   statusInfo,
   type Prioridade,
   type BacklogAcao,
+  type PrazoAlerta,
 } from "@/lib/backlog";
 import { BacklogDescricao } from "@/components/adm/backlog-descricao";
 import { baixarCSV, baixarXLS } from "@/lib/export-cliente";
@@ -21,6 +22,11 @@ export type BacklogRow = {
   temDescricao: boolean;
   prioridade: string;
   status: string;
+  prazoFmt: string | null;
+  prazoInput: string | null;
+  prazoTs: number | null;
+  prazoAlerta: PrazoAlerta;
+  prazoDias: number | null;
   criadoPorNome: string;
   criadoFmt: string;
   criadoTs: number;
@@ -38,6 +44,38 @@ const FILTROS: { valor: string; label: string }[] = [
   ...STATUS.map((s) => ({ valor: s.valor, label: s.label })),
 ];
 
+// Pílula de prazo. Acessível: além da cor, sempre traz rótulo textual
+// ("Vencido", "Vence hoje", "Vence em X dia(s)" ou a data).
+function PrazoBadge({ it }: { it: BacklogRow }) {
+  if (!it.prazoFmt) return null;
+
+  let classe = "bg-slate-100 text-slate-700 ring-1 ring-slate-200";
+  let rotulo = `Prazo ${it.prazoFmt}`;
+
+  if (it.prazoAlerta === "vencido") {
+    classe = "bg-red-100 text-red-800 ring-1 ring-red-200";
+    const d = it.prazoDias ?? 0;
+    const atraso = Math.abs(d);
+    rotulo = `Vencido há ${atraso} dia${atraso === 1 ? "" : "s"} · ${it.prazoFmt}`;
+  } else if (it.prazoAlerta === "proximo") {
+    classe = "bg-amber-100 text-amber-800 ring-1 ring-amber-200";
+    const d = it.prazoDias ?? 0;
+    rotulo =
+      d === 0
+        ? `Vence hoje · ${it.prazoFmt}`
+        : `Vence em ${d} dia${d === 1 ? "" : "s"} · ${it.prazoFmt}`;
+  }
+
+  return (
+    <span
+      className={"rounded-full px-2.5 py-0.5 text-xs font-semibold " + classe}
+      title={`Prazo: ${it.prazoFmt}`}
+    >
+      {rotulo}
+    </span>
+  );
+}
+
 export function BacklogPainel({ itens }: { itens: BacklogRow[] }) {
   const router = useRouter();
 
@@ -46,6 +84,7 @@ export function BacklogPainel({ itens }: { itens: BacklogRow[] }) {
   const tituloRef = useRef<HTMLInputElement>(null);
   const descRef = useRef<HTMLDivElement>(null);
   const [prioridade, setPrioridade] = useState<Prioridade>("media");
+  const [prazo, setPrazo] = useState("");
   const [salvando, setSalvando] = useState(false);
   const [erroNovo, setErroNovo] = useState<string | null>(null);
 
@@ -53,6 +92,7 @@ export function BacklogPainel({ itens }: { itens: BacklogRow[] }) {
   const [filtro, setFiltro] = useState("ativos");
   const [autor, setAutor] = useState("");
   const [busca, setBusca] = useState("");
+  const [ordem, setOrdem] = useState<"padrao" | "prazo">("padrao");
 
   const autores = useMemo(
     () =>
@@ -81,12 +121,13 @@ export function BacklogPainel({ itens }: { itens: BacklogRow[] }) {
       const res = await fetch("/api/adm/backlog", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ titulo, descricao, prioridade }),
+        body: JSON.stringify({ titulo, descricao, prioridade, prazo }),
       });
       if (res.ok) {
         if (tituloRef.current) tituloRef.current.value = "";
         if (descRef.current) descRef.current.innerHTML = "";
         setPrioridade("media");
+        setPrazo("");
         setNovoAberto(false);
         router.refresh();
       } else {
@@ -143,6 +184,14 @@ export function BacklogPainel({ itens }: { itens: BacklogRow[] }) {
         );
       })
       .sort((a, b) => {
+        // Ordenação por prazo: mais próximo primeiro; sem prazo sempre por último.
+        if (ordem === "prazo") {
+          if (a.prazoTs === null && b.prazoTs === null) return a.criadoTs - b.criadoTs;
+          if (a.prazoTs === null) return 1;
+          if (b.prazoTs === null) return -1;
+          if (a.prazoTs !== b.prazoTs) return a.prazoTs - b.prazoTs;
+          return a.criadoTs - b.criadoTs;
+        }
         const sa = statusInfo(a.status).ordem - statusInfo(b.status).ordem;
         if (sa !== 0) return sa;
         const pa =
@@ -150,7 +199,7 @@ export function BacklogPainel({ itens }: { itens: BacklogRow[] }) {
         if (pa !== 0) return pa;
         return a.criadoTs - b.criadoTs;
       });
-  }, [itens, filtro, autor, busca]);
+  }, [itens, filtro, autor, busca, ordem]);
 
   // Exportação (CSV / Excel) do que está filtrado na tela.
   function dadosExport(): { colunas: string[]; linhas: string[][] } {
@@ -160,6 +209,7 @@ export function BacklogPainel({ itens }: { itens: BacklogRow[] }) {
       "Título",
       "Prioridade",
       "Status",
+      "Prazo",
       "Criado por",
       "Criado em",
       "Início",
@@ -176,6 +226,7 @@ export function BacklogPainel({ itens }: { itens: BacklogRow[] }) {
         titulo,
         prioridadeInfo(it.prioridade).label,
         statusInfo(it.status).label,
+        it.prazoFmt ?? "",
         it.criadoPorNome,
         it.criadoFmt,
         it.iniciadoFmt ?? "",
@@ -221,7 +272,7 @@ export function BacklogPainel({ itens }: { itens: BacklogRow[] }) {
           </button>
         ) : (
           <form onSubmit={criar} className="grid gap-4">
-            <div className="grid gap-4 sm:grid-cols-[1fr_180px]">
+            <div className="grid gap-4 sm:grid-cols-[1fr_170px_170px]">
               <label className="block">
                 <span className="font-display text-sm font-semibold text-brand-blue">
                   Nome curto
@@ -250,6 +301,17 @@ export function BacklogPainel({ itens }: { itens: BacklogRow[] }) {
                     </option>
                   ))}
                 </select>
+              </label>
+              <label className="block">
+                <span className="font-display text-sm font-semibold text-brand-blue">
+                  Prazo <span className="font-normal text-muted">(opcional)</span>
+                </span>
+                <input
+                  type="date"
+                  value={prazo}
+                  onChange={(e) => setPrazo(e.target.value)}
+                  className="hce-input mt-1.5"
+                />
               </label>
             </div>
             <label className="block">
@@ -311,6 +373,15 @@ export function BacklogPainel({ itens }: { itens: BacklogRow[] }) {
           ))}
         </div>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <select
+            value={ordem}
+            onChange={(e) => setOrdem(e.target.value as "padrao" | "prazo")}
+            className="hce-input sm:w-44"
+            aria-label="Ordenar itens"
+          >
+            <option value="padrao">Ordem padrão</option>
+            <option value="prazo">Por prazo</option>
+          </select>
           <select
             value={autor}
             onChange={(e) => setAutor(e.target.value)}
@@ -398,6 +469,7 @@ export function BacklogPainel({ itens }: { itens: BacklogRow[] }) {
                     >
                       {s.label}
                     </span>
+                    <PrazoBadge it={it} />
                   </div>
                   <h3 className="mt-1.5 font-display text-base font-bold text-ink">
                     {it.titulo}
@@ -477,6 +549,11 @@ export function BacklogPainel({ itens }: { itens: BacklogRow[] }) {
                       <b className="text-ink">Criado</b> por {it.criadoPorNome} ·{" "}
                       {it.criadoFmt}
                     </p>
+                    {it.prazoFmt && (
+                      <p>
+                        <b className="text-ink">Prazo</b> {it.prazoFmt}
+                      </p>
+                    )}
                     {it.iniciadoFmt && (
                       <p>
                         <b className="text-ink">Em andamento</b> desde{" "}
@@ -543,6 +620,7 @@ function EditarModal({
   const [prioridade, setPrioridade] = useState<Prioridade>(
     (item.prioridade as Prioridade) ?? "media",
   );
+  const [prazo, setPrazo] = useState(item.prazoInput ?? "");
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
 
@@ -560,7 +638,7 @@ function EditarModal({
       const res = await fetch(`/api/adm/backlog/${item.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ titulo, descricao, prioridade }),
+        body: JSON.stringify({ titulo, descricao, prioridade, prazo }),
       });
       if (res.ok) onSalvo();
       else {
@@ -594,7 +672,7 @@ function EditarModal({
         </div>
 
         <form onSubmit={salvar} className="mt-4 grid gap-4">
-          <div className="grid gap-4 sm:grid-cols-[1fr_180px]">
+          <div className="grid gap-4 sm:grid-cols-[1fr_170px_170px]">
             <label className="block">
               <span className="font-display text-sm font-semibold text-brand-blue">
                 Nome curto
@@ -622,6 +700,17 @@ function EditarModal({
                   </option>
                 ))}
               </select>
+            </label>
+            <label className="block">
+              <span className="font-display text-sm font-semibold text-brand-blue">
+                Prazo <span className="font-normal text-muted">(opcional)</span>
+              </span>
+              <input
+                type="date"
+                value={prazo}
+                onChange={(e) => setPrazo(e.target.value)}
+                className="hce-input mt-1.5"
+              />
             </label>
           </div>
           <label className="block">

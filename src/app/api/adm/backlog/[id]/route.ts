@@ -4,7 +4,7 @@ import type { Prisma } from "@prisma/client";
 import { getAdmin, logAdm } from "@/lib/adm";
 import { prisma } from "@/lib/db";
 import { getClientIp } from "@/lib/anti-bot";
-import { prioridadeValida, type BacklogAcao } from "@/lib/backlog";
+import { prioridadeValida, prazoDoInput, type BacklogAcao } from "@/lib/backlog";
 import { sanitizarHtml } from "@/lib/sanitize";
 
 // Transicoes de status e edicao de um item de backlog.
@@ -20,6 +20,14 @@ const editSchema = z.object({
     .string()
     .refine(prioridadeValida, "Prioridade inválida.")
     .optional(),
+  // "" ou null => limpa o prazo; "YYYY-MM-DD" => define; ausente => nao mexe.
+  prazo: z
+    .string()
+    .trim()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Data de prazo inválida.")
+    .optional()
+    .nullable()
+    .or(z.literal("")),
 });
 
 export async function PATCH(
@@ -91,8 +99,13 @@ export async function PATCH(
     const msg = parsed.error.issues[0]?.message ?? "Dados inválidos.";
     return NextResponse.json({ error: msg }, { status: 400 });
   }
-  const { titulo, descricao, prioridade } = parsed.data;
-  if (titulo === undefined && descricao === undefined && prioridade === undefined) {
+  const { titulo, descricao, prioridade, prazo } = parsed.data;
+  if (
+    titulo === undefined &&
+    descricao === undefined &&
+    prioridade === undefined &&
+    prazo === undefined
+  ) {
     return NextResponse.json({ error: "Nada para atualizar." }, { status: 400 });
   }
 
@@ -102,6 +115,7 @@ export async function PATCH(
       ...(titulo !== undefined ? { titulo } : {}),
       ...(descricao !== undefined ? { descricao: sanitizarHtml(descricao) } : {}),
       ...(prioridade !== undefined ? { prioridade } : {}),
+      ...(prazo !== undefined ? { prazo: prazoDoInput(prazo) } : {}),
     },
   });
   await logAdm({

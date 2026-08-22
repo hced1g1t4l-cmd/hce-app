@@ -2,7 +2,12 @@ import { requireAdmin } from "@/lib/adm";
 import { prisma } from "@/lib/db";
 import { AdmHeader } from "@/components/adm/adm-header";
 import { BacklogPainel, type BacklogRow } from "@/components/adm/backlog-painel";
-import { codigoBacklog } from "@/lib/backlog";
+import {
+  codigoBacklog,
+  prazoParaBR,
+  prazoParaInput,
+  alertaPrazo,
+} from "@/lib/backlog";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -30,8 +35,12 @@ export default async function AdmBacklogPage() {
     orderBy: { createdAt: "asc" },
   });
 
+  const agora = new Date();
+
   // Código sequencial estável (BAC_001...) pela ordem de criação.
-  const linhas: BacklogRow[] = rows.map((r, i) => ({
+  const linhas: BacklogRow[] = rows.map((r, i) => {
+    const alerta = alertaPrazo(r.prazo, r.status, agora);
+    return {
     id: r.id,
     codigo: codigoBacklog(i + 1),
     titulo: r.titulo,
@@ -39,6 +48,11 @@ export default async function AdmBacklogPage() {
     temDescricao: temConteudo(r.descricao),
     prioridade: r.prioridade,
     status: r.status,
+    prazoFmt: r.prazo ? prazoParaBR(r.prazo) : null,
+    prazoInput: r.prazo ? prazoParaInput(r.prazo) : null,
+    prazoTs: r.prazo ? r.prazo.getTime() : null,
+    prazoAlerta: alerta.tipo,
+    prazoDias: alerta.dias,
     criadoPorNome: r.criadoPorNome,
     criadoFmt: fmt.format(r.createdAt),
     criadoTs: r.createdAt.getTime(),
@@ -48,7 +62,8 @@ export default async function AdmBacklogPage() {
     concluidoFmt: r.concluidoEm ? fmt.format(r.concluidoEm) : null,
     canceladoPorNome: r.canceladoPorNome,
     canceladoFmt: r.canceladoEm ? fmt.format(r.canceladoEm) : null,
-  }));
+    };
+  });
 
   const abertos = linhas.filter((l) => l.status === "aberto").length;
   const andamento = linhas.filter((l) => l.status === "em_andamento").length;

@@ -101,3 +101,73 @@ export const ACAO_LABEL: Record<BacklogAcao, string> = {
 export function codigoBacklog(num: number): string {
   return `BAC_${String(num).padStart(3, "0")}`;
 }
+
+// --- Prazo (data de vencimento) ---
+// O <input type="date"> trabalha em "YYYY-MM-DD". Para evitar off-by-one entre
+// UTC e America/Sao_Paulo (UTC-3), armazenamos SEMPRE o meio-dia UTC do dia
+// escolhido: em Sao Paulo isso cai as 9h do MESMO dia, entao a data-calendario
+// nunca muda ao formatar. Toda leitura/formatacao usa America/Sao_Paulo.
+export const TZ_BR = "America/Sao_Paulo";
+
+// Converte "YYYY-MM-DD" (input date) para Date armazenavel. null se invalido.
+export function prazoDoInput(v: string | null | undefined): Date | null {
+  if (!v) return null;
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v.trim());
+  if (!m) return null;
+  const ano = Number(m[1]);
+  const mes = Number(m[2]);
+  const dia = Number(m[3]);
+  if (mes < 1 || mes > 12 || dia < 1 || dia > 31) return null;
+  return new Date(Date.UTC(ano, mes - 1, dia, 12, 0, 0));
+}
+
+// Dia-calendario (YYYY-MM-DD) em Sao Paulo, para input date e comparacoes.
+export function prazoParaInput(d: Date): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: TZ_BR,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(d);
+}
+
+// dd/mm/aaaa em Sao Paulo (exibicao na tabela/export).
+export function prazoParaBR(d: Date): string {
+  return new Intl.DateTimeFormat("pt-BR", {
+    timeZone: TZ_BR,
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(d);
+}
+
+// Diferenca em dias-calendario (Sao Paulo) entre o prazo e "agora".
+// Negativo = ja venceu; 0 = vence hoje; 3 = vence em 3 dias.
+export function diasAteVencer(prazo: Date, agora: Date = new Date()): number {
+  const diaUTC = (d: Date) => {
+    const [y, mo, da] = prazoParaInput(d).split("-").map(Number);
+    return Date.UTC(y, mo - 1, da);
+  };
+  return Math.round((diaUTC(prazo) - diaUTC(agora)) / 86_400_000);
+}
+
+export type PrazoAlerta = "vencido" | "proximo" | null;
+
+// So itens ativos (aberto/em andamento) recebem alerta de vencimento.
+export function statusAtivo(status: string): boolean {
+  return status === "aberto" || status === "em_andamento";
+}
+
+// Regra do alerta: vencido (dias<0) ou proximo (0..3 dias). Concluido/cancelado
+// nunca alerta. Retorna o tipo e os dias para o rotulo textual acessivel.
+export function alertaPrazo(
+  prazo: Date | null,
+  status: string,
+  agora: Date = new Date(),
+): { tipo: PrazoAlerta; dias: number | null } {
+  if (!prazo || !statusAtivo(status)) return { tipo: null, dias: null };
+  const dias = diasAteVencer(prazo, agora);
+  if (dias < 0) return { tipo: "vencido", dias };
+  if (dias <= 3) return { tipo: "proximo", dias };
+  return { tipo: null, dias };
+}

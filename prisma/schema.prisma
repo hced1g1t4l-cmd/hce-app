@@ -342,6 +342,10 @@ model BacklogItem {
   prioridade String @default("media")
   status     String @default("aberto")
 
+  // Data de vencimento (opcional). Armazenada como meio-dia UTC do dia
+  // escolhido para nunca "voltar" um dia ao formatar em America/Sao_Paulo.
+  prazo      DateTime?
+
   criadoPorLogin String
   criadoPorNome  String
 
