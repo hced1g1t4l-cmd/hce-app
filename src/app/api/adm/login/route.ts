@@ -18,7 +18,7 @@ const LOGIN_WINDOW_MS = 10 * 60 * 1000;
 export async function POST(req: Request) {
   const ip = getClientIp(req) ?? "sem-ip";
   const userAgent = req.headers.get("user-agent");
-  const limit = rateLimit(`adm-login:${ip}`, LOGIN_LIMIT, LOGIN_WINDOW_MS);
+  const limit = await rateLimit(`adm-login:${ip}`, LOGIN_LIMIT, LOGIN_WINDOW_MS);
   if (!limit.ok) {
     return NextResponse.redirect(new URL("/adm/login?erro=rate", req.url), {
       status: 303,
@@ -28,7 +28,9 @@ export async function POST(req: Request) {
   const form = await req.formData();
   const usuario = String(form.get("usuario") || "").trim().toLowerCase();
   const senha = String(form.get("senha") || "");
-  const captchaToken = String(form.get("g-recaptcha-response") || "");
+  const captchaToken = String(
+    form.get("cf-turnstile-response") || form.get("g-recaptcha-response") || "",
+  );
 
   if (!(await verifyCaptcha(captchaToken || undefined))) {
     await logAdm({

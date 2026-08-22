@@ -1,15 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import Script from "next/script";
 import { mascaraTelefone } from "@/lib/telefone";
 import { Container } from "@/components/site/container";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { Button } from "@/components/ui/button";
-
-const SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+import { Recaptcha, type RecaptchaHandle } from "@/components/site/recaptcha";
 
 type Status = "idle" | "sending" | "done";
 
@@ -17,6 +15,7 @@ export default function AviseMePage() {
   const router = useRouter();
   const [status, setStatus] = useState<Status>("idle");
   const [erro, setErro] = useState<string | null>(null);
+  const captcha = useRef<RecaptchaHandle>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -31,10 +30,8 @@ export default function AviseMePage() {
     }
 
     let captchaToken: string | undefined;
-    if (SITE_KEY) {
-      const g = (window as unknown as { grecaptcha?: { getResponse: () => string } })
-        .grecaptcha;
-      captchaToken = g?.getResponse();
+    if (captcha.current?.habilitado) {
+      captchaToken = captcha.current.getToken();
       if (!captchaToken) {
         setErro("Confirme que você não é um robô.");
         return;
@@ -76,13 +73,6 @@ export default function AviseMePage() {
 
   return (
     <>
-      {SITE_KEY && (
-        <Script
-          src="https://www.google.com/recaptcha/api.js"
-          async
-          defer
-        />
-      )}
       <SiteHeader />
 
       <main id="conteudo" className="flex-1 bg-surface-soft py-16 sm:py-20">
@@ -173,11 +163,7 @@ export default function AviseMePage() {
               />
             </div>
 
-            {SITE_KEY && (
-              <div className="mt-6 flex justify-center">
-                <div className="g-recaptcha" data-sitekey={SITE_KEY} />
-              </div>
-            )}
+            <Recaptcha ref={captcha} />
 
             {erro && (
               <p className="mt-5 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">

@@ -15,7 +15,7 @@ const WINDOW_MS = 15 * 60 * 1000;
 
 export async function POST(req: Request) {
   const ip = getClientIp(req) ?? "sem-ip";
-  const limit = rateLimit(`adm-esqueci:${ip}`, LIMIT, WINDOW_MS);
+  const limit = await rateLimit(`adm-esqueci:${ip}`, LIMIT, WINDOW_MS);
   if (!limit.ok) {
     return NextResponse.json(
       { error: "Muitas tentativas. Aguarde alguns minutos." },

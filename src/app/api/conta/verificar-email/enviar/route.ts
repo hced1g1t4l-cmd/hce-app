@@ -59,7 +59,7 @@ export async function POST() {
   }
 
   // Anti-flood: no maximo 3 envios a cada 15 min por usuario.
-  const rl = rateLimit(`verif-enviar:${user.id}`, 3, 15 * 60 * 1000);
+  const rl = await rateLimit(`verif-enviar:${user.id}`, 3, 15 * 60 * 1000);
   if (!rl.ok) {
     return NextResponse.json(
       { error: "Você pediu muitos códigos. Aguarde alguns minutos e tente de novo." },

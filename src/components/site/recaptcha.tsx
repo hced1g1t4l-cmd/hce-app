@@ -7,14 +7,13 @@ import {
   useRef,
 } from "react";
 
-// reCAPTCHA v2 com renderização EXPLÍCITA. Isso resolve o bug em que, ao navegar
-// entre páginas (SPA), o api.js já rodou o auto-render e o widget não aparecia —
-// e aí grecaptcha.getResponse() lançava "No reCAPTCHA clients exist", fazendo o
-// botão "não funcionar". Aqui nós mesmos renderizamos o widget quando o
-// componente monta e expomos getToken()/reset() por ref.
+const TURNSTILE_SITE = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+const RECAPTCHA_SITE = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+const SITE_KEY = TURNSTILE_SITE || RECAPTCHA_SITE;
+const USE_TURNSTILE = Boolean(TURNSTILE_SITE);
 
-const SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
-const SRC = "https://www.google.com/recaptcha/api.js?render=explicit";
+const RECAPTCHA_SRC = "https://www.google.com/recaptcha/api.js?render=explicit";
+const TURNSTILE_SRC = "https://challenges.cloudflare.com/turnstile/v0/api.js";
 
 type Grecaptcha = {
   render: (el: HTMLElement, opts: { sitekey: string }) => number;
@@ -22,9 +21,23 @@ type Grecaptcha = {
   reset: (id?: number) => void;
 };
 
+type TurnstileApi = {
+  render: (
+    el: HTMLElement,
+    opts: {
+      sitekey: string;
+      "response-field"?: boolean;
+      "response-field-name"?: string;
+    },
+  ) => string;
+  getResponse: (id: string) => string;
+  reset: (id: string) => void;
+};
+
 declare global {
   interface Window {
     grecaptcha?: Grecaptcha;
+    turnstile?: TurnstileApi;
   }
 }
 
@@ -34,23 +47,21 @@ export type RecaptchaHandle = {
   habilitado: boolean;
 };
 
-function carregarScript(): Promise<void> {
+function carregarScript(src: string, marker: string): Promise<void> {
   return new Promise((resolve) => {
     if (typeof window === "undefined") return resolve();
-    if (window.grecaptcha?.render) return resolve();
     const existente = document.querySelector<HTMLScriptElement>(
-      "script[data-recaptcha]",
+      `script[data-captcha="${marker}"]`,
     );
     if (existente) {
-      existente.addEventListener("load", () => resolve(), { once: true });
-      if (window.grecaptcha?.render) resolve();
+      resolve();
       return;
     }
     const s = document.createElement("script");
-    s.src = SRC;
+    s.src = src;
     s.async = true;
     s.defer = true;
-    s.dataset.recaptcha = "1";
+    s.dataset.captcha = marker;
     s.addEventListener("load", () => resolve(), { once: true });
     document.head.appendChild(s);
   });
@@ -61,21 +72,36 @@ export const Recaptcha = forwardRef<RecaptchaHandle>(function Recaptcha(
   ref,
 ) {
   const boxRef = useRef<HTMLDivElement>(null);
-  const widgetId = useRef<number | null>(null);
+  const widgetId = useRef<number | string | null>(null);
 
   useImperativeHandle(ref, () => ({
     habilitado: Boolean(SITE_KEY),
     getToken: () => {
       if (!SITE_KEY) return "";
       try {
-        return window.grecaptcha?.getResponse(widgetId.current ?? undefined) ?? "";
+        if (USE_TURNSTILE && typeof widgetId.current === "string") {
+          return window.turnstile?.getResponse(widgetId.current) ?? "";
+        }
+        if (typeof widgetId.current === "number") {
+          return (
+            window.grecaptcha?.getResponse(widgetId.current) ?? ""
+          );
+        }
+        const hid = document.querySelector<HTMLInputElement>(
+          'input[name="cf-turnstile-response"]',
+        );
+        return hid?.value ?? "";
       } catch {
         return "";
       }
     },
     reset: () => {
       try {
-        if (widgetId.current != null) window.grecaptcha?.reset(widgetId.current);
+        if (USE_TURNSTILE && typeof widgetId.current === "string") {
+          window.turnstile?.reset(widgetId.current);
+        } else if (typeof widgetId.current === "number") {
+          window.grecaptcha?.reset(widgetId.current);
+        }
       } catch {
         // ignora
       }
@@ -85,19 +111,34 @@ export const Recaptcha = forwardRef<RecaptchaHandle>(function Recaptcha(
   useEffect(() => {
     if (!SITE_KEY) return;
     let cancelado = false;
-    carregarScript().then(() => {
+    const src = USE_TURNSTILE ? TURNSTILE_SRC : RECAPTCHA_SRC;
+    const marker = USE_TURNSTILE ? "turnstile" : "recaptcha";
+    carregarScript(src, marker).then(() => {
       const tentar = () => {
-        if (cancelado) return;
-        const g = window.grecaptcha;
-        if (g?.render && boxRef.current && widgetId.current == null) {
+        if (cancelado || !boxRef.current || widgetId.current != null) return;
+        if (USE_TURNSTILE && window.turnstile?.render) {
           try {
-            widgetId.current = g.render(boxRef.current, { sitekey: SITE_KEY });
+            widgetId.current = window.turnstile.render(boxRef.current, {
+              sitekey: SITE_KEY,
+              "response-field": true,
+              "response-field-name": "cf-turnstile-response",
+            });
           } catch {
-            // já renderizado ou indisponível
+            // já renderizado
           }
-        } else if (widgetId.current == null) {
-          setTimeout(tentar, 150);
+          return;
         }
+        if (!USE_TURNSTILE && window.grecaptcha?.render) {
+          try {
+            widgetId.current = window.grecaptcha.render(boxRef.current, {
+              sitekey: SITE_KEY,
+            });
+          } catch {
+            // já renderizado
+          }
+          return;
+        }
+        setTimeout(tentar, 150);
       };
       tentar();
     });

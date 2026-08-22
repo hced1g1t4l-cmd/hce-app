@@ -31,7 +31,7 @@ const schema = z.object({
 
 export async function POST(req: Request) {
   const ip = getClientIp(req) ?? "desconhecido";
-  const rl = rateLimit(`redefinir:${ip}`, 15, 15 * 60 * 1000);
+  const rl = await rateLimit(`redefinir:${ip}`, 15, 15 * 60 * 1000);
   if (!rl.ok) {
     return NextResponse.json(
       { error: "Muitas tentativas. Tente novamente mais tarde." },

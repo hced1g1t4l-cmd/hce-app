@@ -9,12 +9,12 @@ const isDev = process.env.NODE_ENV !== "production";
 
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://www.google.com https://www.gstatic.com`,
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://www.google.com https://www.gstatic.com https://challenges.cloudflare.com`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://www.gstatic.com https://www.google.com",
   "font-src 'self'",
-  "frame-src https://www.google.com https://recaptcha.net",
-  "connect-src 'self' https://www.google.com https://*.sentry.io https://viacep.com.br https://*.r2.cloudflarestorage.com",
+  "frame-src https://www.google.com https://recaptcha.net https://challenges.cloudflare.com",
+  "connect-src 'self' https://www.google.com https://challenges.cloudflare.com https://*.sentry.io https://viacep.com.br https://*.r2.cloudflarestorage.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",

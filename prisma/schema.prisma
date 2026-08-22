@@ -378,3 +378,12 @@ model ContatoMensagem {
 
   @@index([createdAt])
 }
+
+// Contador compartilhado entre instancias serverless (rate-limit.ts).
+model RateLimitBucket {
+  key     String   @id
+  count   Int      @default(0)
+  resetAt DateTime
+
+  @@index([resetAt])
+}

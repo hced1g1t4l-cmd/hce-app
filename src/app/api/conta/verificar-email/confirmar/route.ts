@@ -26,7 +26,7 @@ export async function POST(req: Request) {
 
   // Anti-brute-force: no maximo 6 tentativas a cada 15 min por usuario.
   // Com o codigo valendo so 100s, torna a adivinhacao inviavel.
-  const rl = rateLimit(`verif-confirmar:${user.id}`, 6, 15 * 60 * 1000);
+  const rl = await rateLimit(`verif-confirmar:${user.id}`, 6, 15 * 60 * 1000);
   if (!rl.ok) {
     return NextResponse.json(
       { error: "Muitas tentativas. Aguarde alguns minutos e peça um novo código." },

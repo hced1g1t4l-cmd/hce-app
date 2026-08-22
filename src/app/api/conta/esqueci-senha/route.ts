@@ -35,7 +35,7 @@ function emailHtml(link: string): string {
 
 export async function POST(req: Request) {
   const ip = getClientIp(req) ?? "desconhecido";
-  const rl = rateLimit(`esqueci:${ip}`, 5, 60 * 60 * 1000); // 5/h por IP
+  const rl = await rateLimit(`esqueci:${ip}`, 5, 60 * 60 * 1000); // 5/h por IP
   if (!rl.ok) {
     return NextResponse.json(
       { error: "Muitas tentativas. Tente novamente mais tarde." },

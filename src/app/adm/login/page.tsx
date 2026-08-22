@@ -1,11 +1,9 @@
-import Script from "next/script";
 import { redirect } from "next/navigation";
 import { isAuthed } from "@/lib/adm";
+import { Recaptcha } from "@/components/site/recaptcha";
 
 export const dynamic = "force-dynamic";
 export const metadata = { robots: { index: false, follow: false } };
-
-const SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
 export default async function AdmLoginPage({
   searchParams,
@@ -74,14 +72,7 @@ export default async function AdmLoginPage({
           />
         </label>
 
-        {SITE_KEY && (
-          <>
-            <Script src="https://www.google.com/recaptcha/api.js" async defer />
-            <div className="mt-6 flex justify-center">
-              <div className="g-recaptcha" data-sitekey={SITE_KEY} />
-            </div>
-          </>
-        )}
+        <Recaptcha />
 
         <button
           type="submit"

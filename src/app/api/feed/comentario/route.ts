@@ -17,7 +17,7 @@ export async function POST(req: Request) {
   }
 
   const ip = getClientIp(req) ?? "desconhecido";
-  const rl = rateLimit(`comentario:${user.id}:${ip}`, 10, 60 * 60 * 1000);
+  const rl = await rateLimit(`comentario:${user.id}:${ip}`, 10, 60 * 60 * 1000);
   if (!rl.ok) {
     return NextResponse.json(
       { error: "Muitos comentários em pouco tempo. Tente mais tarde." },

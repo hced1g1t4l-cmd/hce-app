@@ -23,7 +23,7 @@ const schema = z.object({
 
 export async function POST(req: Request) {
   const ip = getClientIp(req);
-  const limit = rateLimit(`leads:${ip ?? "sem-ip"}`, 10, 60 * 60 * 1000);
+  const limit = await rateLimit(`leads:${ip ?? "sem-ip"}`, 10, 60 * 60 * 1000);
   if (!limit.ok) {
     return NextResponse.json(
       { error: "Muitas tentativas. Tente novamente mais tarde." },
