@@ -35,6 +35,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     {
+      url: `${BASE_URL}/na-midia`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
       url: `${BASE_URL}/podcast`,
       lastModified: now,
       changeFrequency: "monthly",

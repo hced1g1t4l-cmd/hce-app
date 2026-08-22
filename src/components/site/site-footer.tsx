@@ -52,6 +52,11 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
+              <Link href="/na-midia" className="hover:text-brand-amber">
+                Na Mídia
+              </Link>
+            </li>
+            <li>
               <Link href="/podcast" className="hover:text-brand-amber">
                 Podcast
               </Link>

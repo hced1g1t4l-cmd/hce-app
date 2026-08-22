@@ -13,6 +13,7 @@ const NAV = [
   { label: "Sobre", href: "/quem-somos" },
   { label: "O que fazemos", href: "/servicos" },
   { label: "Feed", href: "/feed" },
+  { label: "Na Mídia", href: "/na-midia" },
   { label: "+HCE", href: "/clube" },
   { label: "Contato", href: "/#contato" },
 ];
