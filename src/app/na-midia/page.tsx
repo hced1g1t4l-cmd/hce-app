@@ -41,6 +41,15 @@ type ItemMidia = {
   // Avatar redondo do autor (foto local em /public/brand/fotos) — dá o ar de
   // "post de rede social" e é 100% confiável (não depende de fonte externa).
   avatar?: string;
+  // Logo do veículo (SVG local em /public/brand/midia) exibido como selo no
+  // canto da thumb. Mapeável por veículo/tipo quando o editor (BAC_130) cadastrar
+  // novos itens. Sem ele o card apenas não mostra o selo.
+  logoVeiculo?: string;
+  // Texto alternativo do logo (nome do veículo, ex.: "Extra", "Instagram").
+  logoAlt?: string;
+  // Classe extra para ajustar a altura/proporção do logo dentro do selo
+  // (ex.: "h-4" para o Extra largo, "h-[18px] w-[18px]" para o Instagram).
+  logoClasse?: string;
 };
 
 // Catálogo editável. Para incluir um novo conteúdo, basta adicionar um objeto
@@ -59,6 +68,9 @@ const ITENS: ItemMidia[] = [
     thumb: "/brand/midia/coluna-cris.jpg",
     thumbPos: "center 22%",
     avatar: "/brand/fotos/chef-cris-4.png",
+    logoVeiculo: "/brand/midia/logo-extra.svg",
+    logoAlt: "Extra",
+    logoClasse: "h-4 w-auto",
   },
   {
     tipo: "Podcast",
@@ -72,10 +84,12 @@ const ITENS: ItemMidia[] = [
       { label: "Linktree", url: "https://linktr.ee/cadamesaumahistoria" },
       { label: "Site", url: "https://cadamesaumahistoria.my.canva.site/" },
     ],
-    // Sem thumb: as fontes de imagem do podcast (Instagram, Linktree, Canva)
-    // ou bloqueiam o acesso ou não expõem uma capa boa, então este card usa o
-    // cabeçalho de gradiente + ícone de microfone como thumbnail (fallback).
+    thumb: "/brand/midia/podcast-gio.jpg",
+    thumbPos: "center",
     avatar: "/brand/fotos/chef-gio-5.png",
+    logoVeiculo: "/brand/midia/logo-instagram-color.svg",
+    logoAlt: "Instagram",
+    logoClasse: "h-[18px] w-[18px]",
   },
 ];
 
@@ -271,6 +285,19 @@ export default function NaMidiaPage() {
                       <span className="absolute top-4 left-4 z-10 rounded-full bg-brand-amber px-3 py-1 font-display text-xs font-semibold text-brand-blue-deep shadow-brand">
                         {item.tipo}
                       </span>
+
+                      {/* Selo do veículo: chip branco translúcido com o logo
+                          oficial, no canto superior direito da thumb. */}
+                      {item.logoVeiculo && (
+                        <span className="absolute top-4 right-4 z-10 inline-flex items-center rounded-lg bg-white/90 px-2 py-1 shadow-brand ring-1 ring-black/5 backdrop-blur-sm">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={item.logoVeiculo}
+                            alt={item.logoAlt ?? item.veiculo}
+                            className={`object-contain ${item.logoClasse ?? "h-4 w-auto"}`}
+                          />
+                        </span>
+                      )}
 
                       {/* Rótulo do veículo sobre a base da imagem. */}
                       <span className="absolute bottom-3 left-4 z-10 font-display text-xs font-semibold tracking-wide text-white/95 drop-shadow">
