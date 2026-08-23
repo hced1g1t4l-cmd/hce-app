@@ -180,7 +180,7 @@ const FAQ_TEXTO: { q: string; a: string }[] = [
   },
   {
     q: "Quais são os planos e preços?",
-    a: "Serão quatro planos, do Gratuito ao Premium, com opção avulsa e anual (com desconto). Veja os detalhes na página do +HCE.",
+    a: "Serão três planos, do Gratuito ao Profissional, com opção avulsa e anual (com desconto). Veja os detalhes na página do +HCE.",
   },
   {
     q: "Como será o pagamento?",
