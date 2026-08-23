@@ -3,9 +3,11 @@
 export const PLANOS = ["free", "essencial", "profissional", "premium"] as const;
 export type Plano = (typeof PLANOS)[number];
 
+// Nota: a chave interna continua "essencial" (evita migração de dados de
+// usuários e de mídia por plano); o rótulo exibido é "Básico" (BAC_131).
 export const PLANO_LABEL: Record<Plano, string> = {
   free: "Gratuito",
-  essencial: "Essencial",
+  essencial: "Básico",
   profissional: "Profissional",
   premium: "Premium",
 };

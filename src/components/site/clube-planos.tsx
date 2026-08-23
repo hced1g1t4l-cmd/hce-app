@@ -35,16 +35,19 @@ const PLANOS: Plano[] = [
   },
   {
     id: "essencial",
-    nome: "Essencial",
-    foco: "Para aprender",
+    nome: "Básico",
+    foco: "Para quem ama cozinhar",
     precoAnual: "29,90",
     precoAvulso: "34,90",
     itens: [
       "Todos os recursos da versão gratuita",
-      "Atualizações semanais de soluções para a cozinha",
-      "Leitor online",
+      "Pílulas e dicas de cozinha",
+      "Organização da casa e da geladeira",
+      "Banco de receitas",
+      "Ebooks",
+      "Técnica, história e cultura gastronômica em nível leve",
     ],
-    cta: "Assinar Essencial",
+    cta: "Assinar Básico",
   },
   {
     id: "profissional",
@@ -53,7 +56,7 @@ const PLANOS: Plano[] = [
     precoAnual: "59,90",
     precoAvulso: "64,90",
     itens: [
-      "Tudo do Essencial",
+      "Tudo do Básico",
       "Biblioteca de Receitas (novas todo mês)",
       "Download das fichas e receitas em PDF",
     ],

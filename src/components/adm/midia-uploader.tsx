@@ -180,7 +180,7 @@ export function MidiaUploader() {
             className="mt-1 block w-full rounded-lg border border-line px-3 py-2 text-sm disabled:opacity-50"
           >
             <option value="free">Gratuito</option>
-            <option value="essencial">Essencial</option>
+            <option value="essencial">Básico</option>
             <option value="profissional">Profissional</option>
             <option value="premium">Premium</option>
           </select>

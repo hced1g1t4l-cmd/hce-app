@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 const PLANO_LABEL: Record<string, string> = {
   free: "Gratuito",
-  essencial: "Essencial",
+  essencial: "Básico",
   profissional: "Profissional",
   premium: "Premium",
 };
