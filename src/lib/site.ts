@@ -16,15 +16,17 @@ export const EMAIL_PRIVACIDADE = "contato@hcegastronomia.com";
 /**
  * Identidade jurídica usada nos Termos de Uso e no Aviso de Privacidade.
  *
- * IMPORTANTE: preencha `razaoSocial`, `cnpj` e `endereco` assim que a empresa
- * estiver formalizada. Onde ficarem em branco, os documentos exibem um aviso
- * de "a ser incluído", em vez de dado inventado.
+ * PRIVACIDADE DO ENDEREÇO: por decisão do negócio, o logradouro completo (rua,
+ * número, complemento, bairro e CEP) NÃO é exibido nos documentos públicos.
+ * Mantemos apenas município/UF (que já consta do foro) para fins de jurisdição.
+ * Por isso `endereco` fica intencionalmente em branco — o componente de
+ * identificação dos documentos trata isso e não exibe "sede em ...".
  */
 export const EMPRESA = {
   nomeFantasia: "HCE Gastronomia",
-  razaoSocial: "", // ex.: "HCE Gastronomia Ltda." — preencher
-  cnpj: "", // ex.: "00.000.000/0001-00" — preencher
-  endereco: "", // logradouro completo — preencher
+  razaoSocial: "HCE - Hospitalidade, Consultoria e Gastronomia Ltda.",
+  cnpj: "68.499.021/0001-37",
+  endereco: "", // omitido de propósito (ver nota acima) — não publicar sede
   cidadeUf: "Rio de Janeiro/RJ",
   pais: "Brasil",
   foro: "Comarca da Capital do Estado do Rio de Janeiro",
@@ -32,11 +34,14 @@ export const EMPRESA = {
   emailPrivacidade: EMAIL_PRIVACIDADE,
   // Encarregado(a) pelo tratamento de dados (DPO). Preencha quando nomear.
   encarregado: "", // nome do(a) Encarregado(a) — opcional
-} as const;
+  // Sem `as const`: mantém os campos como `string` (e não tipos literais), para
+  // que comparações como `nomeFantasia !== razaoSocial` na identificação dos
+  // documentos legais sejam válidas mesmo quando os valores diferem.
+};
 
 // Vigência dos documentos legais. Atualize a data e a versão a cada revisão.
-export const LEGAL_ATUALIZACAO = "9 de agosto de 2026";
-export const LEGAL_VERSAO = "1.0";
+export const LEGAL_ATUALIZACAO = "23 de agosto de 2026";
+export const LEGAL_VERSAO = "1.1";
 
 // Redes sociais oficiais (fonte: "REDES SOCIAIS HCE GASTRONOMIA.pdf").
 export const SOCIALS = [
