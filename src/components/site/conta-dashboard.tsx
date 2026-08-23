@@ -98,12 +98,6 @@ const CONTEUDOS: {
     planoMin: "profissional",
     href: "/mais-hce",
   },
-  {
-    titulo: "E-books, materiais e comunidade",
-    desc: "Conteúdos aprofundados e troca com especialistas.",
-    planoMin: "premium",
-    href: "/mais-hce",
-  },
 ];
 
 function Icone({ children }: { children: React.ReactNode }) {

@@ -62,21 +62,6 @@ const PLANOS: Plano[] = [
     ],
     cta: "Assinar Profissional",
   },
-  {
-    id: "premium",
-    nome: "Premium",
-    foco: "Para se aprofundar",
-    precoAnual: "89,90",
-    precoAvulso: "94,90",
-    itens: [
-      "Todos os recursos do plano Profissional",
-      "Biblioteca exclusiva de e-books e materiais",
-      "Interação com especialistas da HCE",
-      "Comunidade premium",
-    ],
-    cta: "Assinar Premium",
-    destaque: true,
-  },
 ];
 
 const ctaBase =
@@ -112,7 +97,7 @@ export function ClubePlanos() {
 
   return (
     <>
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {PLANOS.map((p) => (
           <article
             key={p.id}

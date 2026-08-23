@@ -105,8 +105,8 @@ const GRUPOS: Grupo[] = [
         q: "Quais são os planos e preços?",
         a: (
           <>
-            Serão quatro planos, do Gratuito ao Premium, com opção avulsa e anual
-            (com desconto). Veja os detalhes na página do{" "}
+            Serão três planos, do Gratuito ao Profissional, com opção avulsa e
+            anual (com desconto). Veja os detalhes na página do{" "}
             <Link href="/mais-hce" className={linkClasses}>
               +HCE
             </Link>
