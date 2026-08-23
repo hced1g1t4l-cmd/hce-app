@@ -38,7 +38,7 @@ export default function PodcastPage() {
             <span className="inline-flex items-center gap-2 rounded-full bg-brand-amber px-4 py-1.5 font-display text-xs font-bold tracking-widest text-brand-blue-deep uppercase">
               Em breve
             </span>
-            <h1 className="mt-6 font-display text-4xl font-extrabold text-balance text-white sm:text-5xl">
+            <h1 className="mt-6 font-display text-4xl font-bold text-balance text-white sm:text-5xl">
               O Podcast HCE está chegando
             </h1>
             <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-white/80">

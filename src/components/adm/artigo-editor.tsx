@@ -751,7 +751,7 @@ function ArtigoPreview({
             <span className="text-sm font-semibold text-brand-amber">
               ← Feed HCE
             </span>
-            <h1 className="mt-4 font-display text-3xl font-extrabold text-balance sm:text-4xl">
+            <h1 className="mt-4 font-display text-3xl font-bold text-balance sm:text-4xl">
               {titulo.trim() || "Título da matéria"}
             </h1>
             {resumo.trim() && (

@@ -181,7 +181,7 @@ export default function ServicosPage() {
             <span className="font-display text-sm font-semibold tracking-[0.28em] text-brand-amber uppercase">
               O que fazemos
             </span>
-            <h1 className="mx-auto mt-3 max-w-3xl font-display text-3xl font-extrabold tracking-tight text-balance text-white sm:text-5xl">
+            <h1 className="mx-auto mt-3 max-w-3xl font-display text-3xl font-bold tracking-tight text-balance text-white sm:text-5xl">
               Consultoria, educação e hospitalidade para A&amp;B
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-white/80">

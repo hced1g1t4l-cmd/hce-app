@@ -55,7 +55,7 @@ export default function ClubePage() {
             <span className="font-display text-sm font-semibold tracking-[0.28em] text-brand-amber uppercase">
               Em breve
             </span>
-            <h1 className="mx-auto mt-3 max-w-3xl font-display text-3xl font-extrabold text-balance text-white sm:text-5xl">
+            <h1 className="mx-auto mt-3 max-w-3xl font-display text-3xl font-bold text-balance text-white sm:text-5xl">
               +HCE: conteúdo que vira resultado
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-white/80">

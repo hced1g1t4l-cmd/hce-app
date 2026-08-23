@@ -57,7 +57,7 @@ export function LegalLayout({
               </span>
               <span aria-hidden className="hce-rule" />
             </div>
-            <h1 className="mt-4 font-display text-3xl font-extrabold tracking-tight text-balance text-white sm:text-5xl">
+            <h1 className="mt-4 font-display text-3xl font-bold tracking-tight text-balance text-white sm:text-5xl">
               {titulo}
             </h1>
             <p className="mt-5 max-w-2xl text-lg leading-relaxed text-white/80">

@@ -108,9 +108,8 @@ export default async function Home() {
               </p>
               <span aria-hidden className="hce-rule" />
             </div>
-            <h1 className="max-w-4xl font-display text-3xl leading-[1.1] font-extrabold tracking-tight text-balance text-white sm:text-5xl lg:text-6xl">
-              Transformamos conhecimento em hospitalidade, pessoas em
-              profissionais e experiências em resultados.
+            <h1 className="max-w-4xl font-display text-3xl leading-[1.1] font-bold tracking-tight text-balance text-white sm:text-5xl lg:text-6xl">
+              Transformamos conhecimento em pessoas e resultados.
             </h1>
             <p className="max-w-2xl text-lg leading-relaxed text-white/80">
               A HCE nasce da união das trajetórias de Cris Leite e Gio

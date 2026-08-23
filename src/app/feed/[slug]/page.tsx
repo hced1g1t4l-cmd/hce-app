@@ -166,7 +166,7 @@ export default async function ArtigoPage({
               >
                 ← Feed HCE
               </Link>
-              <h1 className="mt-4 font-display text-3xl font-extrabold text-balance sm:text-4xl">
+              <h1 className="mt-4 font-display text-3xl font-bold text-balance sm:text-4xl">
                 {artigo.titulo}
               </h1>
               {artigo.resumo && (

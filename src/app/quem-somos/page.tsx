@@ -99,7 +99,7 @@ export default function QuemSomosPage() {
             <span className="font-display text-sm font-semibold tracking-[0.28em] text-brand-amber uppercase">
               Quem somos
             </span>
-            <h1 className="mx-auto mt-3 max-w-3xl font-display text-3xl font-extrabold text-balance text-white sm:text-5xl">
+            <h1 className="mx-auto mt-3 max-w-3xl font-display text-3xl font-bold text-balance text-white sm:text-5xl">
               Duas trajetórias, uma paixão pela gastronomia
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-white/80">
