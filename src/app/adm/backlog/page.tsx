@@ -58,6 +58,7 @@ export default async function AdmBacklogPage() {
     criadoTs: r.createdAt.getTime(),
     iniciadoPorNome: r.iniciadoPorNome,
     iniciadoFmt: r.iniciadoEm ? fmt.format(r.iniciadoEm) : null,
+    iniciadoTs: r.iniciadoEm ? r.iniciadoEm.getTime() : null,
     concluidoPorNome: r.concluidoPorNome,
     concluidoFmt: r.concluidoEm ? fmt.format(r.concluidoEm) : null,
     canceladoPorNome: r.canceladoPorNome,

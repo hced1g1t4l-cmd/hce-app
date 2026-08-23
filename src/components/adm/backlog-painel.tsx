@@ -32,6 +32,7 @@ export type BacklogRow = {
   criadoTs: number;
   iniciadoPorNome: string | null;
   iniciadoFmt: string | null;
+  iniciadoTs: number | null;
   concluidoPorNome: string | null;
   concluidoFmt: string | null;
   canceladoPorNome: string | null;
@@ -43,6 +44,19 @@ const FILTROS: { valor: string; label: string }[] = [
   { valor: "todos", label: "Todos" },
   ...STATUS.map((s) => ({ valor: s.valor, label: s.label })),
 ];
+
+// Ordem de exibição por status na "Ordem padrão": Em andamento primeiro — o
+// item que você "pega para fazer" sobe para o topo —, depois os Abertos e, por
+// fim, Concluídos e Cancelados.
+const ORDEM_STATUS: Record<string, number> = {
+  em_andamento: 0,
+  aberto: 1,
+  concluido: 2,
+  cancelado: 3,
+};
+function ordemStatus(s: string): number {
+  return ORDEM_STATUS[s] ?? 9;
+}
 
 // Pílula de prazo. Acessível: além da cor, sempre traz rótulo textual
 // ("Vencido", "Vence hoje", "Vence em X dia(s)" ou a data).
@@ -192,8 +206,18 @@ export function BacklogPainel({ itens }: { itens: BacklogRow[] }) {
           if (a.prazoTs !== b.prazoTs) return a.prazoTs - b.prazoTs;
           return a.criadoTs - b.criadoTs;
         }
-        const sa = statusInfo(a.status).ordem - statusInfo(b.status).ordem;
+        const sa = ordemStatus(a.status) - ordemStatus(b.status);
         if (sa !== 0) return sa;
+        // Dentro de "Em andamento", quem começou mais recentemente vem primeiro
+        // (o item recém-"pego para fazer" fica no topo).
+        if (
+          a.status === "em_andamento" &&
+          a.iniciadoTs !== null &&
+          b.iniciadoTs !== null &&
+          a.iniciadoTs !== b.iniciadoTs
+        ) {
+          return b.iniciadoTs - a.iniciadoTs;
+        }
         const pa =
           prioridadeInfo(a.prioridade).ordem - prioridadeInfo(b.prioridade).ordem;
         if (pa !== 0) return pa;
