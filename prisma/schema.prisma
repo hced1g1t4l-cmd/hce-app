@@ -329,6 +329,71 @@ model MediaAsset {
   @@index([createdAt])
 }
 
+// Card da secao publica "Na Midia" (BAC_130): coluna, podcast, entrevista,
+// video ou artigo ja publicado por Cris/Gio na imprensa e nas redes.
+// Editavel pelo /adm/na-midia (CRUD, reordenacao e publicar/despublicar), sem
+// deploy. Substitui o array fixo que existia em src/app/na-midia/page.tsx.
+//   - descricao: texto de apoio (curto), armazenado como texto puro.
+//   - linksExtras: Json com [{ label, url }] (chips no rodape do card).
+//   - thumbUrl/avatarUrl: /api/img/{id} (upload local ou og:image baixada) ou
+//     caminho local /brand/... — sempre mesma origem (nada de hotlink externo).
+//   - ordem: menor primeiro; publicado controla a exibicao no site.
+model MidiaItem {
+  id          String  @id @default(cuid())
+  tipo        String  @default("Coluna") // Coluna | Podcast | Entrevista | Vídeo | Artigo
+  veiculo     String
+  autor       String
+  titulo      String
+  descricao   String  @db.Text
+  url         String
+  linksExtras Json    @default("[]") // [{ label, url }]
+  thumbUrl    String? // /api/img/{id} (upload/og:image) — mesma origem
+  thumbPos    String? // object-position do recorte (ex.: "center 22%")
+  avatarUrl   String? // /api/img/{id} ou /brand/fotos/...
+  logoVeiculo String? // selo do veiculo (ex.: /brand/midia/logo-extra.svg)
+  logoAlt     String? // texto alternativo do logo (ex.: "Extra")
+  logoClasse  String? // ajuste de tamanho do logo no selo (ex.: "h-4 w-auto")
+  ordem       Int     @default(0)
+  publicado   Boolean @default(true)
+
+  criadoPorLogin String
+  criadoPorNome  String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([publicado, ordem])
+  @@index([ordem])
+}
+
+// Depoimento/comentario exibido na home (BAC_110/BAC_137). Curadoria feita no
+// /adm/depoimentos: escolher o que entra, a ordem e o formato, sem depender do
+// dev. Substitui o array fixo que existia em components/site/depoimentos-home.
+//   - texto: depoimento (texto puro; a home renderiza com quebras de linha).
+//   - fotoUrl: avatar (/api/img/{id} de upload ou /brand/depoimentos/...).
+//   - formato: texto | imagem | video (video reservado p/ o futuro — pesa o
+//     site, então priorizamos texto/imagem no curto prazo).
+//   - ordem menor primeiro; publicado controla a exibicao no site.
+model Depoimento {
+  id        String  @id @default(cuid())
+  nome      String
+  cargo     String
+  texto     String  @db.Text
+  fotoUrl   String? // /api/img/{id} (upload) ou /brand/depoimentos/... — mesma origem
+  formato   String  @default("texto") // texto | imagem | video
+  ordem     Int     @default(0)
+  publicado Boolean @default(true)
+
+  criadoPorLogin String
+  criadoPorNome  String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([publicado, ordem])
+  @@index([ordem])
+}
+
 // Item de backlog interno do time (modulo /adm/backlog).
 // Qualquer admin cria; codigo sequencial BAC_001 e derivado na listagem.
 // descricao = HTML (permite colar imagens via Ctrl+V, embutidas como /api/img/{id}).

@@ -8,6 +8,11 @@ import { DepoimentosHome } from "@/components/site/depoimentos-home";
 import { TexturaAzul } from "@/components/site/textura-azul";
 import { ArrowRight, Check } from "@/components/ui/icons";
 import { EMAIL_CONTATO } from "@/lib/site";
+import { prisma } from "@/lib/db";
+
+// Revalida periodicamente para refletir a curadoria de depoimentos (/adm)
+// sem tornar a home totalmente dinâmica.
+export const revalidate = 60;
 
 const PILARES = [
   {
@@ -48,7 +53,19 @@ const FUNDADORAS = [
   },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const depoimentosRows = await prisma.depoimento.findMany({
+    where: { publicado: true },
+    orderBy: [{ ordem: "asc" }, { createdAt: "asc" }],
+  });
+  const depoimentos = depoimentosRows.map((d) => ({
+    id: d.id,
+    nome: d.nome,
+    cargo: d.cargo,
+    foto: d.fotoUrl ?? "",
+    texto: d.texto,
+    formato: d.formato,
+  }));
   return (
     <>
       <SiteHeader />
@@ -198,27 +215,29 @@ export default function Home() {
         </section>
 
         {/* DEPOIMENTOS */}
-        <section id="depoimentos" className="bg-white py-24">
-          <Container>
-            <div className="reveal mx-auto max-w-2xl text-center">
-              <span className="font-display text-sm font-semibold tracking-widest text-brand-amber-dark uppercase">
-                Depoimentos
-              </span>
-              <div className="mt-4 flex justify-center">
-                <span aria-hidden className="hce-rule" />
+        {depoimentos.length > 0 && (
+          <section id="depoimentos" className="bg-white py-24">
+            <Container>
+              <div className="reveal mx-auto max-w-2xl text-center">
+                <span className="font-display text-sm font-semibold tracking-widest text-brand-amber-dark uppercase">
+                  Depoimentos
+                </span>
+                <div className="mt-4 flex justify-center">
+                  <span aria-hidden className="hce-rule" />
+                </div>
+                <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-brand-blue sm:text-4xl">
+                  Quem já estudou e trabalhou com a gente
+                </h2>
+                <p className="mt-5 text-lg leading-relaxed text-muted">
+                  Histórias de alunos, chefs e parceiros que viveram de perto o
+                  jeito HCE de ensinar e transformar operações.
+                </p>
               </div>
-              <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-brand-blue sm:text-4xl">
-                Quem já estudou e trabalhou com a gente
-              </h2>
-              <p className="mt-5 text-lg leading-relaxed text-muted">
-                Histórias de alunos, chefs e parceiros que viveram de perto o
-                jeito HCE de ensinar e transformar operações.
-              </p>
-            </div>
 
-            <DepoimentosHome />
-          </Container>
-        </section>
+              <DepoimentosHome depoimentos={depoimentos} />
+            </Container>
+          </section>
+        )}
 
         {/* CLUBE +HCE */}
         <section

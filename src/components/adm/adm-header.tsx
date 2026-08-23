@@ -29,6 +29,8 @@ export async function AdmHeader({
     | "feed"
     | "metricas"
     | "comentarios"
+    | "depoimentos"
+    | "na-midia"
     | "midia"
     | "usuarios"
     | "backlog"
@@ -172,7 +174,21 @@ export async function AdmHeader({
             label="Comentários"
             active={active === "comentarios"}
           />
-          <Tab href="/adm/midia" label="Mídia" active={active === "midia"} />
+          <Tab
+            href="/adm/depoimentos"
+            label="Depoimentos"
+            active={active === "depoimentos"}
+          />
+          <Tab
+            href="/adm/na-midia"
+            label="Na Mídia"
+            active={active === "na-midia"}
+          />
+          <Tab
+            href="/adm/midia"
+            label="Biblioteca"
+            active={active === "midia"}
+          />
           <Tab
             href="/adm/usuarios"
             label="Usuários"
