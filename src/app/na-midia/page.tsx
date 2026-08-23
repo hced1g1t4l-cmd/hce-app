@@ -72,7 +72,7 @@ export default async function NaMidiaPage() {
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-white/80">
               Reunimos aqui os conteúdos de Cris Leite e Gio Gropello na imprensa
-              e nas redes — cozinha, hospitalidade e gestão em diferentes
+              e nas redes, com cozinha, hospitalidade e gestão em diferentes
               formatos. Novos materiais entram nesta página com o tempo.
             </p>
           </Container>

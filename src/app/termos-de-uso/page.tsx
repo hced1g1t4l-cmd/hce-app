@@ -443,7 +443,7 @@ export default function TermosDeUsoPage() {
     <LegalLayout
       eyebrow="Jurídico"
       titulo="Termos de Uso"
-      resumo="Estas são as condições gerais para acesso e uso do site e dos serviços da HCE Gastronomia. Leia com atenção — ao utilizar o site, você concorda com elas."
+      resumo="Estas são as condições gerais para acesso e uso do site e dos serviços da HCE Gastronomia. Leia com atenção. Ao utilizar o site, você concorda com elas."
       atualizacao={LEGAL_ATUALIZACAO}
       versao={LEGAL_VERSAO}
       secoes={SECOES}

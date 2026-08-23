@@ -538,7 +538,7 @@ export default function PrivacidadePage() {
     <LegalLayout
       eyebrow="Privacidade"
       titulo="Aviso de Privacidade"
-      resumo="A sua privacidade importa. Aqui explicamos, de forma clara, quais dados pessoais tratamos, por quê, com quem os compartilhamos e como você pode exercer os seus direitos — em conformidade com a LGPD."
+      resumo="A sua privacidade importa. Aqui explicamos, de forma clara e em conformidade com a LGPD, quais dados pessoais tratamos, por quê, com quem os compartilhamos e como você pode exercer os seus direitos."
       atualizacao={LEGAL_ATUALIZACAO}
       versao={LEGAL_VERSAO}
       secoes={SECOES}
