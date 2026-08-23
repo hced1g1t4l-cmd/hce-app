@@ -36,7 +36,7 @@ const PLANOS: Plano[] = [
   {
     id: "essencial",
     nome: "Básico",
-    foco: "Para quem ama cozinhar",
+    foco: "Para o dia a dia",
     precoAnual: "29,90",
     precoAvulso: "34,90",
     itens: [
