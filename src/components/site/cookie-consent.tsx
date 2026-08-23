@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { cn } from "@/lib/cn";
 import { lerConsent, salvarConsent } from "@/lib/consent";
@@ -68,6 +69,7 @@ function Switch({
 }
 
 export function CookieConsent() {
+  const pathname = usePathname();
   const [montado, setMontado] = useState(false);
   const [banner, setBanner] = useState(false);
   const [modal, setModal] = useState(false);
@@ -122,6 +124,9 @@ export function CookieConsent() {
   }, [modal]);
 
   if (!montado) return null;
+
+  // O painel administrativo (/adm) não expõe o widget de cookies.
+  if (pathname?.startsWith("/adm")) return null;
 
   const jaDecidiu = !banner;
 
