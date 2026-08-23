@@ -59,6 +59,14 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // O produto antes chamado "Clube" agora e "+HCE": mudamos so o endereco da
+  // rota (/clube -> /mais-hce). Redirect 301 permanente preserva SEO e links
+  // antigos ja divulgados/indexados.
+  async redirects() {
+    return [
+      { source: "/clube", destination: "/mais-hce", permanent: true },
+    ];
+  },
 };
 
 // Envolve a config com o Sentry. Sem SENTRY_AUTH_TOKEN, o upload de source maps

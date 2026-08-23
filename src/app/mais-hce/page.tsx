@@ -11,12 +11,12 @@ export const metadata: Metadata = {
   title: "+HCE · Planos e assinatura",
   description:
     "O +HCE é o clube por assinatura da HCE: acervo de receitas e fichas técnicas, e-books, soluções da cozinha e comunidade. Conheça os planos.",
-  alternates: { canonical: "/clube" },
+  alternates: { canonical: "/mais-hce" },
   openGraph: {
     title: "+HCE · Planos e assinatura",
     description:
       "Acervo de receitas e fichas técnicas, e-books, soluções da cozinha e comunidade. Conheça os planos do +HCE.",
-    url: "/clube",
+    url: "/mais-hce",
   },
 };
 

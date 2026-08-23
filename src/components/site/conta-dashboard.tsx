@@ -90,19 +90,19 @@ const CONTEUDOS: {
     titulo: "Soluções semanais para a cozinha",
     desc: "Atualizações práticas, toda semana.",
     planoMin: "essencial",
-    href: "/clube",
+    href: "/mais-hce",
   },
   {
     titulo: "Receitas e fichas técnicas",
     desc: "Biblioteca com download em PDF.",
     planoMin: "profissional",
-    href: "/clube",
+    href: "/mais-hce",
   },
   {
     titulo: "E-books, materiais e comunidade",
     desc: "Conteúdos aprofundados e troca com especialistas.",
     planoMin: "premium",
-    href: "/clube",
+    href: "/mais-hce",
   },
 ];
 
@@ -250,7 +250,7 @@ export function ContaDashboard(props: Props) {
                         </Button>
                       ) : (
                         <Button
-                          href="/clube"
+                          href="/mais-hce"
                           size="md"
                           variant="ghost"
                           className="w-full shrink-0 border border-brand-blue/25 whitespace-nowrap sm:w-auto"
@@ -322,7 +322,7 @@ export function ContaDashboard(props: Props) {
                   fortalecer sua prática na cozinha e na gestão. Conheça os planos.
                 </p>
                 <div className="mt-4 flex flex-wrap gap-3">
-                  <Button href="/clube" size="md">
+                  <Button href="/mais-hce" size="md">
                     Ver planos do +HCE
                   </Button>
                 </div>
@@ -367,7 +367,7 @@ export function ContaDashboard(props: Props) {
                 )}
               </p>
               <div className="mt-6 flex flex-wrap justify-center gap-3">
-                <Button href="/clube" size="md" variant="blue">
+                <Button href="/mais-hce" size="md" variant="blue">
                   Conhecer o +HCE
                 </Button>
                 <Button

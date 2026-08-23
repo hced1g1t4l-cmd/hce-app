@@ -242,7 +242,7 @@ export default async function ArtigoPage({
               para quem quer ir além.
             </p>
             <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button href="/clube" size="lg">
+              <Button href="/mais-hce" size="lg">
                 Conhecer o +HCE
               </Button>
               <Button

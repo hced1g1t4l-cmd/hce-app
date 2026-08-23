@@ -107,7 +107,7 @@ const GRUPOS: Grupo[] = [
           <>
             Serão quatro planos, do Gratuito ao Premium, com opção avulsa e anual
             (com desconto). Veja os detalhes na página do{" "}
-            <Link href="/clube" className={linkClasses}>
+            <Link href="/mais-hce" className={linkClasses}>
               +HCE
             </Link>
             .

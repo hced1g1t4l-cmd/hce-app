@@ -118,7 +118,7 @@ export default async function Home() {
               gastronomia, pela educação e pelo desenvolvimento de pessoas.
             </p>
             <div className="mt-2 flex flex-col gap-3 sm:flex-row">
-              <Button href="/clube" size="lg" className="group">
+              <Button href="/mais-hce" size="lg" className="group">
                 Conheça o +HCE
                 <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
               </Button>
@@ -282,7 +282,7 @@ export default async function Home() {
                 ))}
               </ul>
               <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row lg:justify-start">
-                <Button href="/clube" size="lg" className="group">
+                <Button href="/mais-hce" size="lg" className="group">
                   Ver planos do +HCE
                   <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
                 </Button>

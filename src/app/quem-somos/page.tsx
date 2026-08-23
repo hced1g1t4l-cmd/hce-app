@@ -288,7 +288,7 @@ export default function QuemSomosPage() {
                 Falar com a HCE
               </Button>
               <Button
-                href="/clube"
+                href="/mais-hce"
                 size="lg"
                 variant="secondary"
                 className="border-brand-amber/70 text-brand-amber hover:border-brand-amber hover:bg-brand-amber hover:text-brand-blue-deep"

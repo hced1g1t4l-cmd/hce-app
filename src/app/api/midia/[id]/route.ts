@@ -51,7 +51,7 @@ export async function GET(
     return NextResponse.redirect(new URL(`/entrar?redirect=${back}`, req.url), 302);
   }
   if (!planoAtende(user.plano, asset.planoMinimo)) {
-    return NextResponse.redirect(new URL("/clube", req.url), 302);
+    return NextResponse.redirect(new URL("/mais-hce", req.url), 302);
   }
   if (!r2Configured()) {
     return NextResponse.json(
