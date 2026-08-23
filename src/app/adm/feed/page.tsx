@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/adm";
 import { prisma } from "@/lib/db";
-import { AdmHeader } from "@/components/adm/adm-header";
 import { ArtigosTabela, type ArtigoRow } from "@/components/adm/artigos-tabela";
 import { contagemZero, type ReacaoTipo } from "@/lib/reacoes";
 
@@ -107,8 +106,6 @@ export default async function AdmFeedPage() {
 
   return (
     <main className="min-h-screen bg-surface-soft">
-      <AdmHeader active="feed" />
-
       <div className="mx-auto max-w-7xl px-6 py-8">
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <div>

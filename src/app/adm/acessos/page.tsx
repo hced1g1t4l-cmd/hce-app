@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getAdmin } from "@/lib/adm";
-import { AdmHeader } from "@/components/adm/adm-header";
 import { AcessosChart } from "@/components/adm/acessos-chart";
 import { AcessosMapa } from "@/components/adm/acessos-mapa";
 import {
@@ -39,8 +38,6 @@ export default async function AdmAcessosPage({
 
   return (
     <main className="min-h-screen bg-surface-soft">
-      <AdmHeader active="acessos" />
-
       <div className="mx-auto max-w-7xl px-6 py-8">
         <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
           <div>

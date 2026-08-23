@@ -1,6 +1,5 @@
 import { requireAdmin } from "@/lib/adm";
 import { prisma } from "@/lib/db";
-import { AdmHeader } from "@/components/adm/adm-header";
 import {
   DepoimentosEditor,
   type DepoimentoRow,
@@ -41,8 +40,6 @@ export default async function AdmDepoimentosPage() {
 
   return (
     <main className="min-h-screen bg-surface-soft">
-      <AdmHeader active="depoimentos" />
-
       <div className="mx-auto max-w-6xl px-6 py-8">
         <div className="mb-5">
           <h1 className="font-display text-xl font-bold text-brand-blue">

@@ -1,6 +1,5 @@
 import { requireAdmin } from "@/lib/adm";
 import { prisma } from "@/lib/db";
-import { AdmHeader } from "@/components/adm/adm-header";
 import { BacklogPainel, type BacklogRow } from "@/components/adm/backlog-painel";
 import {
   codigoBacklog,
@@ -71,7 +70,6 @@ export default async function AdmBacklogPage() {
 
   return (
     <main className="min-h-screen bg-surface-soft">
-      <AdmHeader active="backlog" />
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
         <div className="mb-6">
           <h1 className="font-display text-2xl font-bold text-brand-blue">

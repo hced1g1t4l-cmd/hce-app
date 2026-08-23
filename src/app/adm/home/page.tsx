@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { getAdmin } from "@/lib/adm";
 import { prisma } from "@/lib/db";
-import { AdmHeader } from "@/components/adm/adm-header";
 import { PLANOS, PLANO_LABEL, type Plano } from "@/lib/planos";
 import { cn } from "@/lib/cn";
 
@@ -58,8 +57,6 @@ export default async function AdmHomePage() {
 
   return (
     <main className="min-h-screen bg-surface-soft">
-      <AdmHeader active="home" />
-
       <div className="mx-auto max-w-7xl px-6 py-8">
         <div className="mb-5">
           <h1 className="font-display text-xl font-bold text-brand-blue">

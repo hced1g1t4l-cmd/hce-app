@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getAdmin } from "@/lib/adm";
-import { AdmHeader } from "@/components/adm/adm-header";
 import { ArtigoEditor } from "@/components/adm/artigo-editor";
 
 export const dynamic = "force-dynamic";
@@ -15,7 +14,6 @@ export default async function NovoArtigoPage() {
 
   return (
     <main className="min-h-screen bg-surface-soft">
-      <AdmHeader active="feed" />
       <div className="mx-auto max-w-7xl px-6 py-8">
         <div className="mb-5">
           <Link

@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { getAdmin } from "@/lib/adm";
 import { prisma } from "@/lib/db";
-import { AdmHeader } from "@/components/adm/adm-header";
 import { LeadObs, LeadDelete } from "@/components/adm/lead-acoes";
 import { ExportButtons } from "@/components/adm/export-buttons";
 import { capitalizarNome } from "@/lib/nome";
@@ -34,8 +33,6 @@ export default async function AdmPage() {
 
   return (
     <main className="min-h-screen bg-surface-soft">
-      <AdmHeader active="leads" />
-
       <div className="mx-auto max-w-7xl px-6 py-8">
         <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
           <div>

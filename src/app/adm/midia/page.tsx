@@ -3,7 +3,6 @@ import { getAdmin } from "@/lib/adm";
 import { prisma } from "@/lib/db";
 import { r2Configured } from "@/lib/storage";
 import { PLANO_LABEL, type Plano } from "@/lib/planos";
-import { AdmHeader } from "@/components/adm/adm-header";
 import { MidiaUploader } from "@/components/adm/midia-uploader";
 import { MidiaAcoes } from "@/components/adm/midia-acoes";
 
@@ -44,8 +43,6 @@ export default async function AdmMidiaPage() {
 
   return (
     <main className="min-h-screen bg-surface-soft">
-      <AdmHeader active="midia" />
-
       <div className="mx-auto max-w-7xl px-6 py-8">
         <div className="mb-5">
           <h1 className="font-display text-xl font-bold text-brand-blue">
