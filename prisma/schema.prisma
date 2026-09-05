@@ -31,6 +31,12 @@ model User {
   telefone           String?
   aceitaComunicacoes Boolean @default(false) // consentimento LGPD p/ novidades
   plano              String  @default("free") // free | essencial | profissional | premium
+  // Assinatura paga (Clube +HCE via Asaas, BAC_143). statusAssinatura reflete o
+  // ciclo de cobranca; asaasCustomerId reaproveita o mesmo cliente no provedor
+  // entre assinaturas. O `plano` acima continua sendo a fonte do gating; ele so
+  // "sobe" quando ha assinatura ativa e "cai" para free ao cancelar/inadimplir.
+  statusAssinatura   String  @default("nenhuma") // nenhuma | trial | ativa | inadimplente | cancelada
+  asaasCustomerId    String? @unique
   ultimoAcesso       DateTime? // atualizado quando a pessoa navega logada (throttle ~10min)
   // Perfil editavel pela pessoa em /conta.
   bio                String? // pequena apresentacao
@@ -54,6 +60,8 @@ model User {
   reacoes       ArtigoReacao[]
   comentarios   Comentario[]
   feedAcessos   FeedAcesso[]
+  assinaturas   Assinatura[]
+  pagamentos    Pagamento[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -455,4 +463,78 @@ model RateLimitBucket {
   resetAt DateTime
 
   @@index([resetAt])
+}
+
+// ===========================================================================
+// Assinaturas e pagamentos do Clube +HCE (gateway Asaas — BAC_143/144/145).
+// Valores monetarios em CENTAVOS (Int) para evitar erros de ponto flutuante.
+// O provedor guarda o "id externo" (asaas*Id); nunca guardamos dados de cartao
+// (tokenizacao fica no provedor, PCI-DSS). Ver estudo em HCE/docs/.
+// ===========================================================================
+
+// Assinatura recorrente de um usuario a um plano pago.
+// status: trial | ativa | inadimplente | cancelada.
+model Assinatura {
+  id                  String    @id @default(cuid())
+  userId              String
+  plano               String // chave interna do plano: essencial | profissional
+  provedor            String    @default("asaas")
+  asaasCustomerId     String? // cliente no provedor (denormalizado do User)
+  asaasSubscriptionId String?   @unique // id da assinatura no provedor
+  status              String    @default("trial")
+  metodo              String? // CREDIT_CARD | PIX | BOLETO
+  valorCentavos       Int? // valor do ciclo (auditoria)
+  inicioEm            DateTime  @default(now())
+  fimPeriodoAtual     DateTime? // ate quando o acesso esta pago
+  canceladaEm         DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pagamentos Pagamento[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+// Um lancamento de cobranca (uma fatura). Ligado a uma assinatura quando
+// recorrente; userId sempre preenchido para consulta rapida no /adm.
+// status espelha o provedor: PENDING | CONFIRMED | RECEIVED | OVERDUE | REFUNDED...
+model Pagamento {
+  id             String    @id @default(cuid())
+  assinaturaId   String?
+  userId         String
+  provedor       String    @default("asaas")
+  asaasPaymentId String    @unique // id da cobranca no provedor (idempotencia)
+  valorCentavos  Int
+  metodo         String? // CREDIT_CARD | PIX | BOLETO
+  status         String
+  pagoEm         DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  assinatura Assinatura? @relation(fields: [assinaturaId], references: [id], onDelete: SetNull)
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  nota       NotaFiscal?
+
+  @@index([userId, createdAt])
+  @@index([assinaturaId])
+  @@index([status])
+}
+
+// Nota fiscal de servico (NFS-e) emitida para um pagamento aprovado.
+// status: pendente | emitida | erro | cancelada. Uma nota por pagamento.
+model NotaFiscal {
+  id          String    @id @default(cuid())
+  pagamentoId String    @unique
+  asaasNotaId String? // id da NF no provedor
+  numero      String? // numero da nota emitida
+  status      String    @default("pendente")
+  pdfUrl      String? // link do PDF (enviado por e-mail ao cliente)
+  xmlUrl      String?
+  emitidaEm   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  pagamento Pagamento @relation(fields: [pagamentoId], references: [id], onDelete: Cascade)
 }
