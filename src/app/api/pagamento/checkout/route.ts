@@ -14,6 +14,7 @@ import {
 } from "@/lib/planos";
 import {
   asaasConfigurado,
+  asaasConfigurarNfseAssinatura,
   asaasCriarAssinatura,
   asaasCriarCliente,
   asaasErroDescricao,
@@ -22,6 +23,7 @@ import {
   asaasPixQrCode,
   type AsaasBillingType,
 } from "@/lib/asaas";
+import { nfseConfig, nfseHabilitado } from "@/lib/nfse";
 
 // Checkout do Clube +HCE (BAC_143, Fase 2). Cria/reusa o cliente no Asaas,
 // abre a assinatura recorrente (Pix ou cartao) e devolve ao front o meio de
@@ -172,6 +174,31 @@ export async function POST(req: Request) {
       where: { id: user.id },
       data: { statusAssinatura: "trial" },
     });
+
+    // 3.1) NFS-e automatica por cobranca (BAC_144) — so quando ligada por flag
+    // e com os dados fiscais definidos. Best-effort: nunca quebra o checkout.
+    if (nfseHabilitado()) {
+      const c = nfseConfig();
+      await asaasConfigurarNfseAssinatura(sub.id, {
+        municipalServiceCode: c.serviceCode,
+        municipalServiceName: c.serviceName,
+        deductions: c.deductions,
+        effectiveDatePeriod: "ON_PAYMENT_CONFIRMATION",
+        receivedOnly: false,
+        observations: c.observations || undefined,
+        taxes: {
+          retainIss: c.retainIss,
+          iss: c.iss,
+          cofins: 0,
+          csll: 0,
+          inss: 0,
+          ir: 0,
+          pis: 0,
+        },
+      }).catch((e) => {
+        console.error("[checkout] falha ao configurar NFS-e", e);
+      });
+    }
 
     // 4) 1a cobranca gerada pela assinatura (Pix: QR; cartao: fatura hospedada).
     const pagamentos = await asaasPagamentosDaAssinatura(sub.id);

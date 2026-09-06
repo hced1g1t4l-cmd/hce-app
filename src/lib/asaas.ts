@@ -211,6 +211,52 @@ export async function asaasPagamentosDaAssinatura(
   return Array.isArray(data) ? data : [];
 }
 
+export type AsaasInvoiceSettings = {
+  municipalServiceCode?: string;
+  municipalServiceName?: string;
+  deductions?: number;
+  effectiveDatePeriod?:
+    | "ON_PAYMENT_CONFIRMATION"
+    | "ON_PAYMENT_DUE_DATE"
+    | "BEFORE_PAYMENT_DUE_DATE"
+    | "ON_DUE_DATE";
+  receivedOnly?: boolean;
+  observations?: string;
+  taxes?: {
+    retainIss?: boolean;
+    iss?: number;
+    cofins?: number;
+    csll?: number;
+    inss?: number;
+    ir?: number;
+    pis?: number;
+  };
+};
+
+/**
+ * Configura a emissão automática de NFS-e para cada cobrança de uma assinatura.
+ * Depois disso, o Asaas emite a nota sozinho a cada pagamento (conforme
+ * `effectiveDatePeriod`) e dispara eventos INVOICE_* no webhook.
+ */
+export async function asaasConfigurarNfseAssinatura(
+  subscriptionId: string,
+  settings: AsaasInvoiceSettings,
+): Promise<boolean> {
+  const res = await asaasFetch(
+    `/subscriptions/${subscriptionId}/invoiceSettings`,
+    { method: "POST", body: JSON.stringify(settings) },
+  );
+  if (!res.ok) {
+    const body = await parseJson(res);
+    throw new AsaasError(
+      "Falha ao configurar NFS-e da assinatura",
+      res.status,
+      body,
+    );
+  }
+  return true;
+}
+
 /** Cancela (exclui) uma assinatura no Asaas — cessa cobrancas futuras. */
 export async function asaasCancelarAssinatura(
   subscriptionId: string,

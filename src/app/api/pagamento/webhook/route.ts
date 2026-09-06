@@ -47,6 +47,12 @@ const EVENTOS_SUB_ENCERRA = new Set([
   "SUBSCRIPTION_DELETED",
   "SUBSCRIPTION_INACTIVATED",
 ]);
+// Eventos de nota fiscal (NFS-e) -> status local da NotaFiscal.
+const EVENTOS_NOTA: Record<string, "emitida" | "erro" | "cancelada"> = {
+  INVOICE_AUTHORIZED: "emitida",
+  INVOICE_ERROR: "erro",
+  INVOICE_CANCELED: "cancelada",
+};
 
 type AsaasWebhookPayment = {
   id: string;
@@ -60,10 +66,22 @@ type AsaasWebhookPayment = {
   confirmedDate?: string;
 };
 
+type AsaasWebhookInvoice = {
+  id: string;
+  payment?: string;
+  subscription?: string;
+  customer?: string;
+  status?: string;
+  number?: string;
+  pdfUrl?: string;
+  xmlUrl?: string;
+};
+
 type AsaasWebhookBody = {
   event?: string;
   payment?: AsaasWebhookPayment;
   subscription?: { id?: string };
+  invoice?: AsaasWebhookInvoice;
 };
 
 function addMonths(date: Date, n: number): Date {
@@ -91,6 +109,12 @@ export async function POST(req: Request) {
   const pag = body.payment;
 
   try {
+    // --- Eventos de nota fiscal (NFS-e): grava/atualiza a NotaFiscal. ---
+    if (evento.startsWith("INVOICE_")) {
+      await processarNota(body.invoice, evento);
+      return NextResponse.json({ ok: true });
+    }
+
     // --- Eventos de assinatura (sem payment): encerramento direto. ---
     if (!pag && EVENTOS_SUB_ENCERRA.has(evento)) {
       const subId = body.subscription?.id;
@@ -279,6 +303,93 @@ async function enviarBoasVindas(
   await sendEmail({
     to: u.email,
     subject: `Bem-vindo ao Clube +HCE — plano ${planoLabel}`,
+    html,
+  });
+}
+
+// Processa eventos INVOICE_* (NFS-e): grava/atualiza a NotaFiscal ligada ao
+// Pagamento e, quando emitida, envia a nota (PDF) por e-mail. Só ocorre quando
+// a emissão automática está ligada (flag) — sem isso, o Asaas não gera notas.
+async function processarNota(
+  inv: AsaasWebhookInvoice | undefined,
+  evento: string,
+): Promise<void> {
+  if (!inv?.id) return;
+  const status = EVENTOS_NOTA[evento] ?? "pendente";
+
+  // Localiza a cobrança correspondente para ligar a nota (1:1 com Pagamento).
+  const pagamento = inv.payment
+    ? await prisma.pagamento.findUnique({
+        where: { asaasPaymentId: inv.payment },
+      })
+    : null;
+  if (!pagamento) {
+    console.warn("[webhook] nota sem pagamento conhecido", inv.id, evento);
+    return;
+  }
+
+  await prisma.notaFiscal.upsert({
+    where: { pagamentoId: pagamento.id },
+    create: {
+      pagamentoId: pagamento.id,
+      asaasNotaId: inv.id,
+      numero: inv.number ?? null,
+      status,
+      pdfUrl: inv.pdfUrl ?? null,
+      xmlUrl: inv.xmlUrl ?? null,
+      emitidaEm: status === "emitida" ? new Date() : null,
+    },
+    update: {
+      asaasNotaId: inv.id,
+      ...(inv.number ? { numero: inv.number } : {}),
+      status,
+      ...(inv.pdfUrl ? { pdfUrl: inv.pdfUrl } : {}),
+      ...(inv.xmlUrl ? { xmlUrl: inv.xmlUrl } : {}),
+      ...(status === "emitida" ? { emitidaEm: new Date() } : {}),
+    },
+  });
+
+  if (status === "emitida" && inv.pdfUrl) {
+    await enviarNota(pagamento.userId, inv.pdfUrl, inv.number ?? null).catch(
+      () => null,
+    );
+  }
+}
+
+// E-mail com a nota fiscal (PDF) ao cliente.
+async function enviarNota(
+  userId: string,
+  pdfUrl: string,
+  numero: string | null,
+): Promise<void> {
+  if (!emailConfigured()) return;
+  const u = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { email: true, name: true },
+  });
+  if (!u?.email) return;
+  const primeiro = (u.name ?? "").trim().split(" ")[0] || "Olá";
+
+  const html = `
+  <div style="font-family:Arial,Helvetica,sans-serif;max-width:520px;margin:0 auto;color:#1f2937">
+    <h1 style="color:#0b2a4a;font-size:20px;margin:0 0 12px">Sua nota fiscal, ${primeiro}</h1>
+    <p style="line-height:1.6;margin:0 0 12px">
+      A nota fiscal ${numero ? `nº <strong>${numero}</strong> ` : ""}referente à sua
+      assinatura do Clube +HCE foi emitida.
+    </p>
+    <p style="margin:0 0 24px">
+      <a href="${pdfUrl}" style="background:#f4b400;color:#0b2a4a;text-decoration:none;font-weight:bold;padding:12px 20px;border-radius:9999px;display:inline-block">
+        Baixar a nota (PDF)
+      </a>
+    </p>
+    <p style="color:#6b7280;font-size:12px;line-height:1.6;margin:0">
+      Você também encontra suas notas em Minha conta &rsaquo; Pagamento.
+    </p>
+  </div>`;
+
+  await sendEmail({
+    to: u.email,
+    subject: `Nota fiscal — Clube +HCE${numero ? ` (nº ${numero})` : ""}`,
     html,
   });
 }
