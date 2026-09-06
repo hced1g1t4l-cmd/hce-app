@@ -76,3 +76,161 @@ export async function asaasFetch(
     headers: { ...asaasHeaders(), ...(init?.headers ?? {}) },
   });
 }
+
+// ---------------------------------------------------------------------------
+// Fase 2 — operacoes de checkout (cliente, assinatura, cobranca, Pix).
+//
+// Cada helper e um wrapper fino sobre `asaasFetch`, com tipos minimos do que o
+// app realmente usa. Em erro HTTP lancamos `AsaasError` carregando status +
+// corpo, para a rota decidir a mensagem ao usuario sem vazar detalhes crus.
+// ---------------------------------------------------------------------------
+
+export type AsaasBillingType = "PIX" | "CREDIT_CARD" | "BOLETO" | "UNDEFINED";
+export type AsaasCycle =
+  | "WEEKLY"
+  | "BIWEEKLY"
+  | "MONTHLY"
+  | "QUARTERLY"
+  | "SEMIANNUALLY"
+  | "YEARLY";
+
+/** Erro de chamada ao Asaas: guarda status HTTP e corpo para diagnostico. */
+export class AsaasError extends Error {
+  status: number;
+  body: unknown;
+  constructor(message: string, status: number, body: unknown) {
+    super(message);
+    this.name = "AsaasError";
+    this.status = status;
+    this.body = body;
+  }
+}
+
+async function parseJson(res: Response): Promise<unknown> {
+  const text = await res.text();
+  try {
+    return text ? JSON.parse(text) : null;
+  } catch {
+    return text;
+  }
+}
+
+/** Extrai a 1a descricao de erro do Asaas ({ errors: [{ description }] }). */
+export function asaasErroDescricao(body: unknown): string | null {
+  if (
+    body &&
+    typeof body === "object" &&
+    "errors" in body &&
+    Array.isArray((body as { errors: unknown[] }).errors)
+  ) {
+    const first = (body as { errors: Array<{ description?: string }> })
+      .errors[0];
+    return first?.description ?? null;
+  }
+  return null;
+}
+
+export type AsaasCustomer = {
+  id: string;
+  name?: string;
+  email?: string;
+  cpfCnpj?: string;
+};
+
+/** Cria (ou reidentifica) um cliente no Asaas. cpfCnpj so digitos. */
+export async function asaasCriarCliente(input: {
+  name: string;
+  email: string;
+  cpfCnpj: string;
+  mobilePhone?: string;
+  externalReference?: string;
+}): Promise<AsaasCustomer> {
+  const res = await asaasFetch("/customers", {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
+  const body = await parseJson(res);
+  if (!res.ok) {
+    throw new AsaasError("Falha ao criar cliente no Asaas", res.status, body);
+  }
+  return body as AsaasCustomer;
+}
+
+export type AsaasSubscription = {
+  id: string;
+  status: string;
+  customer: string;
+  value: number;
+  cycle: string;
+  billingType: string;
+};
+
+/** Cria uma assinatura recorrente. `value` em reais; `nextDueDate` YYYY-MM-DD. */
+export async function asaasCriarAssinatura(input: {
+  customer: string;
+  billingType: AsaasBillingType;
+  value: number;
+  nextDueDate: string;
+  cycle: AsaasCycle;
+  description: string;
+  externalReference?: string;
+}): Promise<AsaasSubscription> {
+  const res = await asaasFetch("/subscriptions", {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
+  const body = await parseJson(res);
+  if (!res.ok) {
+    throw new AsaasError("Falha ao criar assinatura no Asaas", res.status, body);
+  }
+  return body as AsaasSubscription;
+}
+
+export type AsaasPayment = {
+  id: string;
+  status: string;
+  value: number;
+  billingType: string;
+  dueDate: string;
+  invoiceUrl?: string;
+  subscription?: string;
+};
+
+/** Lista as cobrancas geradas por uma assinatura (a 1a e a do 1o ciclo). */
+export async function asaasPagamentosDaAssinatura(
+  subscriptionId: string,
+): Promise<AsaasPayment[]> {
+  const res = await asaasFetch(`/subscriptions/${subscriptionId}/payments`, {
+    method: "GET",
+  });
+  const body = await parseJson(res);
+  if (!res.ok) {
+    throw new AsaasError("Falha ao ler cobrancas da assinatura", res.status, body);
+  }
+  const data = (body as { data?: AsaasPayment[] })?.data;
+  return Array.isArray(data) ? data : [];
+}
+
+export type AsaasPixQr = {
+  encodedImage: string; // PNG em base64 (sem prefixo data:)
+  payload: string; // copia-e-cola
+  expirationDate?: string;
+};
+
+/** QR Pix de uma cobranca. Retorna null se ainda nao disponivel. */
+export async function asaasPixQrCode(
+  paymentId: string,
+): Promise<AsaasPixQr | null> {
+  const res = await asaasFetch(`/payments/${paymentId}/pixQrCode`, {
+    method: "GET",
+  });
+  if (!res.ok) return null;
+  const body = await parseJson(res);
+  const qr = body as Partial<AsaasPixQr>;
+  if (!qr?.encodedImage || !qr?.payload) return null;
+  return {
+    encodedImage: qr.encodedImage,
+    payload: qr.payload,
+    expirationDate: qr.expirationDate,
+  };
+}
