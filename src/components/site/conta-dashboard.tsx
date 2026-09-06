@@ -11,6 +11,22 @@ import { planoAtende } from "@/lib/planos";
 
 type PerfilInit = React.ComponentProps<typeof PerfilForm>["init"];
 
+type AssinaturaResumo = {
+  plano: string;
+  planoLabel: string;
+  status: string;
+  metodoLabel: string;
+  valor: string;
+  proximaCobranca: string;
+};
+
+type PagamentoItem = {
+  data: string;
+  valor: string;
+  metodo: string;
+  status: string;
+};
+
 type Props = {
   nome: string | null;
   email: string | null;
@@ -19,8 +35,30 @@ type Props = {
   avatar: string | null;
   emailVerified: boolean;
   membroDesde: string | null;
+  statusAssinatura: string;
+  assinatura: AssinaturaResumo | null;
+  pagamentos: PagamentoItem[];
   perfil: PerfilInit;
 };
+
+// Rótulo + cor do status da assinatura.
+function statusAssinaturaInfo(s: string): { label: string; cls: string } {
+  switch (s) {
+    case "ativa":
+      return { label: "Ativa", cls: "bg-emerald-100 text-emerald-700" };
+    case "trial":
+      return {
+        label: "Aguardando pagamento",
+        cls: "bg-brand-amber/25 text-brand-amber-dark",
+      };
+    case "inadimplente":
+      return { label: "Pagamento em atraso", cls: "bg-red-100 text-red-700" };
+    case "cancelada":
+      return { label: "Cancelada", cls: "bg-surface-soft text-muted" };
+    default:
+      return { label: "Gratuito", cls: "bg-surface-soft text-muted" };
+  }
+}
 
 type SecaoId = "visao" | "perfil" | "plano" | "pagamento" | "seguranca";
 
@@ -118,11 +156,52 @@ function Icone({ children }: { children: React.ReactNode }) {
 }
 
 export function ContaDashboard(props: Props) {
-  const { nome, email, plano, planoLabel, avatar, emailVerified, membroDesde, perfil } =
-    props;
+  const {
+    nome,
+    email,
+    plano,
+    planoLabel,
+    avatar,
+    emailVerified,
+    membroDesde,
+    statusAssinatura,
+    assinatura,
+    pagamentos,
+    perfil,
+  } = props;
   const [secao, setSecao] = useState<SecaoId>("visao");
+  const [cancelando, setCancelando] = useState(false);
+  const [cancelErro, setCancelErro] = useState<string | null>(null);
   const nomeCap = capitalizarNome(nome) || "—";
   const primeiro = nomeCap.split(" ")[0];
+  const statusInfo = statusAssinaturaInfo(statusAssinatura);
+  const temAssinaturaAtiva =
+    !!assinatura && assinatura.status !== "cancelada";
+
+  async function cancelarAssinatura() {
+    if (
+      !window.confirm(
+        "Cancelar sua assinatura? O acesso volta ao plano Gratuito agora.",
+      )
+    ) {
+      return;
+    }
+    setCancelando(true);
+    setCancelErro(null);
+    try {
+      const res = await fetch("/api/pagamento/cancelar", { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setCancelErro(data?.error ?? "Não foi possível cancelar.");
+        return;
+      }
+      window.location.reload();
+    } catch {
+      setCancelErro("Falha de conexão. Tente novamente.");
+    } finally {
+      setCancelando(false);
+    }
+  }
 
   return (
     <div className="grid gap-6 lg:grid-cols-[264px_1fr] lg:gap-8">
@@ -281,8 +360,10 @@ export function ContaDashboard(props: Props) {
                     {planoLabel}
                   </p>
                 </div>
-                <span className="rounded-full bg-brand-amber/25 px-4 py-1.5 text-sm font-semibold text-brand-amber-dark">
-                  Ativo
+                <span
+                  className={`rounded-full px-4 py-1.5 text-sm font-semibold ${statusInfo.cls}`}
+                >
+                  {statusInfo.label}
                 </span>
               </div>
 
@@ -326,54 +407,109 @@ export function ContaDashboard(props: Props) {
         )}
 
         {secao === "pagamento" && (
-          <Painel titulo="Pagamento" subtitulo="Assinaturas e cobranças ficarão aqui.">
-            <div className="flex flex-col items-center rounded-2xl border border-dashed border-line bg-surface-soft px-6 py-12 text-center">
-              <span className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-amber/25 text-brand-amber-dark">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="h-7 w-7"
-                  aria-hidden="true"
-                >
-                  <path d="M14.7 6.3a2 2 0 0 1 2.8 0l.2.2a2 2 0 0 1 0 2.8l-8.4 8.4-3.5.7.7-3.5 8.2-8.6Z" />
-                  <path d="M12 21h8" />
-                </svg>
-              </span>
-              <span className="mt-4 rounded-full bg-brand-amber/25 px-3 py-1 text-xs font-semibold text-brand-amber-dark uppercase">
-                Em construção
-              </span>
-              <p className="mt-4 max-w-md leading-relaxed text-muted">
-                {plano === "free" ? (
-                  <>
-                    Você está no plano <strong className="text-ink">Gratuito</strong>{" "}
-                    — não há nenhuma cobrança. Quando os planos pagos do +HCE forem
-                    lançados, você poderá assinar e gerenciar seus pagamentos por aqui.
-                  </>
-                ) : (
-                  <>
-                    A gestão de pagamentos e faturas do seu plano estará disponível
-                    em breve nesta área.
-                  </>
+          <Painel titulo="Pagamento" subtitulo="Sua assinatura, faturas e recibos.">
+            {temAssinaturaAtiva && assinatura ? (
+              <div className="rounded-2xl border border-line bg-surface-soft p-6">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <p className="text-xs tracking-wide text-muted uppercase">
+                      Assinatura
+                    </p>
+                    <p className="mt-1 font-display text-2xl font-bold text-brand-blue">
+                      {assinatura.planoLabel}
+                    </p>
+                  </div>
+                  <span
+                    className={`rounded-full px-4 py-1.5 text-sm font-semibold ${statusInfo.cls}`}
+                  >
+                    {statusInfo.label}
+                  </span>
+                </div>
+
+                <div className="mt-5 grid gap-4 sm:grid-cols-3">
+                  <Dado rotulo="Valor" valor={`${assinatura.valor}/mês`} />
+                  <Dado rotulo="Método" valor={assinatura.metodoLabel} />
+                  <Dado
+                    rotulo="Próxima cobrança"
+                    valor={assinatura.proximaCobranca}
+                  />
+                </div>
+
+                {assinatura.status === "inadimplente" && (
+                  <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    Há uma cobrança em atraso. Regularize o pagamento para manter
+                    o acesso.
+                  </p>
                 )}
-              </p>
-              <div className="mt-6 flex flex-wrap justify-center gap-3">
-                <Button href="/mais-hce" size="md" variant="blue">
-                  Conhecer o +HCE
-                </Button>
-                <Button
-                  href="/avise-me"
-                  size="md"
-                  variant="ghost"
-                  className="border border-brand-blue/25"
-                >
-                  Quero ser avisado
-                </Button>
+
+                {cancelErro && (
+                  <p
+                    role="alert"
+                    className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+                  >
+                    {cancelErro}
+                  </p>
+                )}
+
+                <div className="mt-6">
+                  <button
+                    type="button"
+                    onClick={cancelarAssinatura}
+                    disabled={cancelando}
+                    className="rounded-full border border-red-200 px-5 py-2.5 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {cancelando ? "Cancelando…" : "Cancelar assinatura"}
+                  </button>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="rounded-2xl border border-brand-blue/15 bg-brand-blue p-6 text-white">
+                <p className="font-display text-lg font-bold text-brand-amber">
+                  {assinatura?.status === "cancelada"
+                    ? "Sua assinatura está cancelada"
+                    : "Você está no plano Gratuito"}
+                </p>
+                <p className="mt-2 leading-relaxed text-white/90">
+                  Assine o +HCE para desbloquear receitas, fichas técnicas,
+                  e-books e conteúdos exclusivos.
+                </p>
+                <div className="mt-4">
+                  <Button href="/mais-hce" size="md">
+                    Ver planos do +HCE
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {pagamentos.length > 0 && (
+              <div className="mt-8 border-t border-line pt-6">
+                <h3 className="font-display text-sm font-bold tracking-wide text-brand-blue uppercase">
+                  Histórico de cobranças
+                </h3>
+                <div className="mt-4 overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-left text-muted">
+                        <th className="pb-2 font-medium">Data</th>
+                        <th className="pb-2 font-medium">Valor</th>
+                        <th className="pb-2 font-medium">Método</th>
+                        <th className="pb-2 font-medium">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {pagamentos.map((p, i) => (
+                        <tr key={i} className="border-t border-line">
+                          <td className="py-2.5 text-ink">{p.data}</td>
+                          <td className="py-2.5 text-ink">{p.valor}</td>
+                          <td className="py-2.5 text-ink">{p.metodo}</td>
+                          <td className="py-2.5 text-ink">{p.status}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
           </Painel>
         )}
 

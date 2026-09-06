@@ -211,6 +211,22 @@ export async function asaasPagamentosDaAssinatura(
   return Array.isArray(data) ? data : [];
 }
 
+/** Cancela (exclui) uma assinatura no Asaas — cessa cobrancas futuras. */
+export async function asaasCancelarAssinatura(
+  subscriptionId: string,
+): Promise<boolean> {
+  const res = await asaasFetch(`/subscriptions/${subscriptionId}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) {
+    const body = await parseJson(res);
+    // 404 = ja nao existe no provedor: tratamos como sucesso idempotente.
+    if (res.status === 404) return true;
+    throw new AsaasError("Falha ao cancelar assinatura", res.status, body);
+  }
+  return true;
+}
+
 export type AsaasPixQr = {
   encodedImage: string; // PNG em base64 (sem prefixo data:)
   payload: string; // copia-e-cola

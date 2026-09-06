@@ -33,6 +33,7 @@ export default async function ContaPage() {
       image: true,
       createdAt: true,
       emailVerified: true,
+      statusAssinatura: true,
       bio: true,
       handle: true,
       telefone: true,
@@ -57,6 +58,67 @@ export default async function ContaPage() {
       }).format(perfil.createdAt)
     : null;
 
+  // Assinatura mais recente + histórico de cobranças (área do assinante, Fase 5).
+  const [assinaturaDb, pagamentosDb] = await Promise.all([
+    prisma.assinatura.findFirst({
+      where: { userId: user.id },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.pagamento.findMany({
+      where: { userId: user.id },
+      orderBy: { createdAt: "desc" },
+      take: 12,
+    }),
+  ]);
+
+  const brl = (c: number | null | undefined) =>
+    typeof c === "number"
+      ? (c / 100).toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        })
+      : "—";
+  const dataFmt = (d: Date | null | undefined) =>
+    d ? new Intl.DateTimeFormat("pt-BR").format(d) : "—";
+  const metodoLabel = (m: string | null) =>
+    m === "PIX"
+      ? "Pix"
+      : m === "CREDIT_CARD"
+        ? "Cartão"
+        : m === "BOLETO"
+          ? "Boleto"
+          : (m ?? "—");
+  const statusPagLabel = (s: string) =>
+    (
+      ({
+        PENDING: "Pendente",
+        CONFIRMED: "Confirmado",
+        RECEIVED: "Recebido",
+        RECEIVED_IN_CASH: "Recebido",
+        OVERDUE: "Vencido",
+        REFUNDED: "Estornado",
+        REFUND_IN_PROGRESS: "Estorno em andamento",
+      }) as Record<string, string>
+    )[s] ?? s;
+
+  const assinatura = assinaturaDb
+    ? {
+        plano: assinaturaDb.plano,
+        planoLabel: PLANO_LABEL[assinaturaDb.plano] ?? assinaturaDb.plano,
+        status: assinaturaDb.status,
+        metodoLabel: metodoLabel(assinaturaDb.metodo),
+        valor: brl(assinaturaDb.valorCentavos),
+        proximaCobranca: dataFmt(assinaturaDb.fimPeriodoAtual),
+      }
+    : null;
+
+  const pagamentos = pagamentosDb.map((p) => ({
+    data: dataFmt(p.pagoEm ?? p.createdAt),
+    valor: brl(p.valorCentavos),
+    metodo: metodoLabel(p.metodo),
+    status: statusPagLabel(p.status),
+  }));
+
   return (
     <>
       <SiteHeader />
@@ -70,6 +132,9 @@ export default async function ContaPage() {
             avatar={perfil?.image ?? null}
             emailVerified={Boolean(perfil?.emailVerified)}
             membroDesde={membroDesde}
+            statusAssinatura={perfil?.statusAssinatura ?? "nenhuma"}
+            assinatura={assinatura}
+            pagamentos={pagamentos}
             perfil={{
               bio: perfil?.bio ?? "",
               handle: perfil?.handle ?? "",

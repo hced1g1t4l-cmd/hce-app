@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { webhookTokenValido } from "@/lib/asaas";
+import { appUrl, emailConfigured, sendEmail } from "@/lib/email";
+import { PLANO_LABEL, type Plano } from "@/lib/planos";
 
 // Webhook do Asaas (BAC_143, Fase 3). Mantem o acesso em dia com o pagamento,
 // automaticamente. O Asaas chama esta rota a cada evento de cobranca/assinatura.
@@ -122,6 +124,10 @@ export async function POST(req: Request) {
     }
 
     const confirma = EVENTOS_CONFIRMA.has(evento);
+    // 1a ativação = estava aguardando (trial) e agora confirmou. Usado para
+    // mandar boas-vindas só uma vez (não a cada renovação mensal).
+    const primeiraAtivacao =
+      confirma && !!assinatura && assinatura.status !== "ativa";
     const valorCentavos =
       typeof pag.value === "number" ? Math.round(pag.value * 100) : undefined;
 
@@ -163,6 +169,14 @@ export async function POST(req: Request) {
             fimPeriodoAtual: addMonths(new Date(), 1),
           },
         });
+      }
+      // Boas-vindas só na 1a ativação (best-effort, nunca quebra o webhook).
+      if (primeiraAtivacao) {
+        await enviarBoasVindas(
+          userId,
+          assinatura?.plano,
+          valorCentavos ?? assinatura?.valorCentavos ?? undefined,
+        ).catch(() => null);
       }
     } else if (EVENTOS_OVERDUE.has(evento)) {
       await prisma.user.update({
@@ -211,5 +225,60 @@ async function encerrarAssinatura(asaasSubscriptionId: string): Promise<void> {
   await prisma.user.update({
     where: { id: assinatura.userId },
     data: { statusAssinatura: "cancelada", plano: "free" },
+  });
+}
+
+// E-mail de boas-vindas ao assinante (Fase 4 — parte de e-mail, BAC_145).
+// Reaproveita o utilitário Brevo já usado na recuperação de senha.
+async function enviarBoasVindas(
+  userId: string,
+  plano: string | undefined,
+  valorCentavos: number | undefined,
+): Promise<void> {
+  if (!emailConfigured()) return;
+  const u = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { email: true, name: true },
+  });
+  if (!u?.email) return;
+
+  const primeiro = (u.name ?? "").trim().split(" ")[0] || "Olá";
+  const planoLabel = plano
+    ? (PLANO_LABEL[plano as Plano] ?? plano)
+    : "Clube +HCE";
+  const valor =
+    typeof valorCentavos === "number"
+      ? (valorCentavos / 100).toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        })
+      : null;
+  const url = `${appUrl()}/conta`;
+
+  const html = `
+  <div style="font-family:Arial,Helvetica,sans-serif;max-width:520px;margin:0 auto;color:#1f2937">
+    <h1 style="color:#0b2a4a;font-size:20px;margin:0 0 12px">Bem-vindo ao Clube +HCE, ${primeiro}!</h1>
+    <p style="line-height:1.6;margin:0 0 12px">
+      Seu pagamento foi confirmado e seu acesso ao plano
+      <strong>${planoLabel}</strong> já está liberado${valor ? ` (${valor}/mês)` : ""}.
+    </p>
+    <p style="line-height:1.6;margin:0 0 20px">
+      Aproveite as receitas, fichas técnicas, e-books e conteúdos exclusivos.
+    </p>
+    <p style="margin:0 0 24px">
+      <a href="${url}" style="background:#f4b400;color:#0b2a4a;text-decoration:none;font-weight:bold;padding:12px 20px;border-radius:9999px;display:inline-block">
+        Acessar minha conta
+      </a>
+    </p>
+    <p style="color:#6b7280;font-size:12px;line-height:1.6;margin:0">
+      A cobrança é mensal e você pode cancelar quando quiser em Minha conta &rsaquo; Pagamento.
+      Em caso de dúvida, responda este e-mail.
+    </p>
+  </div>`;
+
+  await sendEmail({
+    to: u.email,
+    subject: `Bem-vindo ao Clube +HCE — plano ${planoLabel}`,
+    html,
   });
 }
