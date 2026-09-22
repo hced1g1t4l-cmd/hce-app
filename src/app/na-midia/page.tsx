@@ -13,7 +13,12 @@ import {
 
 // Conteúdo agora vem do banco (model MidiaItem), gerenciado em /adm/na-midia
 // (BAC_130). A página exibe só os itens publicados, na ordem definida no painel.
-export const dynamic = "force-dynamic";
+//
+// ISR em vez de force-dynamic: a página é pública e não depende do usuário, então
+// servimos uma versão em cache e revalidamos a cada 5 min. Isso mantém a página
+// no ar mesmo se o banco cair (serve o último render bom), e reduz o acoplamento
+// ao banco a cada request — foi o que manteve a home viva numa queda do Neon.
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "Na Mídia · HCE",
@@ -29,10 +34,18 @@ export const metadata: Metadata = {
 };
 
 export default async function NaMidiaPage() {
-  const rows = await prisma.midiaItem.findMany({
-    where: { publicado: true },
-    orderBy: [{ ordem: "asc" }, { createdAt: "asc" }],
-  });
+  // Leitura tolerante a falha: se o banco estiver indisponível, a página não
+  // estoura 500 — cai para o estado vazio ("Em breve, novos conteúdos") e segue
+  // no ar. Quando o banco volta, o ISR revalida e o conteúdo reaparece sozinho.
+  let rows: Awaited<ReturnType<typeof prisma.midiaItem.findMany>> = [];
+  try {
+    rows = await prisma.midiaItem.findMany({
+      where: { publicado: true },
+      orderBy: [{ ordem: "asc" }, { createdAt: "asc" }],
+    });
+  } catch (e) {
+    console.error("[na-midia] falha ao ler MidiaItem (banco indisponível?):", e);
+  }
 
   const itens: MidiaCard[] = rows.map((r) => ({
     id: r.id,

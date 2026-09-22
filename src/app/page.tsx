@@ -54,10 +54,21 @@ const FUNDADORAS = [
 ];
 
 export default async function Home() {
-  const depoimentosRows = await prisma.depoimento.findMany({
-    where: { publicado: true },
-    orderBy: [{ ordem: "asc" }, { createdAt: "asc" }],
-  });
+  // Leitura tolerante a falha: se o banco estiver fora (no build ISR ou em
+  // runtime), a home NÃO quebra — a seção de depoimentos apenas não aparece.
+  // Sem isto, uma queda do Neon derruba a home e ainda bloqueia novos deploys
+  // (o prerender falha no build).
+  let depoimentosRows: Awaited<
+    ReturnType<typeof prisma.depoimento.findMany>
+  > = [];
+  try {
+    depoimentosRows = await prisma.depoimento.findMany({
+      where: { publicado: true },
+      orderBy: [{ ordem: "asc" }, { createdAt: "asc" }],
+    });
+  } catch (e) {
+    console.error("[home] falha ao ler depoimentos (banco indisponível?):", e);
+  }
   const depoimentos = depoimentosRows.map((d) => ({
     id: d.id,
     nome: d.nome,
