@@ -449,6 +449,12 @@ model Incidente {
   abertoPorNome String
   abertoEm      DateTime @default(now()) // data/quando o incidente foi aberto
 
+  // Origem do registro: "manual" (aberto por admin no painel) ou "sentinela"
+  // (aberto automaticamente pela celula de monitoramento). "assinatura" e a
+  // chave usada para deduplicar incidentes automaticos (ex.: "db_down").
+  origem     String  @default("manual")
+  assinatura String?
+
   emAndamentoEm      DateTime?
   emAndamentoPorNome String?
   resolvidoEm        DateTime?
@@ -460,6 +466,39 @@ model Incidente {
   updatedAt DateTime @updatedAt
 
   @@index([status, createdAt])
+  @@index([createdAt])
+  @@index([assinatura, status])
+}
+
+// Sentinela - celula de monitoramento ativo da infra. Cada linha e uma
+// execucao das checagens de saude (2x/dia via cron externo, ou manual pelo
+// painel). Alimenta o dashboard /adm/sentinela e dispara incidentes.
+model SentinelaCheck {
+  id     String  @id @default(cuid())
+  origem String  @default("cron") // cron | manual
+  ok     Boolean // resultado consolidado (todas as checagens criticas passaram?)
+
+  // Banco de dados
+  dbOk         Boolean @default(false)
+  dbLatenciaMs Int?
+  dbSizeBytes  BigInt? // pg_database_size(current_database())
+
+  // Pagina publica critica (/na-midia)
+  naMidiaOk     Boolean @default(false)
+  naMidiaStatus Int?
+
+  // Conteudo essencial
+  midiaCount Int?
+
+  // Neon (consumo do ciclo atual, via API - opcional)
+  neonOk             Boolean   @default(false)
+  neonComputeSeconds Int?
+  neonStorageBytes   BigInt?
+  neonPeriodEnd      DateTime?
+
+  detalhe   String   @db.Text // JSON resumido das checagens (mensagens)
+  createdAt DateTime @default(now())
+
   @@index([createdAt])
 }
 

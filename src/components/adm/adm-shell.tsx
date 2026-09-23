@@ -46,6 +46,7 @@ const GRUPOS: GrupoNav[] = [
   {
     titulo: "Administração",
     itens: [
+      { href: "/adm/sentinela", label: "Sentinela" },
       { href: "/adm/incidentes", label: "Incidentes" },
       { href: "/adm/backlog", label: "Backlog" },
       { href: "/adm/admins", label: "Admins" },
