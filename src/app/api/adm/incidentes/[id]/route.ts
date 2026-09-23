@@ -1,0 +1,168 @@
+import { NextResponse } from "next/server";
+import { z } from "zod";
+import type { Prisma } from "@prisma/client";
+import { getAdmin, logAdm } from "@/lib/adm";
+import { prisma } from "@/lib/db";
+import { getClientIp } from "@/lib/anti-bot";
+import {
+  severidadeValida,
+  dataAberturaDoInput,
+  type IncidenteAcao,
+} from "@/lib/incidentes";
+
+// Transicoes de status e edicao de um incidente.
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+const ACOES: IncidenteAcao[] = ["iniciar", "resolver", "cancelar", "reabrir"];
+
+const editSchema = z.object({
+  titulo: z.string().trim().min(1).max(180).optional(),
+  detalhamento: z.string().max(20000).optional(),
+  severidade: z
+    .string()
+    .refine(severidadeValida, "Severidade inválida.")
+    .optional(),
+  dataAbertura: z
+    .string()
+    .trim()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida.")
+    .optional(),
+});
+
+export async function PATCH(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const admin = await getAdmin();
+  if (!admin) {
+    return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+  }
+  if (admin.precisaTrocarSenha) {
+    return NextResponse.json(
+      { error: "Troque a sua senha antes de continuar." },
+      { status: 403 },
+    );
+  }
+  const { id } = await params;
+  const item = await prisma.incidente.findUnique({ where: { id } });
+  if (!item) {
+    return NextResponse.json(
+      { error: "Incidente não encontrado" },
+      { status: 404 },
+    );
+  }
+
+  const body = (await req.json().catch(() => ({}))) as Record<string, unknown>;
+  const acao = body.acao as IncidenteAcao | undefined;
+
+  // --- Transicao de status ---
+  if (acao && ACOES.includes(acao)) {
+    const agora = new Date();
+    const data: Prisma.IncidenteUpdateInput = {};
+    if (acao === "iniciar") {
+      data.status = "em_andamento";
+      data.emAndamentoEm = agora;
+      data.emAndamentoPorNome = admin.nome;
+      data.resolvidoEm = null;
+      data.resolvidoPorNome = null;
+      data.canceladoEm = null;
+      data.canceladoPorNome = null;
+    } else if (acao === "resolver") {
+      data.status = "resolvido";
+      data.resolvidoEm = agora;
+      data.resolvidoPorNome = admin.nome;
+    } else if (acao === "cancelar") {
+      data.status = "cancelado";
+      data.canceladoEm = agora;
+      data.canceladoPorNome = admin.nome;
+    } else if (acao === "reabrir") {
+      data.status = "aberto";
+      data.resolvidoEm = null;
+      data.resolvidoPorNome = null;
+      data.canceladoEm = null;
+      data.canceladoPorNome = null;
+    }
+
+    await prisma.incidente.update({ where: { id }, data });
+    await logAdm({
+      adminId: admin.id,
+      adminLogin: admin.login,
+      acao: `incidente.${acao}`,
+      detalhe: `"${item.titulo}"`,
+      ip: getClientIp(req),
+      userAgent: req.headers.get("user-agent"),
+    });
+    return NextResponse.json({ ok: true });
+  }
+
+  // --- Edicao dos campos ---
+  const parsed = editSchema.safeParse(body);
+  if (!parsed.success) {
+    const msg = parsed.error.issues[0]?.message ?? "Dados inválidos.";
+    return NextResponse.json({ error: msg }, { status: 400 });
+  }
+  const { titulo, detalhamento, severidade, dataAbertura } = parsed.data;
+  if (
+    titulo === undefined &&
+    detalhamento === undefined &&
+    severidade === undefined &&
+    dataAbertura === undefined
+  ) {
+    return NextResponse.json({ error: "Nada para atualizar." }, { status: 400 });
+  }
+
+  const novaData =
+    dataAbertura !== undefined ? dataAberturaDoInput(dataAbertura) : undefined;
+
+  await prisma.incidente.update({
+    where: { id },
+    data: {
+      ...(titulo !== undefined ? { titulo } : {}),
+      ...(detalhamento !== undefined ? { detalhamento } : {}),
+      ...(severidade !== undefined ? { severidade } : {}),
+      ...(novaData ? { abertoEm: novaData } : {}),
+    },
+  });
+  await logAdm({
+    adminId: admin.id,
+    adminLogin: admin.login,
+    acao: "incidente.editar",
+    detalhe: `"${titulo ?? item.titulo}"`,
+    ip: getClientIp(req),
+    userAgent: req.headers.get("user-agent"),
+  });
+  return NextResponse.json({ ok: true });
+}
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const admin = await getAdmin();
+  if (!admin) {
+    return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+  }
+  const { id } = await params;
+  const item = await prisma.incidente.findUnique({
+    where: { id },
+    select: { titulo: true },
+  });
+  if (!item) {
+    return NextResponse.json(
+      { error: "Incidente não encontrado" },
+      { status: 404 },
+    );
+  }
+
+  await prisma.incidente.delete({ where: { id } });
+  await logAdm({
+    adminId: admin.id,
+    adminLogin: admin.login,
+    acao: "incidente.excluir",
+    detalhe: `"${item.titulo}"`,
+    ip: getClientIp(req),
+    userAgent: req.headers.get("user-agent"),
+  });
+  return NextResponse.json({ ok: true });
+}
